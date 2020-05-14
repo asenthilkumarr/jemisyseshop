@@ -18,7 +18,6 @@ class HomeScreen3 extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Home',
-      //home: MyHomePage(title: 'Flutter Demo Home Page'),
       home: Home3(),
       debugShowCheckedModeBanner: false,
     );
@@ -565,33 +564,54 @@ class _home3 extends State<Home3> {
         .width;
 //    print(screenWidth);
     double _height = 100;
-    if (screenWidth > 1600)
-      _height = 650;
-    else if (screenWidth >= 1300)
-      _height = 500;
-    else if (screenWidth >= 1000)
-      _height = 400;
-    else if (screenWidth >= 700)
-      _height = 300;
-    else if (screenWidth >= 500)
-      _height = 200;
-    else if (screenWidth >= 400)
-      _height = 120;
+    double _ratio = 0.9;
+    if (screenWidth > 1600){
+      _height = 350; _ratio =0.5;
+    }
+    else if (screenWidth >= 1300){
+      _height = 300;_ratio=0.45;
+    }
+    else if (screenWidth >= 1000){
+      _height = 250;_ratio=0.55;
+    }
+    else if (screenWidth >= 700){
+      _height = 210;_ratio=0.6;
+    }
+    else if (screenWidth >= 500){
+      _height = 200;_ratio=0.5;
+    }
+    else if (screenWidth >= 400){
+      _height = 120;_ratio=0.8;
+    }
+    print(_ratio);
+    print(screenWidth);
     if (images.length > 1) {
       return new Container(
         child: CarouselSlider.builder(
           itemCount: images.length,
           options: CarouselOptions(
+//              autoPlay: true,
+//              aspectRatio: 3.5,
+//              enlargeCenterPage: true,
+              aspectRatio: 16/9,
+              viewportFraction: _ratio,
+              initialPage: 0,
+              enableInfiniteScroll: true,
+              reverse: false,
               autoPlay: true,
-              aspectRatio: 2.0,
+              autoPlayInterval: Duration(seconds: 3),
+              autoPlayAnimationDuration: Duration(milliseconds: 800),
+              autoPlayCurve: Curves.fastOutSlowIn,
               enlargeCenterPage: true,
+//              onPageChanged: callbackFunction,
+              scrollDirection: Axis.horizontal,
               height: _height
           ),
           itemBuilder: (context, index) {
             return Container(
               child: SizedBox(
-                  child: Image.network(images[index], fit: BoxFit.fitWidth,
-                    width: screenWidth - 30,)
+                  child: Image.network(images[index], fit: BoxFit.fitHeight,
+                    )
               ),
             );
           },
@@ -625,7 +645,7 @@ class _home3 extends State<Home3> {
     return Card(
         shape: RoundedRectangleBorder(
           side: BorderSide(
-            color: Color(0xFFEFEBEB),
+            color: listbgColor,
             width: 1.0,
           ),
         ),
@@ -733,7 +753,7 @@ class _home3 extends State<Home3> {
                            child: IconButton(
                              icon: new Image.asset(
                                  isLogin ? 'assets/user_profile.png' : 'assets/login.png'),
-                             iconSize: 20,
+                             iconSize: 15,
 
                              onPressed: () {
                                if (isLogin)
@@ -746,6 +766,15 @@ class _home3 extends State<Home3> {
                              },
                            ),
                          ),
+                         IconButton(
+                           key: _keyRed,
+                           icon: new Image.asset('assets/goldRate.png'),
+                           iconSize: 15,
+
+                           onPressed: () {
+                             showGoldRate();
+                           },
+                         ),
                          Center(
                            child: Padding(
                              padding: const EdgeInsets.only(right: 5.0),
@@ -754,7 +783,7 @@ class _home3 extends State<Home3> {
                                    //new IconButton(icon: Icon(Icons.shopping_cart, size: 35, color: Colors.white,),
                                    IconButton(
                                      icon: new Image.asset('assets/shopping_cart.png'),
-                                     iconSize: 20,
+                                     iconSize: 15,
                                      onPressed: () {},),
                                    new Positioned( // draw a red marble
                                      top: 2.0,
@@ -926,7 +955,6 @@ class _home3 extends State<Home3> {
       return new Text('ERROR');
     }
   }
-
   Widget CategoryListView(List<Category> data) {
     return
       new ListView.builder(
@@ -977,7 +1005,7 @@ class _home3 extends State<Home3> {
                 ),
                 Spacer(),
                 Container(
-                  color: Color(0xFF88A9BB),
+                  color: listLabelbgColor,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -1008,130 +1036,70 @@ class _home3 extends State<Home3> {
             CategoryListitem2(context, data[index]),
       );
   }
-  Widget CategoryListitem3(BuildContext context, Category dt) {
-    if (dt.categoryCode != null) {
-      return Container(
-        width: 110,
-        //color: Colors.grey,
-        child: Card(
-          shape: RoundedRectangleBorder(
-            side: BorderSide(
-              color: Color(0xFFD6DFE4),
-              width: 1.0,
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-            child: Column(
-              children: <Widget>[
-                Spacer(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    InkWell(
-                      onTap: () {
-                        _selcategoryCode = dt.categoryCode;
-                        _selCategory = dt.description;
-                        getDesign();
-                        setState(() {});
-                      },
-                      child: Container(
-                        child: ClipRRect(
-//                          borderRadius: BorderRadius.circular(20.0),
-                          child: Image.network(dt.imageUrl,
-                            width: 80, fit: BoxFit.fitHeight,),
-                        ),),
-                    )
-                    //Image.network(dt.imageUrl, height: 80, width: 80,),
-                    //Spacer(),
-                  ],
-                ),
-                Spacer(),
-                Container(
-                  color: Color(0xFF88A9BB),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text('${dt.description}',
-                        style: TextStyle(color: Colors.white),),
-                      //Spacer(),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
-    else {
-      return new Text('ERROR');
-    }
-  }
-  Widget CategoryListView3(List<Category> data) {
-    return
-      new ListView.builder(
-
-        scrollDirection: Axis.horizontal,
-        itemCount: data.length,
-        itemBuilder: (BuildContext context, int index) =>
-            CategoryListitem3(context, data[index]),
-      );
-  }
 
   Widget CompanyLogo() {
     return new Container(
       color: primary1Color,
-      child: SizedBox(
-        height: 30,
-        child: new Image.network(
-          'http://42.61.99.57/JEMiSyseShopImage/Banner3.png',
-          //"http://42.61.99.57/JEMiSyseShopImage/logo.png",
-          fit: BoxFit.fitHeight,
-        ),
-      ),
+child: Text('JEMiSys eShop', style: TextStyle(fontSize: 20, color: Colors.white,fontWeight: FontWeight.bold)),
+//      child: SizedBox(
+//        height: 30,
+//        child: new Image.network(
+//          'http://42.61.99.57/JEMiSyseShopImage/Banner3.png',
+//          //"http://42.61.99.57/JEMiSyseShopImage/logo.png",
+//          fit: BoxFit.fitHeight,
+//        ),
+//      ),
     );
   }
 
-  void showPopup() {
+  void showGoldRate() {
     bool _fromTop = true;
+
     showGeneralDialog(
         barrierLabel: "Label",
         barrierDismissible: true,
         barrierColor: Colors.black.withOpacity(0.5),
         transitionDuration: Duration(milliseconds: 700),
         context: context,
+//        position: RelativeRect.fromLTRB(100, kIsWeb ? 55 : 80, 50, 100),
+
         pageBuilder: (context, anim1, anim2) {
           return Padding(
-            padding: const EdgeInsets.only(top:70.0, left:20.0, right: 20.0),
+            padding: const EdgeInsets.only(top: kIsWeb ? 50.0 : 74.0, left:20.0, right:kIsWeb ? 70 : 70),
             child: Align(
-              alignment: _fromTop ? Alignment.topCenter : Alignment.bottomCenter,
-              child: Container(
-                height: 120,
+//              right: kIsWeb ? 40 : 40,
+//                position: RelativeRect.fromLTRB(100, kIsWeb ? 55 : 80, 50, 100),
+              alignment: _fromTop ? Alignment.topRight : Alignment.bottomCenter,
+              child: Material(
+                type: MaterialType.transparency,
+                child: new Stack(
+                  children: <Widget>[
+                    Container(
+                height: 100,
                 child: SizedBox( width: 200,
                   child: Padding(
                     padding: const EdgeInsets.only(left:30.0, top:10.0),
                     child: Column(
                       children: [
-                        Text('Gold Rate', style: TextStyle(fontSize: 15),),
+                        Text('Gold Rate'),
                         SizedBox(height: 10,),
                         Row(
                           children: [
                             Padding(
-                              padding: const EdgeInsets.only(right:20.0),
-                              child: Text('916', style: TextStyle(fontSize: 15)),
+                              padding: const EdgeInsets.only(right:15.0),
+                              child: Text('916 :'),
                             ),
-                            Text('\$55.50', style: TextStyle(fontSize: 15)),
+                            Text('\$55.50'),
                           ],
                         ),
                         SizedBox(height: 10,),
                         Row(
                           children: [
                             Padding(
-                              padding: const EdgeInsets.only(right:20.0),
-                              child: Text('999', style: TextStyle(fontSize: 15)),
+                              padding: const EdgeInsets.only(right:15.0),
+                              child: Text('999 :'),
                             ),
-                            Text('\$65.50', style: TextStyle(fontSize: 15)),
+                            Text('\$65.50'),
                           ],
                         ),
 
@@ -1142,16 +1110,43 @@ class _home3 extends State<Home3> {
 //              margin: EdgeInsets.only(top: 80, left: 12, right: 12, bottom: 50),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(40),
+                  borderRadius: BorderRadius.only(
+                    topLeft: const  Radius.circular(1000.0),
+                    topRight: const Radius.circular(300.0),
+                    bottomLeft: const  Radius.circular(150.0),
+                    bottomRight: const  Radius.circular(1000.0),
+                  ),
                 ),
               ),
+              Positioned(
+                  right: 0.0,
+                  child: GestureDetector(
+                    onTap: (){
+                      Navigator.of(context).pop();
+                    },
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: CircleAvatar(
+                        radius: 14.0,
+                        backgroundColor: Colors.red,
+                        child: Icon(Icons.close, color: Colors.white),
+                      ),
+                    ),
+                  )),
+              ]),
+            )
             ),
           );
   });
   }
 
   var scaffoldKey = GlobalKey<ScaffoldState>();
-
+  GlobalKey _keyRed = GlobalKey();
+  _getPositions() {
+    final RenderBox renderBoxRed = _keyRed.currentContext.findRenderObject();
+    final positionRed = renderBoxRed.localToGlobal(Offset.zero);
+    print("POSITION of Red: $positionRed ");
+  }
   @override
   void initState() {
     super.initState();
@@ -1169,11 +1164,11 @@ class _home3 extends State<Home3> {
         precacheImage(NetworkImage(imageUrl), context);
       });
     });
+    Future.delayed(Duration.zero, () => showGoldRate());
   }
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(Duration.zero, () => showPopup());
     final screenSize = MediaQuery
         .of(context)
         .size;
@@ -1224,7 +1219,7 @@ class _home3 extends State<Home3> {
                                 //margin: const EdgeInsets.all(15.0),
                                 //padding: const EdgeInsets.all(3.0),
                                 decoration: BoxDecoration(
-                                    border: Border.all(color: Color(0xFFD8D8D8))
+                                    border: Border.all(color: listbgColor)
                                 ),
                                 //child: HorizontalMenu(menuitem, context),
                                 child: HorizontalMenuWedget(),
@@ -1243,13 +1238,13 @@ class _home3 extends State<Home3> {
                                 left: 5.0, right: 5.0),
                             child: Container(
                                 height: 120,
-                                color: Color(0xFFE5E7E9),
+                                color: listbgColor,
                                 child: FutureBuilder<List<ItemMasterList>>(
                                   //future: _fetchData(),
                                   builder: (context, snapshot) {
                                     if (categoryList.length > 0) {
                                       List<Category> data = categoryList;
-                                      return CategoryListView(data);
+                                      return CategoryListView2(data);
                                     } else if (snapshot.hasError) {
                                       return Text("${snapshot.error}");
                                     }
@@ -1261,6 +1256,32 @@ class _home3 extends State<Home3> {
                         ],
                       ),
                     ),
+//                    SliverList(
+//                      delegate: SliverChildListDelegate(
+//                        [
+//                          Padding(
+//                            padding: const EdgeInsets.only(
+//                                left: 5.0, right: 5.0),
+//                            child: Container(
+//                                height: 120,
+//                                color: Color(0xFFE5E7E9),
+//                                child: FutureBuilder<List<ItemMasterList>>(
+//                                  //future: _fetchData(),
+//                                  builder: (context, snapshot) {
+//                                    if (categoryList.length > 0) {
+//                                      List<Category> data = categoryList;
+//                                      return CategoryListView(data);
+//                                    } else if (snapshot.hasError) {
+//                                      return Text("${snapshot.error}");
+//                                    }
+//                                    return Container();
+//                                  },
+//                                )
+//                            ),
+//                          ),
+//                        ],
+//                      ),
+//                    ),
                     //Space
                     SliverToBoxAdapter(
                       child: SizedBox(height: 3,),
@@ -1272,14 +1293,13 @@ class _home3 extends State<Home3> {
                             left: 5.0, right: 5.0),
                         child: Container(
                           decoration: BoxDecoration(
-                              border: Border.all(color: Color(
-                                  0xFFD8D8D8)),
-                              color: Color(0xFFD8D8D8)
+                              border: Border.all(color: listbgColor),
+                              color: listLabelbgColor
                           ),
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(
                                 10.0, 5.0, 0.0, 5.0),
-                            child: Text(_selCategory,),
+                            child: Text(_selCategory, style: TextStyle(color: Colors.white)),
                           ),
                         ),
                       ),
@@ -1325,36 +1345,6 @@ class _home3 extends State<Home3> {
                       ),
                     ),
 
-                    //Space
-                    SliverToBoxAdapter(
-                      child: SizedBox(height: 3,),
-                    ),
-                    SliverList(
-                      delegate: SliverChildListDelegate(
-                        [
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                left: 5.0, right: 5.0),
-                            child: Container(
-                                height: 120,
-//                                color: Color(0xFFE5E7E9),
-                                child: FutureBuilder<List<ItemMasterList>>(
-                                  //future: _fetchData(),
-                                  builder: (context, snapshot) {
-                                    if (categoryList.length > 0) {
-                                      List<Category> data = categoryList;
-                                      return CategoryListView3(data);
-                                    } else if (snapshot.hasError) {
-                                      return Text("${snapshot.error}");
-                                    }
-                                    return Container();
-                                  },
-                                )
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                   ],
                 ),
               )

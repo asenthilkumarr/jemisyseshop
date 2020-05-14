@@ -9,6 +9,8 @@ const Color pagetitle1Color = Color(0xFFFB4309);//FB4309
 const Color pageColortop = Color(0xFFFF3D00);//Color(0xFFFF3D00);
 const Color pageColorbottom = Color(0xFFFFD54F);
 const Color title1Color = Color(0xFFFFFFFF);//FB4309
+const Color listbgColor = Color(0xFFD6DFE4);
+const Color listLabelbgColor = Color(0xFF88A9BB);
 
 const double textborderRadius = 15.0;
 
