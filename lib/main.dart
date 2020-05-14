@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:jemisyseshop/view/home.dart';
 
-import 'view/home2.dart';
-import 'view/home3.dart';
-
 void main() {
 
-  runApp(HomeScreen3());
+  runApp(HomeScreen());
   //runApp(MyApp());
 }
 

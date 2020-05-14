@@ -1,6 +1,0 @@
-<application>
-  <component name="NotificationConfiguration">
-    <notification groupId="Dart Analysis" displayType="NONE" shouldLog="false" />
-    <notification groupId="Gradle Notification Group" displayType="NONE" shouldLog="false" />
-  </component>
-</application>

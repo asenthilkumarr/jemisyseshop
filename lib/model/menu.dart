@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:jemisyseshop/view/home.dart';
 import 'package:jemisyseshop/view/home2.dart';
 import 'package:jemisyseshop/view/home3.dart';
 
 final List<String> menuitem = [
   'Home',
   'Home 2',
+  'Home 3',
   'Diamond',
   'Engagement',
   'Wedding',
@@ -58,14 +60,17 @@ void _openPage(menuItem, BuildContext context) {
         MaterialPageRoute(builder: (context) {
           switch (menuItem) {
             case 'Home':
-              return HomeScreen3();
+              return HomeScreen();
               break;
             case 'Home 2':
               return HomeScreen2();
               break;
+            case 'Home 3':
+              return HomeScreen3();
+              break;
 
             default:
-              return HomeScreen3();
+              return HomeScreen();
           }
         }), (Route<dynamic> route) => false);
   }

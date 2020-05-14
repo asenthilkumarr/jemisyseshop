@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -6,7 +9,6 @@ import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/model/menu.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:jemisyseshop/style.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
@@ -15,8 +17,7 @@ class HomeScreen2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Home 2',
-      //home: MyHomePage(title: 'Flutter Demo Home Page'),
+      title: 'Home 3',
       home: Home2(),
       debugShowCheckedModeBanner: false,
     );
@@ -481,6 +482,7 @@ class _home2 extends State<Home2> {
 
   List<DesignCode> selDesign = new List<DesignCode>();
   Country sCountry;
+  bool hidetitleMsg = false;
 
   void getDefault() {
     var sitem = country.firstWhere((d) => d.shortCode == _selCountry);
@@ -561,35 +563,62 @@ class _home2 extends State<Home2> {
         .of(context)
         .size
         .width;
-//    print(screenWidth);
     double _height = 100;
-    if (screenWidth > 1600)
-      _height = 650;
-    else if (screenWidth >= 1300)
-      _height = 500;
-    else if (screenWidth >= 1000)
-      _height = 400;
-    else if (screenWidth >= 700)
-      _height = 300;
-    else if (screenWidth >= 500)
-      _height = 200;
-    else if (screenWidth >= 400)
-      _height = 120;
+    double _ratio = 0.65;
+    if (screenWidth > 1600){
+      _height = 350; _ratio =0.5;
+    }
+    else if (screenWidth >= 1300){
+      _height = 300;_ratio=1;
+    }
+    else if (screenWidth >= 1000){
+      _height = 250;_ratio=0.55;
+    }
+    else if (screenWidth >= 850){
+      _height = 220;_ratio=0.9;
+    }
+//    else if (screenWidth >= 790){
+//      _height = 215;_ratio=1.0;
+//    }
+    else if (screenWidth >= 700){
+      _height = 210;_ratio=1.0;
+    }
+    else if (screenWidth >= 630){
+      _height = 210;_ratio=0.8;
+    }
+    else if (screenWidth >= 500){
+      _height = 200;_ratio=0.9;
+    }
+    else if (screenWidth >= 400){
+      _height = 120;_ratio=0.8;
+    }
     if (images.length > 1) {
       return new Container(
         child: CarouselSlider.builder(
           itemCount: images.length,
           options: CarouselOptions(
+//              autoPlay: true,
+//              aspectRatio: 3.5,
+//              enlargeCenterPage: true,
+              aspectRatio: 16/9,
+              viewportFraction: _ratio,
+              initialPage: 0,
+              enableInfiniteScroll: true,
+              reverse: false,
               autoPlay: true,
-              aspectRatio: 2.0,
+              autoPlayInterval: Duration(seconds: 3),
+              autoPlayAnimationDuration: Duration(milliseconds: 800),
+              autoPlayCurve: Curves.fastOutSlowIn,
               enlargeCenterPage: true,
+//              onPageChanged: callbackFunction,
+              scrollDirection: Axis.horizontal,
               height: _height
           ),
           itemBuilder: (context, index) {
             return Container(
               child: SizedBox(
-                  child: Image.network(images[index], fit: BoxFit.fitWidth,
-                    width: screenWidth - 30,)
+                  child: Image.network(images[index], fit: BoxFit.fitHeight,
+                    )
               ),
             );
           },
@@ -623,17 +652,24 @@ class _home2 extends State<Home2> {
     return Card(
         shape: RoundedRectangleBorder(
           side: BorderSide(
-            color: Color(0xFFEFEBEB),
+            color: listbgColor,
             width: 1.0,
           ),
         ),
         child: Stack(
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.only(bottom: 20.0),
-                child: Center(
-                  child: Image.network(
-                    item.imageUrl, fit: BoxFit.fitHeight,),
+                padding: const EdgeInsets.all(20.0),
+                child: Align(
+                  alignment: FractionalOffset.topCenter,
+                  child: Image(
+                    image: CachedNetworkImageProvider(
+                      item.imageUrl,
+                    ),
+                    fit: BoxFit.fitHeight,
+                  ),
+//                  child: Image.network(
+//                    item.imageUrl, fit: BoxFit.fitHeight,),
                 ),
               ),
               Align(
@@ -642,7 +678,7 @@ class _home2 extends State<Home2> {
                     //color: Colors.white,
                     child: Padding(
                       padding: const EdgeInsets.only(
-                          left: 5.0, right: 5.0, top: 0.0, bottom: 3.0),
+                          left: 10.0, right: 10.0, top: 0.0, bottom: 3.0),
                       child: Row(
 //                  mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -662,7 +698,6 @@ class _home2 extends State<Home2> {
   }
 
   Widget DesignGridWidgets2(DesignCode item) {
-//    print(item.description);
     return Padding(
       padding: const EdgeInsets.only(left: 5.0, right: 5.0),
       child: new Card(
@@ -697,81 +732,232 @@ class _home2 extends State<Home2> {
       ),
     );
   }
+  Widget titleBar(){
+   return Container(
+     color: primary1Color,
+       child: Column(
+         children: [
+           Row(
+                 children: [
+                   Align(
+                     alignment: Alignment.centerLeft,
+                     child: IconButton(
+                       icon: Icon(Icons.menu, color: Colors.white,),
+                       iconSize: 25,
 
+                       onPressed: () {
+                         scaffoldKey.currentState.openDrawer();
+                       },
+                     ),
+                   ),
+                   Spacer(),
+                   Align(
+                     alignment: Alignment.center,
+                     child: CompanyLogo(),
+                   ),
+                   Spacer(),
+                   Align(
+                     alignment: Alignment.centerRight,
+                     child: SizedBox(
+                       width: 80,
+                       child: Row(
+                       children: [
+                         Visibility(
+                           visible: !isLogin ? true : true,
+                           child: SizedBox(
+                           width: 40,
+                           child: IconButton(
+//                             icon: new Image.asset(
+//                                 isLogin ? 'assets/user_profile.png' : 'assets/login.png', height: 25,),
+                             icon: Icon(Icons.person, color: !isLogin ? Colors.white : Colors.transparent,),
+                             iconSize: 25,
+                             onPressed: () {
+                               if (isLogin)
+                                 isLogin = false;
+                               else
+                                 isLogin = true;
+                               setState(() {
+
+                               });
+                             },
+                           )),
+                         ),
+//                         SizedBox(
+//                             width: 40,
+//                             child: IconButton(
+//                           key: _keyRed,
+//                           icon: new Image.asset('assets/goldRate.png', height: 20,),
+//                           iconSize: 15,
+//
+//                           onPressed: () {
+//                             showGoldRate();
+//                           },
+//                         )),
+                         Center(
+                             child: SizedBox(
+                                 width: 40,
+                                 child: Padding(
+                             padding: const EdgeInsets.only(right: 0.0),
+                                     child: Stack(
+                                 children: <Widget>[
+                                   //new IconButton(icon: Icon(Icons.shopping_cart, size: 35, color: Colors.white,),
+                                   IconButton(
+                                     icon: new Image.asset('assets/shopping_cart.png', height: 20,),
+//                                     icon: Icon(Icons.cur, color: Colors.white,),
+                                     iconSize: 15,
+                                     onPressed: () {},),
+                                   new Positioned( // draw a red marble
+                                     top: 5.0,
+                                     right: 10.0,
+                                     child: Container(
+                                       alignment: Alignment.center,
+                                       decoration: BoxDecoration(
+                                           color: Colors.white,
+                                           shape: BoxShape.circle
+                                       ),
+                                       child: Padding(
+                                         padding: const EdgeInsets.all(3.0),
+                                         child: new Text(
+                                           '5',
+                                           style: new TextStyle(
+                                             color: Colors.red,
+                                             fontSize: 9,
+                                           ),
+                                           textAlign: TextAlign.center,
+                                         ),
+                                       ),
+                                     ),
+                                   )
+                                 ]
+                             )),
+                           ),
+                         ),
+                       ],
+                     ),
+                   )
+                   )
+
+
+                 ],
+               ),
+
+         ],
+       ),
+     
+   );
+  }
+  Widget titleMessage() {
+    return !hidetitleMsg ? Padding(
+      padding: const EdgeInsets.only(bottom:1.0),
+      child: Container(
+          color: primary1Color,
+          child: Padding(
+            padding: const EdgeInsets.only(left:8.0, top:8.0, bottom:8.0, right:5.0),
+            child: Stack(
+              children: <Widget>[
+                Wrap(
+              runSpacing: 5.0,
+              spacing: 5.0,
+              direction: Axis.horizontal,
+              children: [
+                Center(
+                  child: Text("FREE SHIPPING ON EVERY ORDER",
+                  style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            ),
+                Positioned(
+                    right: 0.0,
+                    child: GestureDetector(
+                      onTap: (){
+                        hidetitleMsg = true;
+                        setState(() {
+
+                        });
+                      },
+                      child: Icon(Icons.close, color: Colors.white, size: 18,),
+
+                    )),
+            ]
+          ),
+      ),
+      ))
+    : Container();
+  }
   Widget pageAppBar() {
     return AppBar(
-      //title: Text("eShop"),
+//      title: Text("JEMiSys eShop"),
 
-        elevation: 0.0,
-        backgroundColor: primary1Color,
-        centerTitle: true,
-        actions: <Widget>[
+    elevation: 0.0,
+    backgroundColor: primary1Color,
+    centerTitle: true,
+    actions: <Widget>[
 //          Visibility(
 //              visible: isLogin ? true : false,
 //              child:
 //          ),
-          Visibility(
-            visible: !isLogin ? true : false,
-            child: IconButton(
-              icon: new Image.asset(
-                  isLogin ? 'assets/user_profile.png' : 'assets/login.png'),
-              iconSize: 20,
+      Visibility(
+        visible: !isLogin ? true : false,
+        child: IconButton(
+          icon: new Image.asset(
+              isLogin ? 'assets/user_profile.png' : 'assets/login.png'),
+          iconSize: 20,
 
-              onPressed: () {
-                if (isLogin)
-                  isLogin = false;
-                else
-                  isLogin = true;
-                setState(() {
+          onPressed: () {
+            if (isLogin)
+              isLogin = false;
+            else
+              isLogin = true;
+            setState(() {
 
-                });
-              },
-            ),
-          ),
-          IconButton(
-            icon: new Image.asset(sCountry.imageUrl),
-            iconSize: 20,
-            onPressed: () {
-              _showPopupMenu();
-            },
-          ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.only(right: 5.0),
-              child: Stack(
-                  children: <Widget>[
-                    //new IconButton(icon: Icon(Icons.shopping_cart, size: 35, color: Colors.white,),
-                    IconButton(
-                      icon: new Image.asset('assets/shopping_cart.png'),
-                      iconSize: 20,
-                      onPressed: () {},),
-                    new Positioned( // draw a red marble
-                      top: 2.0,
-                      right: 10.0,
-                      child: Container(
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle
+            });
+          },
+        ),
+      ),
+      IconButton(
+        icon: new Image.asset(sCountry.imageUrl),
+        iconSize: 20,
+        onPressed: () {
+          _showPopupMenu();
+        },
+      ),
+      Center(
+        child: Padding(
+          padding: const EdgeInsets.only(right: 5.0),
+          child: Stack(
+              children: <Widget>[
+                //new IconButton(icon: Icon(Icons.shopping_cart, size: 35, color: Colors.white,),
+                IconButton(
+                  icon: new Image.asset('assets/shopping_cart.png'),
+                  iconSize: 20,
+                  onPressed: () {},),
+                new Positioned( // draw a red marble
+                  top: 2.0,
+                  right: 10.0,
+                  child: Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(3.0),
+                      child: new Text(
+                        '5',
+                        style: new TextStyle(
+                          color: Colors.red,
+                          fontSize: 9,
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(3.0),
-                          child: new Text(
-                            '5',
-                            style: new TextStyle(
-                              color: Colors.red,
-                              fontSize: 9,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
+                        textAlign: TextAlign.center,
                       ),
-                    )
-                  ]
-              ),
-            ),
+                    ),
+                  ),
+                )
+              ]
           ),
-        ]
+        ),
+      ),
+    ]
     );
   }
 
@@ -799,8 +985,15 @@ class _home2 extends State<Home2> {
                       child: Container(
                         child: ClipRRect(
 //                          borderRadius: BorderRadius.circular(20.0),
-                          child: Image.network(dt.imageUrl,
-                            width: 80, fit: BoxFit.fitHeight,),
+                          child: _sizedContainer(
+                            Image(
+                              image: CachedNetworkImageProvider(
+                                dt.imageUrl,
+                              ),
+                            ),
+                          ),
+//                          child: Image.network(dt.imageUrl,
+//                            width: 80, fit: BoxFit.fitHeight,),
                         ),),
                     )
                     //Image.network(dt.imageUrl, height: 80, width: 80,),
@@ -829,7 +1022,6 @@ class _home2 extends State<Home2> {
       return new Text('ERROR');
     }
   }
-
   Widget CategoryListView(List<Category> data) {
     return
       new ListView.builder(
@@ -840,29 +1032,211 @@ class _home2 extends State<Home2> {
             CategoryListitem(context, data[index]),
       );
   }
+  Widget CategoryListitem2(BuildContext context, Category dt) {
+    if (dt.categoryCode != null) {
+      return Container(
+        width: 110,
+        //color: Colors.grey,
+        child: Card(
+//          shape: RoundedRectangleBorder(
+//            side: BorderSide(
+//              color: Color(0xFFD6DFE4),
+//              width: 1.0,
+//            ),
+//          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+            child: Column(
+              children: <Widget>[
+                Spacer(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    InkWell(
+                      onTap: () {
+                        _selcategoryCode = dt.categoryCode;
+                        _selCategory = dt.description;
+                        getDesign();
+                        setState(() {});
+                      },
+                      child: _sizedContainer(
+                        Image(
+                          image: CachedNetworkImageProvider(
+                            dt.imageUrl,
+                          ),
+                        ),
+                      ),
+                    )
+                    //Image.network(dt.imageUrl, height: 80, width: 80,),
+                    //Spacer(),
+                  ],
+                ),
+                Spacer(),
+                Container(
+                  color: listLabelbgColor,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text('${dt.description}',
+                        style: TextStyle(color: Colors.white),),
+                      //Spacer(),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+    else {
+      return new Text('ERROR');
+    }
+  }
 
+  Widget CategoryListView2(List<Category> data) {
+    return
+      new ListView.builder(
+
+        scrollDirection: Axis.horizontal,
+        itemCount: data.length,
+        itemBuilder: (BuildContext context, int index) =>
+            CategoryListitem2(context, data[index]),
+      );
+  }
+  Widget _sizedContainer(Widget child) {
+    return SizedBox(
+      width: 80.0,
+      height: 80.0,
+      child: Center(child: child),
+    );
+  }
   Widget CompanyLogo() {
     return new Container(
       color: primary1Color,
-      child: SizedBox(
-        height: 40,
-        child: new Image.network(
-          'http://42.61.99.57/JEMiSyseShopImage/Banner3.png',
-          //"http://42.61.99.57/JEMiSyseShopImage/logo.png",
-          fit: BoxFit.fitHeight,
-        ),
-      ),
+child: Text('JEMiSys eShop', style: TextStyle(fontSize: 20, color: Colors.white,fontWeight: FontWeight.bold)),
+//      child: SizedBox(
+//        height: 30,
+//        child: new Image.network(
+//          'http://42.61.99.57/JEMiSyseShopImage/Banner3.png',
+//          //"http://42.61.99.57/JEMiSyseShopImage/logo.png",
+//          fit: BoxFit.fitHeight,
+//        ),
+//      ),
     );
   }
 
-  var scaffoldKey = GlobalKey<ScaffoldState>();
+  void showGoldRate() {
+    bool _fromTop = true;
+    double p = 100.0;
+//    double topp=positionRed.dx;
+//    double rightp=positionRed.dy;
+    if(kIsWeb && hidetitleMsg)
+      p = 45.0;
+    else if(kIsWeb && !hidetitleMsg)
+      p = 75.0;
+    else if(!kIsWeb && hidetitleMsg)
+      p = 70.0;
+    final RenderBox renderBoxRed = _keyRed.currentContext.findRenderObject();
+    final positionRed = renderBoxRed.localToGlobal(Offset.zero);
+    double topp = positionRed.dy;
+//    double rightp = positionRed.dx;
+//        print('$topp and $rightp');
+    showGeneralDialog(
+        barrierLabel: "Label",
+        barrierDismissible: true,
+        barrierColor: Colors.black.withOpacity(0.5),
+        transitionDuration: Duration(milliseconds: 700),
+        context: context,
+        pageBuilder: (context, anim1, anim2) {
+          return Padding(
+//            padding: EdgeInsets.only(top: p, left:20.0, right:kIsWeb ? 50 : 50),
+            padding: EdgeInsets.only(top: topp, left:20.0, right:20),
+            child: Align(
+              alignment: _fromTop ? Alignment.topRight : Alignment.bottomCenter,
+              child: Material(
+                type: MaterialType.transparency,
+                child: new Stack(
+                  children: <Widget>[
+                    Container(
+                height: 100,
+                child: SizedBox( width: 200,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left:30.0, top:10.0),
+                    child: Column(
+                      children: [
+                        Text('Gold Rate'),
+                        SizedBox(height: 10,),
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(right:15.0),
+                              child: Text('916 :'),
+                            ),
+                            Text('\$55.50'),
+                          ],
+                        ),
+                        SizedBox(height: 10,),
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(right:15.0),
+                              child: Text('999 :'),
+                            ),
+                            Text('\$65.50'),
+                          ],
+                        ),
 
+                      ],
+                    ),
+                  ),
+                ),
+//              margin: EdgeInsets.only(top: 80, left: 12, right: 12, bottom: 50),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: const  Radius.circular(1000.0),
+                    topRight: const Radius.circular(300.0),
+                    bottomLeft: const  Radius.circular(150.0),
+                    bottomRight: const  Radius.circular(1000.0),
+                  ),
+                ),
+              ),
+              Positioned(
+                  right: 0.0,
+                  child: GestureDetector(
+                    onTap: (){
+                      Navigator.of(context).pop();
+                    },
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: CircleAvatar(
+                        radius: 14.0,
+                        backgroundColor: Colors.red,
+                        child: Icon(Icons.close, color: Colors.white),
+                      ),
+                    ),
+                  )),
+              ]),
+            )
+            ),
+          );
+  });
+  }
+
+  var scaffoldKey = GlobalKey<ScaffoldState>();
+  GlobalKey _keyRed = GlobalKey();
+  _getPositions() {
+    final RenderBox renderBoxRed = _keyRed.currentContext.findRenderObject();
+    final positionRed = renderBoxRed.localToGlobal(Offset.zero);
+    print("POSITION of Red: $positionRed ");
+  }
   @override
   void initState() {
     super.initState();
-    DefaultCacheManager manager = new DefaultCacheManager();
-    manager.emptyCache(); //clears all data in cache.
-    imageCache.clear();
+//    DefaultCacheManager manager = new DefaultCacheManager();
+//    manager.emptyCache(); //clears all data in cache.
+//    imageCache.clear();
     getDefault();
     if (categoryList.length > 0) {
       _selcategoryCode = categoryList[0].categoryCode;
@@ -874,6 +1248,7 @@ class _home2 extends State<Home2> {
         precacheImage(NetworkImage(imageUrl), context);
       });
     });
+    Future.delayed(Duration.zero, () => showGoldRate());
   }
 
   @override
@@ -888,7 +1263,7 @@ class _home2 extends State<Home2> {
 
     return Scaffold(
       key: scaffoldKey,
-      appBar: pageAppBar(),
+//      appBar: pageAppBar(),
       drawer: MenuItemWedget(scaffoldKey: scaffoldKey, isLogin: isLogin),
       body: SafeArea(
           child: Container(
@@ -897,11 +1272,12 @@ class _home2 extends State<Home2> {
                 child: CustomScrollView(
                   slivers: <Widget>[
                     SliverToBoxAdapter(
-                      child: CompanyLogo(),
+                      child: titleMessage(),//CompanyLogo(),
                     ),
                     SliverToBoxAdapter(
-                      child: SizedBox(height: 5,),
+                      child: titleBar(),//CompanyLogo(),
                     ),
+
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: const EdgeInsets.only(left: 5.0, right: 5.0),
@@ -927,11 +1303,37 @@ class _home2 extends State<Home2> {
                                 //margin: const EdgeInsets.all(15.0),
                                 //padding: const EdgeInsets.all(3.0),
                                 decoration: BoxDecoration(
-                                    border: Border.all(color: Color(0xFFD8D8D8))
+                                    border: Border.all(color: listbgColor)
                                 ),
                                 //child: HorizontalMenu(menuitem, context),
-                                child: HorizontalMenuWedget(),
-                              ),
+                                child:
+                                Stack(
+                                    children: <Widget>[
+HorizontalMenuWedget(),
+                                      Positioned(
+                                          right: 0.0,
+                                          key: _keyRed,
+                                          child: GestureDetector(
+   onTap: (){
+                                              showGoldRate();
+                                              setState(() {
+                                              });
+                                            },
+                                            //child: Icon( Image.asset('assets/goldRate.png', height: 20,)),
+//                                            child: Icon(Icons.close, color: primary1Color, size: 18,),
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(top:2.0),
+                                              child: Container(
+                                                color: primary1Color,
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.all(2.0),
+                                                    child: Image.asset('assets/goldRate.png', height: 17,),
+                                                  )),
+                                            ),
+                                          )),
+                                ]
+                              )
+                            ),
                             ),
                           ),
 
@@ -946,13 +1348,13 @@ class _home2 extends State<Home2> {
                                 left: 5.0, right: 5.0),
                             child: Container(
                                 height: 120,
-                                color: Color(0xFFE5E7E9),
+                                color: listbgColor,
                                 child: FutureBuilder<List<ItemMasterList>>(
                                   //future: _fetchData(),
                                   builder: (context, snapshot) {
                                     if (categoryList.length > 0) {
                                       List<Category> data = categoryList;
-                                      return CategoryListView(data);
+                                      return CategoryListView2(data);
                                     } else if (snapshot.hasError) {
                                       return Text("${snapshot.error}");
                                     }
@@ -964,6 +1366,32 @@ class _home2 extends State<Home2> {
                         ],
                       ),
                     ),
+//                    SliverList(
+//                      delegate: SliverChildListDelegate(
+//                        [
+//                          Padding(
+//                            padding: const EdgeInsets.only(
+//                                left: 5.0, right: 5.0),
+//                            child: Container(
+//                                height: 120,
+//                                color: Color(0xFFE5E7E9),
+//                                child: FutureBuilder<List<ItemMasterList>>(
+//                                  //future: _fetchData(),
+//                                  builder: (context, snapshot) {
+//                                    if (categoryList.length > 0) {
+//                                      List<Category> data = categoryList;
+//                                      return CategoryListView(data);
+//                                    } else if (snapshot.hasError) {
+//                                      return Text("${snapshot.error}");
+//                                    }
+//                                    return Container();
+//                                  },
+//                                )
+//                            ),
+//                          ),
+//                        ],
+//                      ),
+//                    ),
                     //Space
                     SliverToBoxAdapter(
                       child: SizedBox(height: 3,),
@@ -975,14 +1403,13 @@ class _home2 extends State<Home2> {
                             left: 5.0, right: 5.0),
                         child: Container(
                           decoration: BoxDecoration(
-                              border: Border.all(color: Color(
-                                  0xFFD8D8D8)),
-                              color: Color(0xFFD8D8D8)
+                              border: Border.all(color: listbgColor),
+                              color: listLabelbgColor
                           ),
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(
                                 10.0, 5.0, 0.0, 5.0),
-                            child: Text(_selCategory,),
+                            child: Text(_selCategory, style: TextStyle(color: Colors.white)),
                           ),
                         ),
                       ),
@@ -1000,6 +1427,7 @@ class _home2 extends State<Home2> {
                         ],
                       ),
                     ),
+
                     SliverList(
                       delegate: SliverChildListDelegate(
                         [
@@ -1008,13 +1436,13 @@ class _home2 extends State<Home2> {
                                 left: 5.0, right: 5.0),
                             child: Container(
                                 height: 120,
-                                color: Color(0xFFE5E7E9),
+                                color: Color(0xFFD6DFE4),
                                 child: FutureBuilder<List<ItemMasterList>>(
                                   //future: _fetchData(),
                                   builder: (context, snapshot) {
                                     if (categoryList.length > 0) {
                                       List<Category> data = categoryList;
-                                      return CategoryListView(data);
+                                      return CategoryListView2(data);
                                     } else if (snapshot.hasError) {
                                       return Text("${snapshot.error}");
                                     }
@@ -1026,6 +1454,7 @@ class _home2 extends State<Home2> {
                         ],
                       ),
                     ),
+
                   ],
                 ),
               )
@@ -1034,4 +1463,3 @@ class _home2 extends State<Home2> {
     );
   }
 }
-

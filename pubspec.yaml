@@ -31,7 +31,8 @@ dependencies:
   flutter_custom_clippers: ^1.1.1
   carousel_slider: ^2.0.0
   intl: ^0.16.1
-  flutter_cache_manager: ^1.2.2
+  cached_network_image: ^2.2.0+1
+#  flutter_cache_manager: ^1.2.2
 
 dev_dependencies:
   flutter_test:

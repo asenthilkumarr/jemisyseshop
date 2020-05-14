@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,16 +6,17 @@ import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/model/menu.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:jemisyseshop/style.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/animation.dart';
 
 class HomeScreen3 extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Home',
+      title: 'Home 2',
+      //home: MyHomePage(title: 'Flutter Demo Home Page'),
       home: Home3(),
       debugShowCheckedModeBanner: false,
     );
@@ -28,12 +27,14 @@ class Home3 extends StatefulWidget{
   _home3 createState() => _home3();
 }
 
-class _home3 extends State<Home3> {
+class _home3 extends State<Home3> with TickerProviderStateMixin{
   bool isLogin = false;
   String _selcategoryCode = '';
   String _selCategory = "";
   String _selCountry = 'SG';
   final formatter = new NumberFormat('##0.00', 'en_US');
+  AnimationController controller;
+  Animation<double> animation;
 
   final List<String> images = [
     'http://42.61.99.57/JEMiSyseShopImage/front-banner2-lg.jpg',
@@ -258,7 +259,6 @@ class _home3 extends State<Home3> {
         6.20,
         0.00,
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/GR103.jpg'),
-
     DesignCode(
         'ER101',
         'ER',
@@ -322,7 +322,6 @@ class _home3 extends State<Home3> {
         0.00,
         0.00,
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/ER107.jpg'),
-
     DesignCode(
         'NE101',
         'NE',
@@ -404,7 +403,6 @@ class _home3 extends State<Home3> {
         35.00,
         0.00,
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/NE109.jpg'),
-
     DesignCode(
         'PE101',
         'PE',
@@ -564,54 +562,33 @@ class _home3 extends State<Home3> {
         .width;
 //    print(screenWidth);
     double _height = 100;
-    double _ratio = 0.9;
-    if (screenWidth > 1600){
-      _height = 350; _ratio =0.5;
-    }
-    else if (screenWidth >= 1300){
-      _height = 300;_ratio=0.45;
-    }
-    else if (screenWidth >= 1000){
-      _height = 250;_ratio=0.55;
-    }
-    else if (screenWidth >= 700){
-      _height = 210;_ratio=0.6;
-    }
-    else if (screenWidth >= 500){
-      _height = 200;_ratio=0.5;
-    }
-    else if (screenWidth >= 400){
-      _height = 120;_ratio=0.8;
-    }
-    print(_ratio);
-    print(screenWidth);
+    if (screenWidth > 1600)
+      _height = 650;
+    else if (screenWidth >= 1300)
+      _height = 500;
+    else if (screenWidth >= 1000)
+      _height = 400;
+    else if (screenWidth >= 700)
+      _height = 300;
+    else if (screenWidth >= 500)
+      _height = 200;
+    else if (screenWidth >= 400)
+      _height = 120;
     if (images.length > 1) {
       return new Container(
         child: CarouselSlider.builder(
           itemCount: images.length,
           options: CarouselOptions(
-//              autoPlay: true,
-//              aspectRatio: 3.5,
-//              enlargeCenterPage: true,
-              aspectRatio: 16/9,
-              viewportFraction: _ratio,
-              initialPage: 0,
-              enableInfiniteScroll: true,
-              reverse: false,
               autoPlay: true,
-              autoPlayInterval: Duration(seconds: 3),
-              autoPlayAnimationDuration: Duration(milliseconds: 800),
-              autoPlayCurve: Curves.fastOutSlowIn,
+              aspectRatio: 2.0,
               enlargeCenterPage: true,
-//              onPageChanged: callbackFunction,
-              scrollDirection: Axis.horizontal,
               height: _height
           ),
           itemBuilder: (context, index) {
             return Container(
               child: SizedBox(
-                  child: Image.network(images[index], fit: BoxFit.fitHeight,
-                    )
+                  child: Image.network(images[index], fit: BoxFit.fitWidth,
+                    width: screenWidth - 30,)
               ),
             );
           },
@@ -645,16 +622,15 @@ class _home3 extends State<Home3> {
     return Card(
         shape: RoundedRectangleBorder(
           side: BorderSide(
-            color: listbgColor,
+            color: Color(0xFFEFEBEB),
             width: 1.0,
           ),
         ),
         child: Stack(
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Align(
-                  alignment: FractionalOffset.topCenter,
+                padding: const EdgeInsets.only(bottom: 20.0),
+                child: Center(
                   child: Image.network(
                     item.imageUrl, fit: BoxFit.fitHeight,),
                 ),
@@ -665,7 +641,7 @@ class _home3 extends State<Home3> {
                     //color: Colors.white,
                     child: Padding(
                       padding: const EdgeInsets.only(
-                          left: 10.0, right: 10.0, top: 0.0, bottom: 3.0),
+                          left: 5.0, right: 5.0, top: 0.0, bottom: 3.0),
                       child: Row(
 //                  mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -720,184 +696,81 @@ class _home3 extends State<Home3> {
       ),
     );
   }
-  Widget titleBar(){
-   return Container(
-     color: primary1Color,
-       child: Column(
-         children: [
-           Row(
-                 children: [
-                   Align(
-                     alignment: Alignment.centerLeft,
-                     child: IconButton(
-                       icon: Icon(Icons.menu, color: Colors.white,),
-                       iconSize: 25,
 
-                       onPressed: () {
-                         scaffoldKey.currentState.openDrawer();
-                       },
-                     ),
-                   ),
-                   Spacer(),
-                   Align(
-                     alignment: Alignment.center,
-                     child: CompanyLogo(),
-                   ),
-                   Spacer(),
-                   Align(
-                     alignment: Alignment.centerRight,
-                     child: Row(
-                       children: [
-                         Visibility(
-                           visible: !isLogin ? true : false,
-                           child: IconButton(
-                             icon: new Image.asset(
-                                 isLogin ? 'assets/user_profile.png' : 'assets/login.png'),
-                             iconSize: 15,
-
-                             onPressed: () {
-                               if (isLogin)
-                                 isLogin = false;
-                               else
-                                 isLogin = true;
-                               setState(() {
-
-                               });
-                             },
-                           ),
-                         ),
-                         IconButton(
-                           key: _keyRed,
-                           icon: new Image.asset('assets/goldRate.png'),
-                           iconSize: 15,
-
-                           onPressed: () {
-                             showGoldRate();
-                           },
-                         ),
-                         Center(
-                           child: Padding(
-                             padding: const EdgeInsets.only(right: 5.0),
-                             child: Stack(
-                                 children: <Widget>[
-                                   //new IconButton(icon: Icon(Icons.shopping_cart, size: 35, color: Colors.white,),
-                                   IconButton(
-                                     icon: new Image.asset('assets/shopping_cart.png'),
-                                     iconSize: 15,
-                                     onPressed: () {},),
-                                   new Positioned( // draw a red marble
-                                     top: 2.0,
-                                     right: 10.0,
-                                     child: Container(
-                                       alignment: Alignment.center,
-                                       decoration: BoxDecoration(
-                                           color: Colors.white,
-                                           shape: BoxShape.circle
-                                       ),
-                                       child: Padding(
-                                         padding: const EdgeInsets.all(3.0),
-                                         child: new Text(
-                                           '5',
-                                           style: new TextStyle(
-                                             color: Colors.red,
-                                             fontSize: 9,
-                                           ),
-                                           textAlign: TextAlign.center,
-                                         ),
-                                       ),
-                                     ),
-                                   )
-                                 ]
-                             ),
-                           ),
-                         ),
-                       ],
-                     ),
-                   )
-
-
-                 ],
-               ),
-
-         ],
-       ),
-     
-   );
-  }
   Widget pageAppBar() {
     return AppBar(
-//      title: Text("JEMiSys eShop"),
+      //title: Text("eShop"),
 
-    elevation: 0.0,
-    backgroundColor: primary1Color,
-    centerTitle: true,
-    actions: <Widget>[
+        elevation: 0.0,
+        backgroundColor: primary1Color,
+        centerTitle: true,
+        actions: <Widget>[
 //          Visibility(
 //              visible: isLogin ? true : false,
 //              child:
 //          ),
-      Visibility(
-        visible: !isLogin ? true : false,
-        child: IconButton(
-          icon: new Image.asset(
-              isLogin ? 'assets/user_profile.png' : 'assets/login.png'),
-          iconSize: 20,
+          Visibility(
+            visible: !isLogin ? true : false,
+            child: IconButton(
+              icon: new Image.asset(
+                  isLogin ? 'assets/user_profile.png' : 'assets/login.png'),
+              iconSize: 20,
 
-          onPressed: () {
-            if (isLogin)
-              isLogin = false;
-            else
-              isLogin = true;
-            setState(() {
+              onPressed: () {
+                if (isLogin)
+                  isLogin = false;
+                else
+                  isLogin = true;
+                setState(() {
 
-            });
-          },
-        ),
-      ),
-      IconButton(
-        icon: new Image.asset(sCountry.imageUrl),
-        iconSize: 20,
-        onPressed: () {
-          _showPopupMenu();
-        },
-      ),
-      Center(
-        child: Padding(
-          padding: const EdgeInsets.only(right: 5.0),
-          child: Stack(
-              children: <Widget>[
-                //new IconButton(icon: Icon(Icons.shopping_cart, size: 35, color: Colors.white,),
-                IconButton(
-                  icon: new Image.asset('assets/shopping_cart.png'),
-                  iconSize: 20,
-                  onPressed: () {},),
-                new Positioned( // draw a red marble
-                  top: 2.0,
-                  right: 10.0,
-                  child: Container(
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(3.0),
-                      child: new Text(
-                        '5',
-                        style: new TextStyle(
-                          color: Colors.red,
-                          fontSize: 9,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                )
-              ]
+                });
+              },
+            ),
           ),
-        ),
-      ),
-    ]
+          IconButton(
+            icon: new Image.asset(sCountry.imageUrl),
+            iconSize: 20,
+            onPressed: () {
+              _showPopupMenu();
+            },
+          ),
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.only(right: 5.0),
+              child: Stack(
+                  children: <Widget>[
+                    //new IconButton(icon: Icon(Icons.shopping_cart, size: 35, color: Colors.white,),
+                    IconButton(
+                      icon: new Image.asset('assets/shopping_cart.png'),
+                      iconSize: 20,
+                      onPressed: () {},),
+                    new Positioned( // draw a red marble
+                      top: 2.0,
+                      right: 10.0,
+                      child: Container(
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(3.0),
+                          child: new Text(
+                            '5',
+                            style: new TextStyle(
+                              color: Colors.red,
+                              fontSize: 9,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    )
+                  ]
+              ),
+            ),
+          ),
+        ]
     );
   }
 
@@ -955,6 +828,7 @@ class _home3 extends State<Home3> {
       return new Text('ERROR');
     }
   }
+
   Widget CategoryListView(List<Category> data) {
     return
       new ListView.builder(
@@ -965,194 +839,29 @@ class _home3 extends State<Home3> {
             CategoryListitem(context, data[index]),
       );
   }
-  Widget CategoryListitem2(BuildContext context, Category dt) {
-    if (dt.categoryCode != null) {
-      return Container(
-        width: 110,
-        //color: Colors.grey,
-        child: Card(
-//          shape: RoundedRectangleBorder(
-//            side: BorderSide(
-//              color: Color(0xFFD6DFE4),
-//              width: 1.0,
-//            ),
-//          ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-            child: Column(
-              children: <Widget>[
-                Spacer(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    InkWell(
-                      onTap: () {
-                        _selcategoryCode = dt.categoryCode;
-                        _selCategory = dt.description;
-                        getDesign();
-                        setState(() {});
-                      },
-                      child: Container(
-                        child: ClipRRect(
-//                          borderRadius: BorderRadius.circular(20.0),
-                          child: Image.network(dt.imageUrl,
-                            width: 80, fit: BoxFit.fitHeight,),
-                        ),),
-                    )
-                    //Image.network(dt.imageUrl, height: 80, width: 80,),
-                    //Spacer(),
-                  ],
-                ),
-                Spacer(),
-                Container(
-                  color: listLabelbgColor,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text('${dt.description}',
-                        style: TextStyle(color: Colors.white),),
-                      //Spacer(),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
-    else {
-      return new Text('ERROR');
-    }
-  }
-
-  Widget CategoryListView2(List<Category> data) {
-    return
-      new ListView.builder(
-
-        scrollDirection: Axis.horizontal,
-        itemCount: data.length,
-        itemBuilder: (BuildContext context, int index) =>
-            CategoryListitem2(context, data[index]),
-      );
-  }
 
   Widget CompanyLogo() {
     return new Container(
       color: primary1Color,
-child: Text('JEMiSys eShop', style: TextStyle(fontSize: 20, color: Colors.white,fontWeight: FontWeight.bold)),
-//      child: SizedBox(
-//        height: 30,
-//        child: new Image.network(
-//          'http://42.61.99.57/JEMiSyseShopImage/Banner3.png',
-//          //"http://42.61.99.57/JEMiSyseShopImage/logo.png",
-//          fit: BoxFit.fitHeight,
-//        ),
-//      ),
+      child: SizedBox(
+        height: 40,
+        child: new Image.network(
+          'http://42.61.99.57/JEMiSyseShopImage/Banner3.png',
+          //"http://42.61.99.57/JEMiSyseShopImage/logo.png",
+          fit: BoxFit.fitHeight,
+        ),
+      ),
     );
   }
 
-  void showGoldRate() {
-    bool _fromTop = true;
-
-    showGeneralDialog(
-        barrierLabel: "Label",
-        barrierDismissible: true,
-        barrierColor: Colors.black.withOpacity(0.5),
-        transitionDuration: Duration(milliseconds: 700),
-        context: context,
-//        position: RelativeRect.fromLTRB(100, kIsWeb ? 55 : 80, 50, 100),
-
-        pageBuilder: (context, anim1, anim2) {
-          return Padding(
-            padding: const EdgeInsets.only(top: kIsWeb ? 50.0 : 74.0, left:20.0, right:kIsWeb ? 70 : 70),
-            child: Align(
-//              right: kIsWeb ? 40 : 40,
-//                position: RelativeRect.fromLTRB(100, kIsWeb ? 55 : 80, 50, 100),
-              alignment: _fromTop ? Alignment.topRight : Alignment.bottomCenter,
-              child: Material(
-                type: MaterialType.transparency,
-                child: new Stack(
-                  children: <Widget>[
-                    Container(
-                height: 100,
-                child: SizedBox( width: 200,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left:30.0, top:10.0),
-                    child: Column(
-                      children: [
-                        Text('Gold Rate'),
-                        SizedBox(height: 10,),
-                        Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(right:15.0),
-                              child: Text('916 :'),
-                            ),
-                            Text('\$55.50'),
-                          ],
-                        ),
-                        SizedBox(height: 10,),
-                        Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(right:15.0),
-                              child: Text('999 :'),
-                            ),
-                            Text('\$65.50'),
-                          ],
-                        ),
-
-                      ],
-                    ),
-                  ),
-                ),
-//              margin: EdgeInsets.only(top: 80, left: 12, right: 12, bottom: 50),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: const  Radius.circular(1000.0),
-                    topRight: const Radius.circular(300.0),
-                    bottomLeft: const  Radius.circular(150.0),
-                    bottomRight: const  Radius.circular(1000.0),
-                  ),
-                ),
-              ),
-              Positioned(
-                  right: 0.0,
-                  child: GestureDetector(
-                    onTap: (){
-                      Navigator.of(context).pop();
-                    },
-                    child: Align(
-                      alignment: Alignment.topCenter,
-                      child: CircleAvatar(
-                        radius: 14.0,
-                        backgroundColor: Colors.red,
-                        child: Icon(Icons.close, color: Colors.white),
-                      ),
-                    ),
-                  )),
-              ]),
-            )
-            ),
-          );
-  });
-  }
-
   var scaffoldKey = GlobalKey<ScaffoldState>();
-  GlobalKey _keyRed = GlobalKey();
-  _getPositions() {
-    final RenderBox renderBoxRed = _keyRed.currentContext.findRenderObject();
-    final positionRed = renderBoxRed.localToGlobal(Offset.zero);
-    print("POSITION of Red: $positionRed ");
-  }
+
   @override
   void initState() {
     super.initState();
-    DefaultCacheManager manager = new DefaultCacheManager();
-    manager.emptyCache(); //clears all data in cache.
-    imageCache.clear();
+//    DefaultCacheManager manager = new DefaultCacheManager();
+//    manager.emptyCache(); //clears all data in cache.
+//    imageCache.clear();
     getDefault();
     if (categoryList.length > 0) {
       _selcategoryCode = categoryList[0].categoryCode;
@@ -1164,7 +873,33 @@ child: Text('JEMiSys eShop', style: TextStyle(fontSize: 20, color: Colors.white,
         precacheImage(NetworkImage(imageUrl), context);
       });
     });
-    Future.delayed(Duration.zero, () => showGoldRate());
+
+    controller = AnimationController(
+        duration: const Duration(milliseconds: 1000), vsync: this);
+    animation = CurvedAnimation(parent: controller, curve: Curves.easeIn);
+
+    /*animation.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        controller.reverse();
+      } else if (status == AnimationStatus.dismissed) {
+        controller.forward();
+      }
+    });*/
+
+    controller.forward();
+
+//    return Container(
+//        color: Colors.white,
+//        child: FadeTransition(
+//            opacity: animation,
+//            child: Row(
+//                mainAxisAlignment: MainAxisAlignment.center,
+//                children:[
+//                  Icon(Icons.check, size: 100.0,color: Colors.green,),
+//                ]
+//            )
+//        )
+//    );
   }
 
   @override
@@ -1172,14 +907,13 @@ child: Text('JEMiSys eShop', style: TextStyle(fontSize: 20, color: Colors.white,
     final screenSize = MediaQuery
         .of(context)
         .size;
-//    double screenheight = screenSize.height;
-//    if (!kIsWeb) screenheight = screenSize.height - 24;
+
     int itemCount = GridItemCount(screenSize.width);
     double itemheight = GridItemHeight(screenSize.height, screenSize.width);
 
     return Scaffold(
       key: scaffoldKey,
-//      appBar: pageAppBar(),
+      appBar: pageAppBar(),
       drawer: MenuItemWedget(scaffoldKey: scaffoldKey, isLogin: isLogin),
       body: SafeArea(
           child: Container(
@@ -1188,12 +922,11 @@ child: Text('JEMiSys eShop', style: TextStyle(fontSize: 20, color: Colors.white,
                 child: CustomScrollView(
                   slivers: <Widget>[
                     SliverToBoxAdapter(
-                      child: titleBar(),//CompanyLogo(),
+                      child: CompanyLogo(),
                     ),
-//                    SliverToBoxAdapter(
-//                      child: SizedBox(height: 5,),
-//                    ),
-
+                    SliverToBoxAdapter(
+                      child: SizedBox(height: 5,),
+                    ),
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: const EdgeInsets.only(left: 5.0, right: 5.0),
@@ -1219,7 +952,7 @@ child: Text('JEMiSys eShop', style: TextStyle(fontSize: 20, color: Colors.white,
                                 //margin: const EdgeInsets.all(15.0),
                                 //padding: const EdgeInsets.all(3.0),
                                 decoration: BoxDecoration(
-                                    border: Border.all(color: listbgColor)
+                                    border: Border.all(color: Color(0xFFD8D8D8))
                                 ),
                                 //child: HorizontalMenu(menuitem, context),
                                 child: HorizontalMenuWedget(),
@@ -1238,13 +971,13 @@ child: Text('JEMiSys eShop', style: TextStyle(fontSize: 20, color: Colors.white,
                                 left: 5.0, right: 5.0),
                             child: Container(
                                 height: 120,
-                                color: listbgColor,
+                                color: Color(0xFFE5E7E9),
                                 child: FutureBuilder<List<ItemMasterList>>(
                                   //future: _fetchData(),
                                   builder: (context, snapshot) {
                                     if (categoryList.length > 0) {
                                       List<Category> data = categoryList;
-                                      return CategoryListView2(data);
+                                      return CategoryListView(data);
                                     } else if (snapshot.hasError) {
                                       return Text("${snapshot.error}");
                                     }
@@ -1256,32 +989,6 @@ child: Text('JEMiSys eShop', style: TextStyle(fontSize: 20, color: Colors.white,
                         ],
                       ),
                     ),
-//                    SliverList(
-//                      delegate: SliverChildListDelegate(
-//                        [
-//                          Padding(
-//                            padding: const EdgeInsets.only(
-//                                left: 5.0, right: 5.0),
-//                            child: Container(
-//                                height: 120,
-//                                color: Color(0xFFE5E7E9),
-//                                child: FutureBuilder<List<ItemMasterList>>(
-//                                  //future: _fetchData(),
-//                                  builder: (context, snapshot) {
-//                                    if (categoryList.length > 0) {
-//                                      List<Category> data = categoryList;
-//                                      return CategoryListView(data);
-//                                    } else if (snapshot.hasError) {
-//                                      return Text("${snapshot.error}");
-//                                    }
-//                                    return Container();
-//                                  },
-//                                )
-//                            ),
-//                          ),
-//                        ],
-//                      ),
-//                    ),
                     //Space
                     SliverToBoxAdapter(
                       child: SizedBox(height: 3,),
@@ -1293,13 +1000,14 @@ child: Text('JEMiSys eShop', style: TextStyle(fontSize: 20, color: Colors.white,
                             left: 5.0, right: 5.0),
                         child: Container(
                           decoration: BoxDecoration(
-                              border: Border.all(color: listbgColor),
-                              color: listLabelbgColor
+                              border: Border.all(color: Color(
+                                  0xFFD8D8D8)),
+                              color: Color(0xFFD8D8D8)
                           ),
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(
                                 10.0, 5.0, 0.0, 5.0),
-                            child: Text(_selCategory, style: TextStyle(color: Colors.white)),
+                            child: Text(_selCategory,),
                           ),
                         ),
                       ),
@@ -1317,7 +1025,6 @@ child: Text('JEMiSys eShop', style: TextStyle(fontSize: 20, color: Colors.white,
                         ],
                       ),
                     ),
-
                     SliverList(
                       delegate: SliverChildListDelegate(
                         [
@@ -1326,13 +1033,13 @@ child: Text('JEMiSys eShop', style: TextStyle(fontSize: 20, color: Colors.white,
                                 left: 5.0, right: 5.0),
                             child: Container(
                                 height: 120,
-                                color: Color(0xFFD6DFE4),
+                                color: Color(0xFFE5E7E9),
                                 child: FutureBuilder<List<ItemMasterList>>(
                                   //future: _fetchData(),
                                   builder: (context, snapshot) {
                                     if (categoryList.length > 0) {
                                       List<Category> data = categoryList;
-                                      return CategoryListView2(data);
+                                      return CategoryListView(data);
                                     } else if (snapshot.hasError) {
                                       return Text("${snapshot.error}");
                                     }
@@ -1344,7 +1051,6 @@ child: Text('JEMiSys eShop', style: TextStyle(fontSize: 20, color: Colors.white,
                         ],
                       ),
                     ),
-
                   ],
                 ),
               )
@@ -1353,3 +1059,4 @@ child: Text('JEMiSys eShop', style: TextStyle(fontSize: 20, color: Colors.white,
     );
   }
 }
+
