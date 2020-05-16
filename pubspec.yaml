@@ -32,6 +32,7 @@ dependencies:
   carousel_slider: ^2.0.0
   intl: ^0.16.1
   cached_network_image: ^2.2.0+1
+  flutter_widgets: ^0.1.12
 #  flutter_cache_manager: ^1.2.2
 
 dev_dependencies:

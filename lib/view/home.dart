@@ -1,16 +1,19 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter_widgets/flutter_widgets.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/model/menu.dart';
 import 'package:intl/intl.dart';
 import 'package:jemisyseshop/style.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/animation.dart';
 
 class HomeScreen extends StatelessWidget {
   // This widget is the root of your application.
@@ -29,12 +32,17 @@ class Home extends StatefulWidget{
   _home createState() => _home();
 }
 
-class _home extends State<Home> {
+class _home extends State<Home> with TickerProviderStateMixin {
   bool isLogin = false;
   String _selcategoryCode = '';
   String _selCategory = "";
   String _selCountry = 'SG';
-  final formatter = new NumberFormat('##0.00', 'en_US');
+  int _selectedCategoryIndex = 0;
+  final formatter2dec = new NumberFormat('##0.00', 'en_US');
+  final formatterint = new NumberFormat('##0', 'en_US');
+  AnimationController controller;
+  Animation<double> animation;
+  ItemScrollController _scrollControllerlist = ItemScrollController();
 
   final List<String> images = [
     'http://42.61.99.57/JEMiSyseShopImage/front-banner2-lg.jpg',
@@ -57,6 +65,48 @@ class _home extends State<Home> {
     Category('BA', 'BANGLE',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/Bangle.jpg')
   ];
+  final List<DesignCode> topSelling = [
+    DesignCode(
+        'BR101',
+        'BR',
+        '',
+        '18K WG',
+        1250.00,
+        0.00,
+        0.00,
+        '40% OFF',
+        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BR101.jpg'),
+    DesignCode(
+        'DR101',
+        'R',
+        '',
+        '18K WG',
+        1200.00,
+        0.00,
+        0.00,
+        '',
+        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/DR101.jpg'),
+    DesignCode(
+        'BA101',
+        'BA',
+        '',
+        '18K YG',
+        700.00,
+        0.00,
+        0.00,
+        '50% OFF',
+        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BA101.jpg'),
+    DesignCode(
+        'ER101',
+        'ER',
+        '',
+        '18K WG',
+        950.00,
+        0.00,
+        0.00,
+        '',
+        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/ER101.jpg'),
+  ];
   final List<DesignCode> design = [
     DesignCode(
         'BA101',
@@ -66,33 +116,37 @@ class _home extends State<Home> {
         1200.00,
         0.00,
         0.00,
+        '50% OFF',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BA101.jpg'),
     DesignCode(
         'BA102',
         'BA',
         '',
         '18K YG',
-        1200.00,
+        800.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BA102.jpg'),
     DesignCode(
         'BA103',
         'BA',
         '',
         '18K YG',
-        1200.00,
+        2200.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BA103.jpg'),
     DesignCode(
         'BA104',
         'BA',
         '',
         '18K YG',
-        1200.00,
+        1050.00,
         0.00,
         0.00,
+        '30% OFF',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BA104.jpg'),
     DesignCode(
         'BA105',
@@ -102,6 +156,7 @@ class _home extends State<Home> {
         0.00,
         24.250,
         0.00,
+        '50% OFF',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BA105.jpg'),
     DesignCode(
         'BA106',
@@ -111,6 +166,7 @@ class _home extends State<Home> {
         0.00,
         32.15,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BA106.jpg'),
     DesignCode(
         'BA107',
@@ -120,6 +176,7 @@ class _home extends State<Home> {
         0.00,
         15.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BA107.jpg'),
     DesignCode(
         'BA108',
@@ -129,6 +186,7 @@ class _home extends State<Home> {
         0.00,
         33.12,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BA108.jpg'),
 
     DesignCode(
@@ -139,6 +197,7 @@ class _home extends State<Home> {
         1250.00,
         0.00,
         0.00,
+        '40% OFF',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BR101.jpg'),
     DesignCode(
         'BR102',
@@ -148,15 +207,17 @@ class _home extends State<Home> {
         0.00,
         22.30,
         0.00,
+        '50% OFF',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BR102.png'),
     DesignCode(
         'BR103',
         'BR',
         '',
         '18K WG',
-        1250.00,
+        1150.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BR103.jpg'),
     DesignCode(
         'BR104',
@@ -166,6 +227,7 @@ class _home extends State<Home> {
         0.00,
         41.30,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BR104.png'),
     DesignCode(
         'BR105',
@@ -175,6 +237,7 @@ class _home extends State<Home> {
         0.00,
         35.12,
         0.00,
+        '50% OFF',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BR105.jpg'),
 
     DesignCode(
@@ -182,54 +245,60 @@ class _home extends State<Home> {
         'R',
         '',
         '18K WG',
-        1200.00,
+        700.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/DR101.jpg'),
     DesignCode(
         'DR102',
         'R',
         '',
         '18K WG',
-        1200.00,
+        950.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/DR102.jpg'),
     DesignCode(
         'DR103',
         'R',
         '',
         '18K WG',
-        1200.00,
+        1300.00,
         0.00,
         0.00,
+        '50% OFF',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/DR103.jpg'),
     DesignCode(
         'DR104',
         'R',
         '',
         '18K WG',
-        1200.00,
+        1650.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/DR104.jpg'),
     DesignCode(
         'DR105',
         'R',
         '',
         '18K WG',
-        1200.00,
+        1250.00,
         0.00,
         0.00,
+        '50% OFF',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/DR105.jpg'),
     DesignCode(
         'DR106',
         'R',
         '',
         '18K WG',
-        1200.00,
+        1400.00,
         0.00,
         0.00,
+        '35% OFF',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/DR106.jpg'),
 
     DesignCode(
@@ -240,6 +309,7 @@ class _home extends State<Home> {
         0.00,
         6.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/GR101.jpg'),
     DesignCode(
         'GR102',
@@ -249,6 +319,7 @@ class _home extends State<Home> {
         0.00,
         8.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/GR102.jpg'),
     DesignCode(
         'GR103',
@@ -258,6 +329,7 @@ class _home extends State<Home> {
         0.00,
         6.20,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/GR103.jpg'),
 
     DesignCode(
@@ -265,9 +337,10 @@ class _home extends State<Home> {
         'ER',
         '',
         '18K WG',
-        1200.00,
+        1100.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/ER101.jpg'),
     DesignCode(
         'ER102',
@@ -277,6 +350,7 @@ class _home extends State<Home> {
         0.00,
         6.40,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/ER102.jpg'),
     DesignCode(
         'ER103',
@@ -286,6 +360,7 @@ class _home extends State<Home> {
         0.00,
         4.50,
         0.00,
+        '10% OFF',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/ER103.jpg'),
     DesignCode(
         'ER104',
@@ -295,6 +370,7 @@ class _home extends State<Home> {
         0.00,
         3.50,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/ER104.jpg'),
     DesignCode(
         'ER105',
@@ -304,24 +380,27 @@ class _home extends State<Home> {
         0.00,
         4.30,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/ER105.jpg'),
     DesignCode(
         'ER106',
         'ER',
         '',
         '18K WG',
-        1200.00,
+        900.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/ER106.jpg'),
     DesignCode(
         'ER107',
         'ER',
         '',
         '18K WG',
-        1200.00,
+        1350.00,
         0.00,
         0.00,
+        '50% OFF',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/ER107.jpg'),
 
     DesignCode(
@@ -329,36 +408,40 @@ class _home extends State<Home> {
         'NE',
         '',
         '18K WG',
-        1200.00,
+        800.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/NE101.jpg'),
     DesignCode(
         'NE102',
         'NE',
         '',
         '18K WG',
-        1200.00,
+        650.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/NE102.jpg'),
     DesignCode(
         'NE103',
         'NE',
         '',
         '18K WG',
-        1200.00,
+        1800.00,
         0.00,
         0.00,
+        '50% OFF',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/NE103.jpg'),
     DesignCode(
         'NE104',
         'NE',
         '',
         '18K WG',
-        1200.00,
+        2200.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/NE104.jpg'),
     DesignCode(
         'NE105',
@@ -368,6 +451,7 @@ class _home extends State<Home> {
         1200.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/NE105.jpg'),
     DesignCode(
         'NE106',
@@ -377,6 +461,7 @@ class _home extends State<Home> {
         0.00,
         76.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/NE106.jpg'),
     DesignCode(
         'NE107',
@@ -386,6 +471,7 @@ class _home extends State<Home> {
         0.00,
         53.50,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/NE107.jpg'),
     DesignCode(
         'NE108',
@@ -395,6 +481,7 @@ class _home extends State<Home> {
         0.00,
         102.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/NE108.jpg'),
     DesignCode(
         'NE109',
@@ -404,6 +491,7 @@ class _home extends State<Home> {
         0.00,
         35.00,
         0.00,
+        '50% OFF',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/NE109.jpg'),
 
     DesignCode(
@@ -414,6 +502,7 @@ class _home extends State<Home> {
         1200.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/PE101.jpg'),
     DesignCode(
         'PE102',
@@ -423,6 +512,7 @@ class _home extends State<Home> {
         0.00,
         7.52,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/PE102.jpg'),
     DesignCode(
         'PE103',
@@ -432,6 +522,7 @@ class _home extends State<Home> {
         0.00,
         10.20,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/PE103.jpg'),
     DesignCode(
         'PE104',
@@ -441,24 +532,27 @@ class _home extends State<Home> {
         0.00,
         6.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/PE104.jpg'),
     DesignCode(
         'PE105',
         'PE',
         '',
         '18K WG',
-        1200.00,
+        1600.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/PE105.jpg'),
     DesignCode(
         'PE106',
         'PE',
         '',
         '18K WG',
-        1200.00,
+        700.00,
         0.00,
         0.00,
+        '50% OFF',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/PE106.jpg'),
   ];
 
@@ -566,32 +660,40 @@ class _home extends State<Home> {
         .width;
     double _height = 100;
     double _ratio = 0.65;
-    if (screenWidth > 1600){
-      _height = 350; _ratio =0.5;
+    if (screenWidth > 1600) {
+      _height = 350;
+      _ratio = 0.5;
     }
-    else if (screenWidth >= 1300){
-      _height = 300;_ratio=1;
+    else if (screenWidth >= 1300) {
+      _height = 300;
+      _ratio = 1;
     }
-    else if (screenWidth >= 1000){
-      _height = 250;_ratio=0.55;
+    else if (screenWidth >= 1000) {
+      _height = 250;
+      _ratio = 0.55;
     }
-    else if (screenWidth >= 850){
-      _height = 220;_ratio=0.9;
+    else if (screenWidth >= 850) {
+      _height = 220;
+      _ratio = 0.9;
     }
 //    else if (screenWidth >= 790){
 //      _height = 215;_ratio=1.0;
 //    }
-    else if (screenWidth >= 700){
-      _height = 210;_ratio=1.0;
+    else if (screenWidth >= 700) {
+      _height = 210;
+      _ratio = 1.0;
     }
-    else if (screenWidth >= 630){
-      _height = 210;_ratio=0.8;
+    else if (screenWidth >= 630) {
+      _height = 210;
+      _ratio = 0.8;
     }
-    else if (screenWidth >= 500){
-      _height = 200;_ratio=0.9;
+    else if (screenWidth >= 500) {
+      _height = 200;
+      _ratio = 0.9;
     }
-    else if (screenWidth >= 400){
-      _height = 120;_ratio=0.8;
+    else if (screenWidth >= 400) {
+      _height = 120;
+      _ratio = 0.8;
     }
     if (images.length > 1) {
       return new Container(
@@ -601,7 +703,7 @@ class _home extends State<Home> {
 //              autoPlay: true,
 //              aspectRatio: 3.5,
 //              enlargeCenterPage: true,
-              aspectRatio: 16/9,
+              aspectRatio: 16 / 9,
               viewportFraction: _ratio,
               initialPage: 0,
               enableInfiniteScroll: true,
@@ -659,10 +761,19 @@ class _home extends State<Home> {
         ),
         child: Stack(
             children: <Widget>[
+//              CustomPaint(
+//                painter: ShapesPainter(),
+//                child: Center(
+//                  child: Transform.rotate(angle: - pi / 4,
+//                    child: Text("50%\nOFF", style: TextStyle(fontSize: 22, ),
+//                    ),
+//                  ),
+//                ),
+//              ),
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Align(
-                  alignment: FractionalOffset.topCenter,
+                  alignment: FractionalOffset.center,
                   child: Image(
                     image: CachedNetworkImageProvider(
                       item.imageUrl,
@@ -676,64 +787,60 @@ class _home extends State<Home> {
               Align(
                   alignment: FractionalOffset.bottomCenter,
                   child: Container(
-                    //color: Colors.white,
+                    color: listbgColor,
                     child: Padding(
                       padding: const EdgeInsets.only(
-                          left: 10.0, right: 10.0, top: 0.0, bottom: 3.0),
+                          left: 10.0, right: 10.0, top: 3.0, bottom: 3.0),
                       child: Row(
 //                  mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Text(item.designCode),
                           Spacer(),
-                          Text(item.tagPrice > 0 ? '\$${formatter.format(
-                              item.tagPrice)}' : 'Wt.: ${formatter.format(
+                          Text(item.tagPrice > 0 ? '\$${formatterint.format(
+                              item.tagPrice)}' : 'Wt.: ${formatter2dec.format(
                               item.grossWeight)}g'),
                         ],
                       ),
                     ),
                   )
               ),
+              item.promotion != "" ? Positioned(
+                left: 0.0,
+                child: Container(
+                  child: CustomPaint(
+                    painter: ShapesPainter(),
+//                      painter: DrawTriangle(),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 12.0, top: 9.0),
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Transform.rotate(angle: -pi / 4,
+                            child: Wrap(
+                                runSpacing: 5.0,
+                                spacing: 5.0,
+                                direction: Axis.vertical,
+                                children: [
+                                  SizedBox(
+                                      width: 40,
+                                      child: Text(item.promotion,
+                                        style: TextStyle(
+                                            fontSize: 15, color: Colors.white),
+                                      )
+
+                                  ),
+                                ])
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ) : SizedBox(height: 1, width: 1,),
             ]
         )
     );
   }
 
-  Widget DesignGridWidgets2(DesignCode item) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 5.0, right: 5.0),
-      child: new Card(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Flexible(
-              flex: 6,
-              child: Container(
-                child: Image.network(
-                  item.imageUrl, width: 500, fit: BoxFit.fill,),
-              ),
-            ),
-            Flexible(
-                flex: 1,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-//                  mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(item.designCode),
-                      Spacer(),
-                      Text(item.tagPrice > 0 ? '\$${formatter.format(
-                          item.tagPrice)}' : 'Wt.: ${formatter.format(
-                          item.grossWeight)} g'),
-                    ],
-                  ),
-                )
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-  Widget titleBar(){
+  Widget titleBar() {
     return Container(
       color: primary1Color,
       child: Column(
@@ -760,17 +867,19 @@ class _home extends State<Home> {
               Align(
                   alignment: Alignment.centerRight,
                   child: SizedBox(
-                    width: 80,
+                    width: 105,
                     child: Row(
                       children: [
                         Visibility(
                           visible: !isLogin ? true : true,
                           child: SizedBox(
-                              width: 40,
+                              width: 35,
                               child: IconButton(
 //                             icon: new Image.asset(
 //                                 isLogin ? 'assets/user_profile.png' : 'assets/login.png', height: 25,),
-                                icon: Icon(Icons.person, color: !isLogin ? Colors.white : Colors.transparent,),
+                                icon: Icon(Icons.person,
+                                  color: !isLogin ? Colors.white : Colors
+                                      .transparent,),
                                 iconSize: 25,
                                 onPressed: () {
                                   if (isLogin)
@@ -783,29 +892,31 @@ class _home extends State<Home> {
                                 },
                               )),
                         ),
-//                         SizedBox(
-//                             width: 40,
-//                             child: IconButton(
-//                           key: _keyRed,
-//                           icon: new Image.asset('assets/goldRate.png', height: 20,),
-//                           iconSize: 15,
-//
-//                           onPressed: () {
-//                             showGoldRate();
-//                           },
-//                         )),
+                         SizedBox(
+                             width: 35,
+                             child: IconButton(
+                           key: _keyRed,
+                           icon: new Image.asset('assets/goldRate.png', height: 20,),
+                           iconSize: 25,
+
+                           onPressed: () {
+                             showGoldRate();
+                           },
+                         )),
                         Center(
                           child: SizedBox(
-                            width: 40,
+                            width: 35,
                             child: Padding(
                                 padding: const EdgeInsets.only(right: 0.0),
                                 child: Stack(
                                     children: <Widget>[
                                       //new IconButton(icon: Icon(Icons.shopping_cart, size: 35, color: Colors.white,),
                                       IconButton(
-                                        icon: new Image.asset('assets/shopping_cart.png', height: 20,),
+                                        icon: new Image.asset(
+                                          'assets/shopping_cart.png',
+                                          height: 20,),
 //                                     icon: Icon(Icons.cur, color: Colors.white,),
-                                        iconSize: 15,
+                                        iconSize: 25,
                                         onPressed: () {},),
                                       new Positioned( // draw a red marble
                                         top: 5.0,
@@ -847,13 +958,15 @@ class _home extends State<Home> {
 
     );
   }
+
   Widget titleMessage() {
     return !hidetitleMsg ? Padding(
-        padding: const EdgeInsets.only(bottom:1.0),
+        padding: const EdgeInsets.only(bottom: 1.0),
         child: Container(
           color: primary1Color,
           child: Padding(
-            padding: const EdgeInsets.only(left:8.0, top:8.0, bottom:8.0, right:5.0),
+            padding: const EdgeInsets.only(
+                left: 8.0, top: 8.0, bottom: 8.0, right: 5.0),
             child: Stack(
                 children: <Widget>[
                   Wrap(
@@ -870,13 +983,14 @@ class _home extends State<Home> {
                   Positioned(
                       right: 0.0,
                       child: GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           hidetitleMsg = true;
                           setState(() {
 
                           });
                         },
-                        child: Icon(Icons.close, color: Colors.white, size: 18,),
+                        child: Icon(
+                          Icons.close, color: Colors.white, size: 18,),
 
                       )),
                 ]
@@ -885,6 +999,7 @@ class _home extends State<Home> {
         ))
         : Container();
   }
+
   Widget pageAppBar() {
     return AppBar(
 //      title: Text("JEMiSys eShop"),
@@ -962,82 +1077,123 @@ class _home extends State<Home> {
     );
   }
 
-  Widget CategoryListitem(BuildContext context, Category dt) {
-    if (dt.categoryCode != null) {
-      return Container(
-        width: 110,
+  Widget TopSellingListitem(DesignCode item) {
+    final screenSize = MediaQuery
+        .of(context)
+        .size;
+    int count = GridItemCount(screenSize.width);
+    return Container(
+        width: screenSize.width / count-4,
         //color: Colors.grey,
         child: Card(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-            child: Column(
-              children: <Widget>[
-                Spacer(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    InkWell(
-                      onTap: () {
-                        _selcategoryCode = dt.categoryCode;
-                        _selCategory = dt.description;
-                        getDesign();
-                        setState(() {});
-                      },
-                      child: Container(
-                        child: ClipRRect(
-//                          borderRadius: BorderRadius.circular(20.0),
-                          child: _sizedContainer(
-                            Image(
-                              image: CachedNetworkImageProvider(
-                                dt.imageUrl,
-                              ),
-                            ),
-                          ),
-//                          child: Image.network(dt.imageUrl,
-//                            width: 80, fit: BoxFit.fitHeight,),
-                        ),),
-                    )
-                    //Image.network(dt.imageUrl, height: 80, width: 80,),
-                    //Spacer(),
-                  ],
-                ),
-                Spacer(),
-                Container(
-                  color: Colors.grey,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text('${dt.description}',
-                        style: TextStyle(color: Colors.white),),
-                      //Spacer(),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+        shape: RoundedRectangleBorder(
+          side: BorderSide(
+            color: listbgColor,
+            width: 1.0,
           ),
         ),
-      );
-    }
-    else {
-      return new Text('ERROR');
-    }
+        child: Stack(
+            children: <Widget>[
+//              CustomPaint(
+//                painter: ShapesPainter(),
+//                child: Center(
+//                  child: Transform.rotate(angle: - pi / 4,
+//                    child: Text("50%\nOFF", style: TextStyle(fontSize: 22, ),
+//                    ),
+//                  ),
+//                ),
+//              ),
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Align(
+                  alignment: FractionalOffset.center,
+                  child: Image(
+                    image: CachedNetworkImageProvider(
+                      item.imageUrl,
+                    ),
+                    fit: BoxFit.fitHeight,
+                  ),
+//                  child: Image.network(
+//                    item.imageUrl, fit: BoxFit.fitHeight,),
+                ),
+              ),
+              Align(
+                  alignment: FractionalOffset.bottomCenter,
+                  child: Container(
+                    color: listbgColor,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 10.0, right: 10.0, top: 3.0, bottom: 3.0),
+                      child: Row(
+//                  mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(item.designCode),
+                          Spacer(),
+                          Text(item.tagPrice > 0 ? '\$${formatterint.format(
+                              item.tagPrice)}' : 'Wt.: ${formatter2dec.format(
+                              item.grossWeight)}g'),
+                        ],
+                      ),
+                    ),
+                  )
+              ),
+              item.promotion != "" ? Positioned(
+                left: 0.0,
+                child: Container(
+                  child: CustomPaint(
+                    painter: ShapesPainter(),
+//                      painter: DrawTriangle(),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 12.0, top: 9.0),
+                      child: Align(
+
+
+
+                        alignment: Alignment.bottomCenter,
+                        child: Transform.rotate(angle: -pi / 4,
+                            child: Wrap(
+                                runSpacing: 5.0,
+                                spacing: 5.0,
+                                direction: Axis.vertical,
+                                children: [
+                                  SizedBox(
+                                      width: 40,
+                                      child: Text(item.promotion,
+                                        style: TextStyle(
+                                            fontSize: 15, color: Colors.white),
+                                      )
+
+                                  ),
+                                ])
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ) : SizedBox(height: 1, width: 1,),
+            ]
+        )
+    )
+    );
   }
-  Widget CategoryListView(List<Category> data) {
+
+  Widget TopSellingListView(List<DesignCode> data) {
     return
       new ListView.builder(
-
         scrollDirection: Axis.horizontal,
         itemCount: data.length,
         itemBuilder: (BuildContext context, int index) =>
-            CategoryListitem(context, data[index]),
+            TopSellingListitem(data[index]),
       );
   }
-  Widget CategoryListitem2(BuildContext context, Category dt) {
+
+  Widget CategoryListitem(BuildContext context, Category dt, int index, int totindex) {
+    int nindex = index;
+
     if (dt.categoryCode != null) {
       return Container(
         width: 110,
-        //color: Colors.grey,
+//        color: selectedColor,
         child: Card(
 //          shape: RoundedRectangleBorder(
 //            side: BorderSide(
@@ -1058,7 +1214,14 @@ class _home extends State<Home> {
                         _selcategoryCode = dt.categoryCode;
                         _selCategory = dt.description;
                         getDesign();
-                        setState(() {});
+                        if (index < totindex - 1 && index > 1) {
+                          nindex = index;
+                          print(nindex);
+                          _scrollControllerlist.scrollTo(
+                              index: nindex, duration: Duration(seconds: 1));
+                        }
+                        setState(() {
+                        });
                       },
                       child: _sizedContainer(
                         Image(
@@ -1094,17 +1257,17 @@ class _home extends State<Home> {
       return new Text('ERROR');
     }
   }
-
-  Widget CategoryListView2(List<Category> data) {
+  Widget CategoryListView(List<Category> data) {
     return
-      new ListView.builder(
-
+      new ScrollablePositionedList.builder(
+        itemScrollController: _scrollControllerlist,
         scrollDirection: Axis.horizontal,
         itemCount: data.length,
         itemBuilder: (BuildContext context, int index) =>
-            CategoryListitem2(context, data[index]),
+            CategoryListitem(context, data[index], index, data.length),
       );
   }
+
   Widget _sizedContainer(Widget child) {
     return SizedBox(
       width: 80.0,
@@ -1112,10 +1275,12 @@ class _home extends State<Home> {
       child: Center(child: child),
     );
   }
+
   Widget CompanyLogo() {
     return new Container(
       color: primary1Color,
-      child: Text('JEMiSys eShop', style: TextStyle(fontSize: 20, color: Colors.white,fontWeight: FontWeight.bold)),
+      child: Text('JEMiSys eShop', style: TextStyle(
+          fontSize: 27, color: Colors.white, fontWeight: FontWeight.normal,)),
 //      child: SizedBox(
 //        height: 30,
 //        child: new Image.network(
@@ -1132,15 +1297,15 @@ class _home extends State<Home> {
     double p = 100.0;
 //    double topp=positionRed.dx;
 //    double rightp=positionRed.dy;
-    if(kIsWeb && hidetitleMsg)
+    if (kIsWeb && hidetitleMsg)
       p = 45.0;
-    else if(kIsWeb && !hidetitleMsg)
+    else if (kIsWeb && !hidetitleMsg)
       p = 75.0;
-    else if(!kIsWeb && hidetitleMsg)
+    else if (!kIsWeb && hidetitleMsg)
       p = 70.0;
     final RenderBox renderBoxRed = _keyRed.currentContext.findRenderObject();
     final positionRed = renderBoxRed.localToGlobal(Offset.zero);
-    double topp = positionRed.dy;
+    double topp = positionRed.dy+30;
 //    double rightp = positionRed.dx;
 //        print('$topp and $rightp');
     showGeneralDialog(
@@ -1152,18 +1317,20 @@ class _home extends State<Home> {
         pageBuilder: (context, anim1, anim2) {
           return Padding(
 //            padding: EdgeInsets.only(top: p, left:20.0, right:kIsWeb ? 50 : 50),
-            padding: EdgeInsets.only(top: topp, left:20.0, right:20),
+            padding: EdgeInsets.only(top: topp, left: 20.0, right: 50),
             child: Align(
-                alignment: _fromTop ? Alignment.topRight : Alignment.bottomCenter,
+                alignment: _fromTop ? Alignment.topRight : Alignment
+                    .bottomCenter,
                 child: Material(
                   type: MaterialType.transparency,
                   child: new Stack(
                       children: <Widget>[
                         Container(
                           height: 100,
-                          child: SizedBox( width: 200,
+                          child: SizedBox(width: 200,
                             child: Padding(
-                              padding: const EdgeInsets.only(left:30.0, top:10.0),
+                              padding: const EdgeInsets.only(
+                                  left: 30.0, top: 10.0),
                               child: Column(
                                 children: [
                                   Text('Gold Rate'),
@@ -1171,7 +1338,8 @@ class _home extends State<Home> {
                                   Row(
                                     children: [
                                       Padding(
-                                        padding: const EdgeInsets.only(right:15.0),
+                                        padding: const EdgeInsets.only(
+                                            right: 15.0),
                                         child: Text('916 :'),
                                       ),
                                       Text('\$55.50'),
@@ -1181,7 +1349,8 @@ class _home extends State<Home> {
                                   Row(
                                     children: [
                                       Padding(
-                                        padding: const EdgeInsets.only(right:15.0),
+                                        padding: const EdgeInsets.only(
+                                            right: 15.0),
                                         child: Text('999 :'),
                                       ),
                                       Text('\$65.50'),
@@ -1196,17 +1365,17 @@ class _home extends State<Home> {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.only(
-                              topLeft: const  Radius.circular(1000.0),
+                              topLeft: const Radius.circular(1000.0),
                               topRight: const Radius.circular(300.0),
-                              bottomLeft: const  Radius.circular(150.0),
-                              bottomRight: const  Radius.circular(1000.0),
+                              bottomLeft: const Radius.circular(150.0),
+                              bottomRight: const Radius.circular(1000.0),
                             ),
                           ),
                         ),
                         Positioned(
                             right: 0.0,
                             child: GestureDetector(
-                              onTap: (){
+                              onTap: () {
                                 Navigator.of(context).pop();
                               },
                               child: Align(
@@ -1227,11 +1396,13 @@ class _home extends State<Home> {
 
   var scaffoldKey = GlobalKey<ScaffoldState>();
   GlobalKey _keyRed = GlobalKey();
+
   _getPositions() {
     final RenderBox renderBoxRed = _keyRed.currentContext.findRenderObject();
     final positionRed = renderBoxRed.localToGlobal(Offset.zero);
     print("POSITION of Red: $positionRed ");
   }
+
   @override
   void initState() {
     super.initState();
@@ -1250,7 +1421,37 @@ class _home extends State<Home> {
       });
     });
     Future.delayed(Duration.zero, () => showGoldRate());
+
+    print('Test11');
+    controller = AnimationController(
+        duration: const Duration(milliseconds: 1000), vsync: this);
+    animation = CurvedAnimation(parent: controller, curve: Curves.easeIn);
+
+    /*animation.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        controller.reverse();
+      } else if (status == AnimationStatus.dismissed) {
+        controller.forward();
+      }
+    });*/
+
+    controller.forward();
+
+//    return Container(
+//        color: Colors.white,
+//        child: FadeTransition(
+//            opacity: animation,
+//            child: Row(
+//                mainAxisAlignment: MainAxisAlignment.center,
+//                children:[
+//                  Icon(Icons.check, size: 100.0,color: Colors.green,),
+//                ]
+//            )
+//        )
+//    );
+
   }
+  ScrollController _scrollController = new ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -1271,12 +1472,13 @@ class _home extends State<Home> {
               color: Colors.white,
               child: Scrollbar(
                 child: CustomScrollView(
+                  controller: _scrollController,
                   slivers: <Widget>[
                     SliverToBoxAdapter(
-                      child: titleMessage(),//CompanyLogo(),
+                      child: titleMessage(), //CompanyLogo(),
                     ),
                     SliverToBoxAdapter(
-                      child: titleBar(),//CompanyLogo(),
+                      child: titleBar(), //CompanyLogo(),
                     ),
 
                     SliverToBoxAdapter(
@@ -1301,8 +1503,6 @@ class _home extends State<Home> {
                               padding: const EdgeInsets.only(
                                   left: 5.0, right: 5.0),
                               child: Container(
-                                //margin: const EdgeInsets.all(15.0),
-                                //padding: const EdgeInsets.all(3.0),
                                   decoration: BoxDecoration(
                                       border: Border.all(color: listbgColor)
                                   ),
@@ -1311,27 +1511,30 @@ class _home extends State<Home> {
                                   Stack(
                                       children: <Widget>[
                                         HorizontalMenuWedget(),
-                                        Positioned(
-                                            right: 0.0,
-                                            key: _keyRed,
-                                            child: GestureDetector(
-                                              onTap: (){
-                                                showGoldRate();
-                                                setState(() {
-                                                });
-                                              },
-                                              //child: Icon( Image.asset('assets/goldRate.png', height: 20,)),
-//                                            child: Icon(Icons.close, color: primary1Color, size: 18,),
-                                              child: Padding(
-                                                padding: const EdgeInsets.only(top:2.0),
-                                                child: Container(
-                                                    color: primary1Color,
-                                                    child: Padding(
-                                                      padding: const EdgeInsets.all(2.0),
-                                                      child: Image.asset('assets/goldRate.png', height: 17,),
-                                                    )),
-                                              ),
-                                            )),
+//                                        Positioned(
+//                                            right: 0.0,
+//                                            key: _keyRed,
+//                                            child: GestureDetector(
+//                                              onTap: () {
+//                                                showGoldRate();
+//                                                setState(() {});
+//                                              },
+//                                              //child: Icon( Image.asset('assets/goldRate.png', height: 20,)),
+////                                            child: Icon(Icons.close, color: primary1Color, size: 18,),
+//                                              child: Padding(
+//                                                padding: const EdgeInsets.only(
+//                                                    top: 2.0),
+//                                                child: Container(
+//                                                    color: listLabelbgColor,
+//                                                    child: Padding(
+//                                                      padding: const EdgeInsets
+//                                                          .all(2.0),
+//                                                      child: Image.asset(
+//                                                        'assets/goldRate.png',
+//                                                        height: 17,),
+//                                                    )),
+//                                              ),
+//                                            )),
                                       ]
                                   )
                               ),
@@ -1355,7 +1558,7 @@ class _home extends State<Home> {
                                   builder: (context, snapshot) {
                                     if (categoryList.length > 0) {
                                       List<Category> data = categoryList;
-                                      return CategoryListView2(data);
+                                      return CategoryListView(data);
                                     } else if (snapshot.hasError) {
                                       return Text("${snapshot.error}");
                                     }
@@ -1399,27 +1602,42 @@ class _home extends State<Home> {
                     ),
                     //Design Title
                     SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: 5.0, right: 5.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              border: Border.all(color: listbgColor),
-                              color: listLabelbgColor
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              left: 5.0, right: 5.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(color: listbgColor),
+                                color: listLabelbgColor
+                            ),
+                            child: Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                      10.0, 0.0, 0.0, 0.0),
+                                  child: Text(_selCategory,
+                                      style: TextStyle(
+                                          color: Colors.white)),
+                                ),
+                                Spacer(),
+                                IconButton(
+                                    icon: new Image.asset(
+                                      'assets/filter_icon.png', height: 20,),
+                                    iconSize: 30,
+                                    onPressed: () {
+                                      print('filter');
+                                    }
+                                ),
+                              ],
+                            ),
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(
-                                10.0, 5.0, 0.0, 5.0),
-                            child: Text(_selCategory, style: TextStyle(color: Colors.white)),
-                          ),
-                        ),
-                      ),
+                        )
                     ),
                     //Design List
                     SliverGrid(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: itemCount,
-                        childAspectRatio: itemheight-0.05,
+                        childAspectRatio: itemheight - 0.15,
                       ),
                       delegate: SliverChildListDelegate(
                         [
@@ -1429,6 +1647,25 @@ class _home extends State<Home> {
                       ),
                     ),
 
+                    SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              left: 5.0, right: 5.0),
+                          child: Container(
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: Color(0xFF9DB1C6)),
+                                  color: Color(0xFF517295)
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                    10.0, 10.0, 0.0, 10.0),
+                                child: Text('TOP SELLING PRODUCTS',
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 20)),
+                              )
+                          ),
+                        )
+                    ),
                     SliverList(
                       delegate: SliverChildListDelegate(
                         [
@@ -1436,14 +1673,14 @@ class _home extends State<Home> {
                             padding: const EdgeInsets.only(
                                 left: 5.0, right: 5.0),
                             child: Container(
-                                height: 120,
+                                height: screenSize.width / itemCount + 25,
                                 color: Color(0xFFD6DFE4),
-                                child: FutureBuilder<List<ItemMasterList>>(
+                                child: FutureBuilder<List<DesignCode>>(
                                   //future: _fetchData(),
                                   builder: (context, snapshot) {
                                     if (categoryList.length > 0) {
-                                      List<Category> data = categoryList;
-                                      return CategoryListView2(data);
+                                      List<DesignCode> data = topSelling;
+                                      return TopSellingListView(data);
                                     } else if (snapshot.hasError) {
                                       return Text("${snapshot.error}");
                                     }
@@ -1455,12 +1692,66 @@ class _home extends State<Home> {
                         ],
                       ),
                     ),
-
+                    SliverToBoxAdapter(
+                      child: SizedBox(height: 50,),
+                    ),
                   ],
                 ),
               )
           )
       ),
+      floatingActionButton: new Container(
+          height: 30,
+          child: FloatingActionButton.extended(
+            backgroundColor: listLabelbgColor,
+            icon: Icon(Icons.arrow_drop_up,),
+            onPressed: () {
+              setState(() {
+//              _messages.insert(0, new Text("message ${_messages.length}"));
+              });
+              _scrollController.animateTo(
+                0.0,
+                curve: Curves.easeOut,
+                duration: const Duration(milliseconds: 300),
+              );
+            },
+            label: Text('Top'),
+          )),
     );
   }
 }
+
+class ShapesPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint();
+    // set the paint color to be white
+    // Create a rectangle with size and width same as the canvas
+    //var rect = Rect.fromLTWH(0, 0, size.width, size.height);
+    // draw the rectangle using the paint
+    paint.color = listLabelbgColor;
+    // create a path
+    var path = Path();
+    path.lineTo(0, 80);
+    path.lineTo(80, 0);
+    // close the path to form a bounded shape
+    path.close();
+    canvas.drawPath(path, paint);
+    paint.color = Colors.white;
+    path = Path();
+    path.lineTo(0, 25);
+    path.lineTo(25, 0);
+    path.close();
+    canvas.drawPath(path, paint);
+    // set the color property of the paint
+    paint.color = Colors.deepOrange;
+    // center of the canvas is (x,y) => (width/2, height/2)
+    var center = Offset(size.width / 2, size.height / 2);
+    // draw the circle with center having radius 75.0
+//    canvas.drawCircle(center, 75.0, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
+}
+

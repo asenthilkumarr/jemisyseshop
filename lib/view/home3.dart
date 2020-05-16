@@ -8,7 +8,6 @@ import 'package:jemisyseshop/model/menu.dart';
 import 'package:intl/intl.dart';
 import 'package:jemisyseshop/style.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:flutter/animation.dart';
 
 class HomeScreen3 extends StatelessWidget {
   // This widget is the root of your application.
@@ -27,12 +26,14 @@ class Home3 extends StatefulWidget{
   _home3 createState() => _home3();
 }
 
-class _home3 extends State<Home3> with TickerProviderStateMixin{
+class _home3 extends State<Home3> {
   bool isLogin = false;
   String _selcategoryCode = '';
   String _selCategory = "";
   String _selCountry = 'SG';
-  final formatter = new NumberFormat('##0.00', 'en_US');
+
+  final formatter2dec = new NumberFormat('##0.00', 'en_US');
+  final formatterint = new NumberFormat('##0', 'en_US');
   AnimationController controller;
   Animation<double> animation;
 
@@ -66,6 +67,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         1200.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BA101.jpg'),
     DesignCode(
         'BA102',
@@ -75,6 +77,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         1200.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BA102.jpg'),
     DesignCode(
         'BA103',
@@ -84,6 +87,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         1200.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BA103.jpg'),
     DesignCode(
         'BA104',
@@ -93,6 +97,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         1200.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BA104.jpg'),
     DesignCode(
         'BA105',
@@ -102,6 +107,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         0.00,
         24.250,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BA105.jpg'),
     DesignCode(
         'BA106',
@@ -111,6 +117,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         0.00,
         32.15,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BA106.jpg'),
     DesignCode(
         'BA107',
@@ -120,6 +127,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         0.00,
         15.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BA107.jpg'),
     DesignCode(
         'BA108',
@@ -129,6 +137,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         0.00,
         33.12,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BA108.jpg'),
 
     DesignCode(
@@ -139,6 +148,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         1250.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BR101.jpg'),
     DesignCode(
         'BR102',
@@ -148,6 +158,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         0.00,
         22.30,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BR102.png'),
     DesignCode(
         'BR103',
@@ -157,6 +168,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         1250.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BR103.jpg'),
     DesignCode(
         'BR104',
@@ -166,6 +178,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         0.00,
         41.30,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BR104.png'),
     DesignCode(
         'BR105',
@@ -175,6 +188,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         0.00,
         35.12,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BR105.jpg'),
 
     DesignCode(
@@ -185,6 +199,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         1200.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/DR101.jpg'),
     DesignCode(
         'DR102',
@@ -194,6 +209,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         1200.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/DR102.jpg'),
     DesignCode(
         'DR103',
@@ -203,6 +219,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         1200.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/DR103.jpg'),
     DesignCode(
         'DR104',
@@ -212,6 +229,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         1200.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/DR104.jpg'),
     DesignCode(
         'DR105',
@@ -221,6 +239,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         1200.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/DR105.jpg'),
     DesignCode(
         'DR106',
@@ -230,6 +249,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         1200.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/DR106.jpg'),
 
     DesignCode(
@@ -240,6 +260,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         0.00,
         6.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/GR101.jpg'),
     DesignCode(
         'GR102',
@@ -249,6 +270,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         0.00,
         8.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/GR102.jpg'),
     DesignCode(
         'GR103',
@@ -258,6 +280,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         0.00,
         6.20,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/GR103.jpg'),
     DesignCode(
         'ER101',
@@ -267,6 +290,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         1200.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/ER101.jpg'),
     DesignCode(
         'ER102',
@@ -276,6 +300,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         0.00,
         6.40,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/ER102.jpg'),
     DesignCode(
         'ER103',
@@ -285,6 +310,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         0.00,
         4.50,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/ER103.jpg'),
     DesignCode(
         'ER104',
@@ -294,6 +320,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         0.00,
         3.50,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/ER104.jpg'),
     DesignCode(
         'ER105',
@@ -303,6 +330,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         0.00,
         4.30,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/ER105.jpg'),
     DesignCode(
         'ER106',
@@ -312,6 +340,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         1200.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/ER106.jpg'),
     DesignCode(
         'ER107',
@@ -321,6 +350,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         1200.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/ER107.jpg'),
     DesignCode(
         'NE101',
@@ -330,6 +360,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         1200.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/NE101.jpg'),
     DesignCode(
         'NE102',
@@ -339,6 +370,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         1200.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/NE102.jpg'),
     DesignCode(
         'NE103',
@@ -348,6 +380,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         1200.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/NE103.jpg'),
     DesignCode(
         'NE104',
@@ -357,6 +390,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         1200.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/NE104.jpg'),
     DesignCode(
         'NE105',
@@ -366,6 +400,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         1200.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/NE105.jpg'),
     DesignCode(
         'NE106',
@@ -375,6 +410,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         0.00,
         76.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/NE106.jpg'),
     DesignCode(
         'NE107',
@@ -384,6 +420,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         0.00,
         53.50,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/NE107.jpg'),
     DesignCode(
         'NE108',
@@ -393,6 +430,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         0.00,
         102.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/NE108.jpg'),
     DesignCode(
         'NE109',
@@ -402,6 +440,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         0.00,
         35.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/NE109.jpg'),
     DesignCode(
         'PE101',
@@ -411,6 +450,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         1200.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/PE101.jpg'),
     DesignCode(
         'PE102',
@@ -420,6 +460,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         0.00,
         7.52,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/PE102.jpg'),
     DesignCode(
         'PE103',
@@ -429,6 +470,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         0.00,
         10.20,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/PE103.jpg'),
     DesignCode(
         'PE104',
@@ -438,6 +480,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         0.00,
         6.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/PE104.jpg'),
     DesignCode(
         'PE105',
@@ -447,6 +490,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         1200.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/PE105.jpg'),
     DesignCode(
         'PE106',
@@ -456,6 +500,7 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         1200.00,
         0.00,
         0.00,
+        '',
         'http://42.61.99.57/JEMiSyseShopImage/jewelimages/PE106.jpg'),
   ];
 
@@ -647,8 +692,8 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
                         children: [
                           Text(item.designCode),
                           Spacer(),
-                          Text(item.tagPrice > 0 ? '\$${formatter.format(
-                              item.tagPrice)}' : 'Wt.: ${formatter.format(
+                          Text(item.tagPrice > 0 ? '\$${formatterint.format(
+                              item.tagPrice)}' : 'Wt.: ${formatter2dec.format(
                               item.grossWeight)}g'),
                         ],
                       ),
@@ -684,8 +729,8 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
                     children: [
                       Text(item.designCode),
                       Spacer(),
-                      Text(item.tagPrice > 0 ? '\$${formatter.format(
-                          item.tagPrice)}' : 'Wt.: ${formatter.format(
+                      Text(item.tagPrice > 0 ? '\$${formatterint.format(
+                          item.tagPrice)}' : 'Wt.: ${formatter2dec.format(
                           item.grossWeight)} g'),
                     ],
                   ),
@@ -832,7 +877,6 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
   Widget CategoryListView(List<Category> data) {
     return
       new ListView.builder(
-
         scrollDirection: Axis.horizontal,
         itemCount: data.length,
         itemBuilder: (BuildContext context, int index) =>
@@ -873,33 +917,6 @@ class _home3 extends State<Home3> with TickerProviderStateMixin{
         precacheImage(NetworkImage(imageUrl), context);
       });
     });
-
-    controller = AnimationController(
-        duration: const Duration(milliseconds: 1000), vsync: this);
-    animation = CurvedAnimation(parent: controller, curve: Curves.easeIn);
-
-    /*animation.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        controller.reverse();
-      } else if (status == AnimationStatus.dismissed) {
-        controller.forward();
-      }
-    });*/
-
-    controller.forward();
-
-//    return Container(
-//        color: Colors.white,
-//        child: FadeTransition(
-//            opacity: animation,
-//            child: Row(
-//                mainAxisAlignment: MainAxisAlignment.center,
-//                children:[
-//                  Icon(Icons.check, size: 100.0,color: Colors.green,),
-//                ]
-//            )
-//        )
-//    );
   }
 
   @override

@@ -55,7 +55,7 @@ List<String> MenuItemSplit(String type, double screenwidth) {
 }
 
 void _openPage(menuItem, BuildContext context) {
-  if(menuItem == 'Home' || menuItem == 'Home 2') {
+  if(menuItem == 'Home' || menuItem == 'Home 2' || menuItem == 'Home 3') {
     Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) {
           switch (menuItem) {
