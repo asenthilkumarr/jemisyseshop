@@ -17,32 +17,31 @@ import 'package:jemisyseshop/style.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/animation.dart';
 
-
-class HomeScreen2 extends StatelessWidget {
+class TopSellingScreen extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Home 3',
+      title: 'Top Selling',
       theme: ThemeData(
         textTheme: GoogleFonts.latoTextTheme(
           Theme.of(context).textTheme,
         ),
       ),
-      home: Home2(),
+      home: TopSelling(),
       debugShowCheckedModeBanner: false,
     );
   }
 }
-class Home2 extends StatefulWidget{
+
+class TopSelling extends StatefulWidget{
   @override
-  _home2 createState() => _home2();
+  _topSelling createState() => _topSelling();
 }
 
-class _home2 extends State<Home2> with TickerProviderStateMixin {
+class _topSelling extends State<TopSelling> with TickerProviderStateMixin {
   bool isLogin = false;
   String _selcategoryCode = '';
-  String _selCategory = "";
   String _selCountry = 'SG';
   int _selectedCategoryIndex = 0;
   final formatter2dec = new NumberFormat('##0.00', 'en_US');
@@ -50,6 +49,7 @@ class _home2 extends State<Home2> with TickerProviderStateMixin {
   AnimationController controller;
   Animation<double> animation;
   ItemScrollController _scrollControllerlist = ItemScrollController();
+  TabController _tabController;
 
   List<DesignCode> selDesign = new List<DesignCode>();
   Country sCountry;
@@ -89,7 +89,6 @@ class _home2 extends State<Home2> with TickerProviderStateMixin {
         .toList();
     selDesign = new List<DesignCode>();
     selDesign = sitem;
-    print(_selcategoryCode + ' ' + sitem.length.toString());
   }
 
   int GridItemCount(double screenwidth) {
@@ -135,69 +134,33 @@ class _home2 extends State<Home2> with TickerProviderStateMixin {
         .size
         .width;
     double _height = 100;
-    double _ratio = 0.65;
-    if (screenWidth > 1600) {
-      _height = 350;
-      _ratio = 0.5;
-    }
-    else if (screenWidth >= 1300) {
+    if (screenWidth > 1600)
+      _height = 650;
+    else if (screenWidth >= 1300)
+      _height = 500;
+    else if (screenWidth >= 1000)
+      _height = 400;
+    else if (screenWidth >= 700)
       _height = 300;
-      _ratio = 1;
-    }
-    else if (screenWidth >= 1000) {
-      _height = 250;
-      _ratio = 0.55;
-    }
-    else if (screenWidth >= 850) {
-      _height = 220;
-      _ratio = 0.9;
-    }
-//    else if (screenWidth >= 790){
-//      _height = 215;_ratio=1.0;
-//    }
-    else if (screenWidth >= 700) {
-      _height = 210;
-      _ratio = 1.0;
-    }
-    else if (screenWidth >= 630) {
-      _height = 210;
-      _ratio = 0.8;
-    }
-    else if (screenWidth >= 500) {
+    else if (screenWidth >= 500)
       _height = 200;
-      _ratio = 0.9;
-    }
-    else if (screenWidth >= 400) {
+    else if (screenWidth >= 400)
       _height = 120;
-      _ratio = 0.8;
-    }
     if (images.length > 1) {
       return new Container(
         child: CarouselSlider.builder(
           itemCount: images.length,
           options: CarouselOptions(
-//              autoPlay: true,
-//              aspectRatio: 3.5,
-//              enlargeCenterPage: true,
-              aspectRatio: 16 / 9,
-              viewportFraction: _ratio,
-              initialPage: 0,
-              enableInfiniteScroll: true,
-              reverse: false,
               autoPlay: true,
-              autoPlayInterval: Duration(seconds: 3),
-              autoPlayAnimationDuration: Duration(milliseconds: 800),
-              autoPlayCurve: Curves.fastOutSlowIn,
+              aspectRatio: 2.0,
               enlargeCenterPage: true,
-//              onPageChanged: callbackFunction,
-              scrollDirection: Axis.horizontal,
               height: _height
           ),
           itemBuilder: (context, index) {
             return Container(
               child: SizedBox(
-                  child: Image.network(images[index], fit: BoxFit.fitHeight,
-                  )
+                  child: Image.network(images[index], fit: BoxFit.fitWidth,
+                    width: screenWidth - 30,)
               ),
             );
           },
@@ -227,95 +190,6 @@ class _home2 extends State<Home2> with TickerProviderStateMixin {
     }
   }
 
-  Widget DesignGridWidgets(DesignCode item) {
-    return Card(
-        shape: RoundedRectangleBorder(
-          side: BorderSide(
-            color: listbgColor,
-            width: 1.0,
-          ),
-        ),
-        child: Stack(
-            children: <Widget>[
-//              CustomPaint(
-//                painter: ShapesPainter(),
-//                child: Center(
-//                  child: Transform.rotate(angle: - pi / 4,
-//                    child: Text("50%\nOFF", style: TextStyle(fontSize: 22, ),
-//                    ),
-//                  ),
-//                ),
-//              ),
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Align(
-                  alignment: FractionalOffset.center,
-                  child: Image(
-                    image: CachedNetworkImageProvider(
-                      item.imageUrl,
-                    ),
-                    fit: BoxFit.fitHeight,
-                  ),
-//                  child: Image.network(
-//                    item.imageUrl, fit: BoxFit.fitHeight,),
-                ),
-              ),
-              Align(
-                  alignment: FractionalOffset.bottomCenter,
-                  child: Container(
-                    color: listbgColor,
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                          left: 10.0, right: 10.0, top: 3.0, bottom: 3.0),
-                      child: Row(
-//                  mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text(item.designCode),
-                          Spacer(),
-                          Text(item.tagPrice > 0 ? '\$${formatterint.format(
-                              item.tagPrice)}' : 'Wt.: ${formatter2dec.format(
-                              item.grossWeight)}g'),
-                        ],
-                      ),
-                    ),
-                  )
-              ),
-              item.promotion != "" ? Positioned(
-                left: 0.0,
-                child: Container(
-                  child: CustomPaint(
-                    painter: ShapesPainter(),
-//                      painter: DrawTriangle(),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 12.0, top: 9.0),
-                      child: Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Transform.rotate(angle: -pi / 4,
-                            child: Wrap(
-                                runSpacing: 5.0,
-                                spacing: 5.0,
-                                direction: Axis.vertical,
-                                children: [
-                                  SizedBox(
-                                      width: 40,
-                                      child: Text(item.promotion,
-                                        style: TextStyle(
-                                            fontSize: 13, color: Colors.white),
-                                      )
-
-                                  ),
-                                ])
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ) : SizedBox(height: 1, width: 1,),
-            ]
-        )
-    );
-  }
-
   Widget titleBar() {
     return Container(
       color: primary1Color,
@@ -343,37 +217,15 @@ class _home2 extends State<Home2> with TickerProviderStateMixin {
               Align(
                   alignment: Alignment.centerRight,
                   child: SizedBox(
-                    width: 105,
+                    width: 80,
                     child: Row(
                       children: [
-                        Visibility(
-                          visible: !isLogin ? true : true,
-                          child: SizedBox(
-                              width: 35,
-                              child: IconButton(
-//                             icon: new Image.asset(
-//                                 isLogin ? 'assets/user_profile.png' : 'assets/login.png', height: 25,),
-                                icon: Icon(Icons.person,
-                                  color: !isLogin ? Colors.white : Colors
-                                      .transparent,),
-                                iconSize: 25,
-                                onPressed: () {
-                                  if (isLogin)
-                                    isLogin = false;
-                                  else
-                                    isLogin = true;
-                                  setState(() {
-
-                                  });
-                                },
-                              )),
-                        ),
                         SizedBox(
-                            width: 35,
+                            width: 40,
                             child: IconButton(
                               key: _keyRed,
-                              icon: new Image.asset('assets/goldRate.png', height: 20,),
-                              iconSize: 25,
+                              icon: new Image.asset('assets/goldRate.png', height: 25,),
+                              iconSize: 30,
 
                               onPressed: () {
                                 showGoldRate();
@@ -381,7 +233,7 @@ class _home2 extends State<Home2> with TickerProviderStateMixin {
                             )),
                         Center(
                           child: SizedBox(
-                            width: 35,
+                            width: 40,
                             child: Padding(
                                 padding: const EdgeInsets.only(right: 0.0),
                                 child: Stack(
@@ -390,7 +242,7 @@ class _home2 extends State<Home2> with TickerProviderStateMixin {
                                       IconButton(
                                         icon: new Image.asset(
                                           'assets/shopping_cart.png',
-                                          height: 20,),
+                                          height: 25,),
 //                                     icon: Icon(Icons.cur, color: Colors.white,),
                                         iconSize: 25,
                                         onPressed: () {},),
@@ -439,7 +291,7 @@ class _home2 extends State<Home2> with TickerProviderStateMixin {
     return !hideTitleMessage ? Padding(
         padding: const EdgeInsets.only(bottom: 1.0),
         child: Container(
-          color: listLabelbgColor,
+          color: primary1Color,
           child: Padding(
             padding: const EdgeInsets.only(
                 left: 8.0, top: 8.0, bottom: 8.0, right: 5.0),
@@ -622,14 +474,11 @@ class _home2 extends State<Home2> with TickerProviderStateMixin {
                         child: Padding(
                           padding: const EdgeInsets.only(left: 12.0, top: 9.0),
                           child: Align(
-
-
-
                             alignment: Alignment.bottomCenter,
                             child: Transform.rotate(angle: -pi / 4,
                                 child: Wrap(
-                                    runSpacing: 5.0,
-                                    spacing: 5.0,
+//                                    runSpacing: 5.0,
+//                                    spacing: 5.0,
                                     direction: Axis.vertical,
                                     children: [
                                       SizedBox(
@@ -653,117 +502,16 @@ class _home2 extends State<Home2> with TickerProviderStateMixin {
     );
   }
 
-  Widget TopSellingListView(List<DesignCode> data) {
-    return
-      new ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: data.length,
-        itemBuilder: (BuildContext context, int index) =>
-            TopSellingListitem(data[index]),
-      );
-  }
-
-  Widget CategoryListitem(BuildContext context, Category dt, int index, int totindex) {
-    int nindex = index;
-
-    if (dt.categoryCode != null) {
-      return Container(
-        width: 110,
-//        color: selectedColor,
-        child: Card(
-//          shape: RoundedRectangleBorder(
-//            side: BorderSide(
-//              color: Color(0xFFD6DFE4),
-//              width: 1.0,
-//            ),
-//          ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-            child: Column(
-              children: <Widget>[
-                Spacer(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    InkWell(
-                      onTap: () {
-                        _selcategoryCode = dt.categoryCode;
-                        _selCategory = dt.description;
-                        getDesign();
-                        if (index < totindex - 1 && index > 1) {
-                          if(_selectedCategoryIndex<index)
-                            nindex = index -1;
-                          else
-                            nindex = index;
-
-                          _scrollControllerlist.scrollTo(
-                              index: nindex, duration: Duration(seconds: 1));
-                        }
-                        _selectedCategoryIndex = index;
-                        setState(() {
-                        });
-                      },
-                      child: _sizedContainer(
-                        Image(
-                          image: CachedNetworkImageProvider(
-                            dt.imageUrl,
-                          ),
-                        ),
-                      ),
-                    )
-                    //Image.network(dt.imageUrl, height: 80, width: 80,),
-                    //Spacer(),
-                  ],
-                ),
-                Spacer(),
-                Container(
-                  color: listLabelbgColor,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text('${dt.description}',
-                        style: TextStyle(color: Colors.white),),
-                      //Spacer(),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
-    else {
-      return new Text('ERROR');
-    }
-  }
-  Widget CategoryListView(List<Category> data) {
-    return
-      new ScrollablePositionedList.builder(
-        itemScrollController: _scrollControllerlist,
-        scrollDirection: Axis.horizontal,
-        itemCount: data.length,
-        itemBuilder: (BuildContext context, int index) =>
-            CategoryListitem(context, data[index], index, data.length),
-      );
-  }
-
-  Widget _sizedContainer(Widget child) {
-    return SizedBox(
-      width: 80.0,
-      height: 80.0,
-      child: Center(child: child),
-    );
-  }
-
   Widget CompanyLogo() {
     return new Container(
       color: primary1Color,
-      child: Text('JEMiSys eShop',
-        style: GoogleFonts.oswald(
-          textStyle: TextStyle(color: Colors.white, fontSize: 35),
+      child: Center(
+        child: Text('JEMiSys eShop',
+          style: GoogleFonts.oswald(
+            textStyle: TextStyle(color: Colors.white, fontSize: 34,),
+          ),
+          //style: TextStyle(fontSize: 27, color: Colors.white, fontWeight: FontWeight.normal,)
         ),
-        //style: TextStyle(fontSize: 27, color: Colors.white, fontWeight: FontWeight.normal,)
       ),
 //      child: SizedBox(
 //        height: 30,
@@ -791,7 +539,6 @@ class _home2 extends State<Home2> with TickerProviderStateMixin {
     final positionRed = renderBoxRed.localToGlobal(Offset.zero);
     double topp = positionRed.dy+30;
 //    double rightp = positionRed.dx;
-//        print('$topp and $rightp');
     showGeneralDialog(
         barrierLabel: "Label",
         barrierDismissible: true,
@@ -890,13 +637,12 @@ class _home2 extends State<Home2> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-//    DefaultCacheManager manager = new DefaultCacheManager();
-//    manager.emptyCache(); //clears all data in cache.
-//    imageCache.clear();
+    _tabController = new TabController(vsync: this, length: hMenuCount,);
+    _tabController.index = 2;
     getDefault();
     if (categoryList.length > 0) {
       _selcategoryCode = categoryList[0].categoryCode;
-      _selCategory = categoryList[0].description;
+
       getDesign();
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -904,37 +650,13 @@ class _home2 extends State<Home2> with TickerProviderStateMixin {
         precacheImage(NetworkImage(imageUrl), context);
       });
     });
-    if(hideGoldRate == false)
-      Future.delayed(Duration.zero, () => showGoldRate());
+//    Future.delayed(Duration.zero, () => showGoldRate());
 
-    print('Test11');
     controller = AnimationController(
         duration: const Duration(milliseconds: 1000), vsync: this);
     animation = CurvedAnimation(parent: controller, curve: Curves.easeIn);
 
-    /*animation.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        controller.reverse();
-      } else if (status == AnimationStatus.dismissed) {
-        controller.forward();
-      }
-    });*/
-
     controller.forward();
-
-//    return Container(
-//        color: Colors.white,
-//        child: FadeTransition(
-//            opacity: animation,
-//            child: Row(
-//                mainAxisAlignment: MainAxisAlignment.center,
-//                children:[
-//                  Icon(Icons.check, size: 100.0,color: Colors.green,),
-//                ]
-//            )
-//        )
-//    );
-
   }
   ScrollController _scrollController = new ScrollController();
 
@@ -948,261 +670,147 @@ class _home2 extends State<Home2> with TickerProviderStateMixin {
     int itemCount = GridItemCount(screenSize.width);
     double itemheight = GridItemHeight(screenSize.height, screenSize.width);
 
-    return Scaffold(
-      key: scaffoldKey,
+    return DefaultTabController(
+        length: hMenuCount,
+        child: Scaffold(
+          key: scaffoldKey,
 //      appBar: pageAppBar(),
-      drawer: MenuItemWedget(scaffoldKey: scaffoldKey, isLogin: isLogin),
-      body: SafeArea(
-          child: Container(
-              color: Colors.white,
-              child: Scrollbar(
-                child: CustomScrollView(
-                  controller: _scrollController,
-                  slivers: <Widget>[
-                    SliverToBoxAdapter(
-                      child: titleMessage(), //CompanyLogo(),
-                    ),
-                    SliverToBoxAdapter(
-                      child: titleBar(), //CompanyLogo(),
-                    ),
+          drawer: MenuItemWedget(scaffoldKey: scaffoldKey, isLogin: isLogin),
+          body: SafeArea(
+              child: Container(
+                  color: Colors.white,
+                  child: Scrollbar(
+                    child: CustomScrollView(
+                      controller: _scrollController,
+                      slivers: <Widget>[
+                        SliverToBoxAdapter(
+                          child: titleMessage(), //CompanyLogo(),
+                        ),
+                        SliverToBoxAdapter(
+                          child: titleBar(), //CompanyLogo(),
+                        ),
 
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 5.0, right: 5.0),
-                        child: BannerImage(context),
-                      ),
-                    ),
-
-                    SliverList(
-                      delegate: SliverChildListDelegate(
-                        [
-                          //PageTitleBar(context),
-
-                          SizedBox(
-                            height: 5,
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+                            child: BannerImage(context),
                           ),
-                          //Menu
-                          SizedBox(
-                            height: 30,
+                        ),
+
+                        SliverList(
+                          delegate: SliverChildListDelegate(
+                            [
+                              //PageTitleBar(context),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              //Menu
+                              SizedBox(
+                                height: 37,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 5.0, right: 5.0),
+                                  child: Container(
+                                      decoration: BoxDecoration(
+                                          border: Border.all(color: listbgColor)
+                                      ),
+                                      //child: HorizontalMenu(menuitem, context),
+                                      child:
+                                      Stack(
+                                          children: <Widget>[
+                                            HorizontalMenuWedget(tabController: _tabController, key: null,),
+                                          ]
+                                      )
+                                  ),
+                                ),
+                              ),
+
+                            ],
+                          ),
+                        ),
+
+                        SliverToBoxAdapter(
+                          child: SizedBox(height: 3,),
+                        ),
+
+                        SliverToBoxAdapter(
                             child: Padding(
                               padding: const EdgeInsets.only(
                                   left: 5.0, right: 5.0),
                               child: Container(
                                   decoration: BoxDecoration(
-                                      border: Border.all(color: listbgColor)
+                                      border: Border.all(color: listbgColor),
+                                      color: listLabelbgColor
                                   ),
-                                  //child: HorizontalMenu(menuitem, context),
-                                  child:
-                                  Stack(
-                                      children: <Widget>[
-                                        HorizontalMenuWedget2(),
-//                                        Positioned(
-//                                            right: 0.0,
-//                                            key: _keyRed,
-//                                            child: GestureDetector(
-//                                              onTap: () {
-//                                                showGoldRate();
-//                                                setState(() {});
-//                                              },
-//                                              //child: Icon( Image.asset('assets/goldRate.png', height: 20,)),
-////                                            child: Icon(Icons.close, color: primary1Color, size: 18,),
-//                                              child: Padding(
-//                                                padding: const EdgeInsets.only(
-//                                                    top: 2.0),
-//                                                child: Container(
-//                                                    color: listLabelbgColor,
-//                                                    child: Padding(
-//                                                      padding: const EdgeInsets
-//                                                          .all(2.0),
-//                                                      child: Image.asset(
-//                                                        'assets/goldRate.png',
-//                                                        height: 17,),
-//                                                    )),
-//                                              ),
-//                                            )),
-                                      ]
-                                  )
+                                child: Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          10.0, 0.0, 0.0, 0.0),
+                                      child: Text('TOP SELLING PRODUCTS',
+                                          style: TextStyle(
+                                              color: Colors.white)),
+                                    ),
+                                    Spacer(),
+                                    IconButton(
+                                        icon: new Image.asset(
+                                          'assets/filter_icon.png', height: 20,),
+                                        iconSize: 30,
+                                        onPressed: () {
+                                          print('filter');
+                                        }
+                                    ),
+                                  ],
+                                ),
+//                                  child: Padding(
+//                                    padding: const EdgeInsets.fromLTRB(
+//                                        10.0, 10.0, 0.0, 10.0),
+//                                    child: Text('TOP SELLING PRODUCTS',
+////                                      style: GoogleFonts.lato(textStyle: TextStyle(color: Colors.white, fontSize: 16)),
+//                                    style: TextStyle(color: Colors.white, fontSize: 16)
+//                                    ),
+//                                  )
                               ),
-                            ),
+                            )
+                        ),
+                        SliverGrid(
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: itemCount,
+                            childAspectRatio: itemheight - 0.15,
                           ),
-
-                        ],
-                      ),
-                    ),
-                    SliverList(
-                      delegate: SliverChildListDelegate(
-                        [
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                left: 5.0, right: 5.0),
-                            child: Container(
-                                height: 120,
-                                color: listbgColor,
-                                child: FutureBuilder<List<ItemMasterList>>(
-                                  //future: _fetchData(),
-                                  builder: (context, snapshot) {
-                                    if (categoryList.length > 0) {
-                                      List<Category> data = categoryList;
-                                      return CategoryListView(data);
-                                    } else if (snapshot.hasError) {
-                                      return Text("${snapshot.error}");
-                                    }
-                                    return Container();
-                                  },
-                                )
-                            ),
+                          delegate: SliverChildListDelegate(
+                            [
+                              for(var i in topSelling)
+                                TopSellingListitem(i),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                        SliverToBoxAdapter(
+                          child: SizedBox(height: 50,),
+                        ),
+                      ],
                     ),
-//                    SliverList(
-//                      delegate: SliverChildListDelegate(
-//                        [
-//                          Padding(
-//                            padding: const EdgeInsets.only(
-//                                left: 5.0, right: 5.0),
-//                            child: Container(
-//                                height: 120,
-//                                color: Color(0xFFE5E7E9),
-//                                child: FutureBuilder<List<ItemMasterList>>(
-//                                  //future: _fetchData(),
-//                                  builder: (context, snapshot) {
-//                                    if (categoryList.length > 0) {
-//                                      List<Category> data = categoryList;
-//                                      return CategoryListView(data);
-//                                    } else if (snapshot.hasError) {
-//                                      return Text("${snapshot.error}");
-//                                    }
-//                                    return Container();
-//                                  },
-//                                )
-//                            ),
-//                          ),
-//                        ],
-//                      ),
-//                    ),
-                    //Space
-                    SliverToBoxAdapter(
-                      child: SizedBox(height: 3,),
-                    ),
-                    //Design Title
-                    SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              left: 5.0, right: 5.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                                border: Border.all(color: listbgColor),
-                                color: listLabelbgColor
-                            ),
-                            child: Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                      10.0, 0.0, 0.0, 0.0),
-                                  child: Text(_selCategory,
-                                      style: TextStyle(
-                                          color: Colors.white)),
-                                ),
-                                Spacer(),
-                                IconButton(
-                                    icon: new Image.asset(
-                                      'assets/filter_icon.png', height: 20,),
-                                    iconSize: 30,
-                                    onPressed: () {
-                                      print('filter');
-                                    }
-                                ),
-                              ],
-                            ),
-                          ),
-                        )
-                    ),
-                    //Design List
-                    SliverGrid(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: itemCount,
-                        childAspectRatio: itemheight - 0.15,
-                      ),
-                      delegate: SliverChildListDelegate(
-                        [
-                          for(var i in selDesign)
-                            DesignGridWidgets(i),
-                        ],
-                      ),
-                    ),
-
-                    SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              left: 5.0, right: 5.0),
-                          child: Container(
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: Color(0xFF9DB1C6)),
-                                  color: Color(0xFF517295)
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.fromLTRB(
-                                    10.0, 10.0, 0.0, 10.0),
-                                child: Text('TOP SELLING PRODUCTS',
-                                  style: GoogleFonts.lato(textStyle: TextStyle(color: Colors.white, fontSize: 18)),
-//                                    style: TextStyle(color: Colors.white, fontSize: 18)
-                                ),
-                              )
-                          ),
-                        )
-                    ),
-                    SliverList(
-                      delegate: SliverChildListDelegate(
-                        [
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                left: 5.0, right: 5.0),
-                            child: Container(
-                                height: screenSize.width / itemCount + 25,
-                                color: Color(0xFFD6DFE4),
-                                child: FutureBuilder<List<DesignCode>>(
-                                  //future: _fetchData(),
-                                  builder: (context, snapshot) {
-                                    if (categoryList.length > 0) {
-                                      List<DesignCode> data = topSelling;
-                                      return TopSellingListView(data);
-                                    } else if (snapshot.hasError) {
-                                      return Text("${snapshot.error}");
-                                    }
-                                    return Container();
-                                  },
-                                )
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SliverToBoxAdapter(
-                      child: SizedBox(height: 50,),
-                    ),
-                  ],
-                ),
+                  )
               )
-          )
-      ),
-      floatingActionButton: new Container(
-          height: 30,
-          child: FloatingActionButton.extended(
-            backgroundColor: listLabelbgColor,
-            icon: Icon(Icons.arrow_drop_up,),
-            onPressed: () {
-              setState(() {
+          ),
+          floatingActionButton: new Container(
+              height: 30,
+              child: FloatingActionButton.extended(
+                backgroundColor: listLabelbgColor,
+                icon: Icon(Icons.arrow_drop_up,),
+                onPressed: () {
+                  setState(() {
 //              _messages.insert(0, new Text("message ${_messages.length}"));
-              });
-              _scrollController.animateTo(
-                0.0,
-                curve: Curves.easeOut,
-                duration: const Duration(milliseconds: 300),
-              );
-            },
-            label: Text('Top'),
-          )),
+                  });
+                  _scrollController.animateTo(
+                    0.0,
+                    curve: Curves.easeOut,
+                    duration: const Duration(milliseconds: 300),
+                  );
+                },
+                label: Text('Top'),
+              )),
+        )
     );
   }
 }
@@ -1215,11 +823,11 @@ class ShapesPainter extends CustomPainter {
     // Create a rectangle with size and width same as the canvas
     //var rect = Rect.fromLTWH(0, 0, size.width, size.height);
     // draw the rectangle using the paint
-    paint.color = listLabelbgColor;
+    paint.color = Color(0xFFF96013);
     // create a path
     var path = Path();
-    path.lineTo(0, 90);
-    path.lineTo(90, 0);
+    path.lineTo(0, 85);
+    path.lineTo(85, 0);
     // close the path to form a bounded shape
     path.close();
     canvas.drawPath(path, paint);

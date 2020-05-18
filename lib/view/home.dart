@@ -7,10 +7,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_widgets/flutter_widgets.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/model/menu.dart';
 import 'package:intl/intl.dart';
+import 'package:jemisyseshop/model/tempData.dart';
 import 'package:jemisyseshop/style.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/animation.dart';
@@ -21,6 +23,11 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Home',
+      theme: ThemeData(
+        textTheme: GoogleFonts.latoTextTheme(
+          Theme.of(context).textTheme,
+        ),
+      ),
       home: Home(),
       debugShowCheckedModeBanner: false,
     );
@@ -43,541 +50,10 @@ class _home extends State<Home> with TickerProviderStateMixin {
   AnimationController controller;
   Animation<double> animation;
   ItemScrollController _scrollControllerlist = ItemScrollController();
-
-  final List<String> images = [
-    'http://42.61.99.57/JEMiSyseShopImage/front-banner2-lg.jpg',
-    'http://42.61.99.57/JEMiSyseShopImage/mothers-day-2020.jpg',
-    'http://42.61.99.57/JEMiSyseShopImage/wedding-band-promo150-banner-2020.jpg',
-    'http://42.61.99.57/JEMiSyseShopImage/wedding-band-promo150-banner-ex-2020.jpg',
-  ];
-
-  final List<Category> categoryList = [
-    Category('R', 'RING',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/Ring.jpg'),
-    Category('ER', 'EARRING',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/Earring.png'),
-    Category('PE', 'PENDANT',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/Pendant.jpg'),
-    Category('NE', 'NECKLACE',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/Necklace.jpg'),
-    Category('BR', 'BRACELET',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/Bracelet.jpg'),
-    Category('BA', 'BANGLE',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/Bangle.jpg')
-  ];
-  final List<DesignCode> topSelling = [
-    DesignCode(
-        'BR101',
-        'BR',
-        '',
-        '18K WG',
-        1250.00,
-        0.00,
-        0.00,
-        '40% OFF',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BR101.jpg'),
-    DesignCode(
-        'DR101',
-        'R',
-        '',
-        '18K WG',
-        1200.00,
-        0.00,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/DR101.jpg'),
-    DesignCode(
-        'BA101',
-        'BA',
-        '',
-        '18K YG',
-        700.00,
-        0.00,
-        0.00,
-        '50% OFF',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BA101.jpg'),
-    DesignCode(
-        'ER101',
-        'ER',
-        '',
-        '18K WG',
-        950.00,
-        0.00,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/ER101.jpg'),
-  ];
-  final List<DesignCode> design = [
-    DesignCode(
-        'BA101',
-        'BA',
-        '',
-        '18K YG',
-        1200.00,
-        0.00,
-        0.00,
-        '50% OFF',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BA101.jpg'),
-    DesignCode(
-        'BA102',
-        'BA',
-        '',
-        '18K YG',
-        800.00,
-        0.00,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BA102.jpg'),
-    DesignCode(
-        'BA103',
-        'BA',
-        '',
-        '18K YG',
-        2200.00,
-        0.00,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BA103.jpg'),
-    DesignCode(
-        'BA104',
-        'BA',
-        '',
-        '18K YG',
-        1050.00,
-        0.00,
-        0.00,
-        '30% OFF',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BA104.jpg'),
-    DesignCode(
-        'BA105',
-        'BA',
-        '',
-        '18K YG',
-        0.00,
-        24.250,
-        0.00,
-        '50% OFF',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BA105.jpg'),
-    DesignCode(
-        'BA106',
-        'BA',
-        '',
-        '18K YG',
-        0.00,
-        32.15,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BA106.jpg'),
-    DesignCode(
-        'BA107',
-        'BA',
-        '',
-        '18K YG',
-        0.00,
-        15.00,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BA107.jpg'),
-    DesignCode(
-        'BA108',
-        'BA',
-        '',
-        '18K YG',
-        0.00,
-        33.12,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BA108.jpg'),
-
-    DesignCode(
-        'BR101',
-        'BR',
-        '',
-        '18K WG',
-        1250.00,
-        0.00,
-        0.00,
-        '40% OFF',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BR101.jpg'),
-    DesignCode(
-        'BR102',
-        'BR',
-        '',
-        '18K WG',
-        0.00,
-        22.30,
-        0.00,
-        '50% OFF',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BR102.png'),
-    DesignCode(
-        'BR103',
-        'BR',
-        '',
-        '18K WG',
-        1150.00,
-        0.00,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BR103.jpg'),
-    DesignCode(
-        'BR104',
-        'BR',
-        '',
-        '18K WG',
-        0.00,
-        41.30,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BR104.png'),
-    DesignCode(
-        'BR105',
-        'BR',
-        '',
-        '18K WG',
-        0.00,
-        35.12,
-        0.00,
-        '50% OFF',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/BR105.jpg'),
-
-    DesignCode(
-        'DR101',
-        'R',
-        '',
-        '18K WG',
-        700.00,
-        0.00,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/DR101.jpg'),
-    DesignCode(
-        'DR102',
-        'R',
-        '',
-        '18K WG',
-        950.00,
-        0.00,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/DR102.jpg'),
-    DesignCode(
-        'DR103',
-        'R',
-        '',
-        '18K WG',
-        1300.00,
-        0.00,
-        0.00,
-        '50% OFF',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/DR103.jpg'),
-    DesignCode(
-        'DR104',
-        'R',
-        '',
-        '18K WG',
-        1650.00,
-        0.00,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/DR104.jpg'),
-    DesignCode(
-        'DR105',
-        'R',
-        '',
-        '18K WG',
-        1250.00,
-        0.00,
-        0.00,
-        '50% OFF',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/DR105.jpg'),
-    DesignCode(
-        'DR106',
-        'R',
-        '',
-        '18K WG',
-        1400.00,
-        0.00,
-        0.00,
-        '35% OFF',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/DR106.jpg'),
-
-    DesignCode(
-        'GR101',
-        'R',
-        '',
-        '18K WG',
-        0.00,
-        6.00,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/GR101.jpg'),
-    DesignCode(
-        'GR102',
-        'R',
-        '',
-        '18K WG',
-        0.00,
-        8.00,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/GR102.jpg'),
-    DesignCode(
-        'GR103',
-        'R',
-        '',
-        '18K WG',
-        0.00,
-        6.20,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/GR103.jpg'),
-
-    DesignCode(
-        'ER101',
-        'ER',
-        '',
-        '18K WG',
-        1100.00,
-        0.00,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/ER101.jpg'),
-    DesignCode(
-        'ER102',
-        'ER',
-        '',
-        '18K WG',
-        0.00,
-        6.40,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/ER102.jpg'),
-    DesignCode(
-        'ER103',
-        'ER',
-        '',
-        '18K WG',
-        0.00,
-        4.50,
-        0.00,
-        '10% OFF',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/ER103.jpg'),
-    DesignCode(
-        'ER104',
-        'ER',
-        '',
-        '18K WG',
-        0.00,
-        3.50,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/ER104.jpg'),
-    DesignCode(
-        'ER105',
-        'ER',
-        '',
-        '18K WG',
-        0.00,
-        4.30,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/ER105.jpg'),
-    DesignCode(
-        'ER106',
-        'ER',
-        '',
-        '18K WG',
-        900.00,
-        0.00,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/ER106.jpg'),
-    DesignCode(
-        'ER107',
-        'ER',
-        '',
-        '18K WG',
-        1350.00,
-        0.00,
-        0.00,
-        '50% OFF',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/ER107.jpg'),
-
-    DesignCode(
-        'NE101',
-        'NE',
-        '',
-        '18K WG',
-        800.00,
-        0.00,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/NE101.jpg'),
-    DesignCode(
-        'NE102',
-        'NE',
-        '',
-        '18K WG',
-        650.00,
-        0.00,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/NE102.jpg'),
-    DesignCode(
-        'NE103',
-        'NE',
-        '',
-        '18K WG',
-        1800.00,
-        0.00,
-        0.00,
-        '50% OFF',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/NE103.jpg'),
-    DesignCode(
-        'NE104',
-        'NE',
-        '',
-        '18K WG',
-        2200.00,
-        0.00,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/NE104.jpg'),
-    DesignCode(
-        'NE105',
-        'NE',
-        '',
-        '18K WG',
-        1200.00,
-        0.00,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/NE105.jpg'),
-    DesignCode(
-        'NE106',
-        'NE',
-        '',
-        '18K WG',
-        0.00,
-        76.00,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/NE106.jpg'),
-    DesignCode(
-        'NE107',
-        'NE',
-        '',
-        '18K WG',
-        0.00,
-        53.50,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/NE107.jpg'),
-    DesignCode(
-        'NE108',
-        'NE',
-        '',
-        '18K WG',
-        0.00,
-        102.00,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/NE108.jpg'),
-    DesignCode(
-        'NE109',
-        'NE',
-        '',
-        '18K WG',
-        0.00,
-        35.00,
-        0.00,
-        '50% OFF',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/NE109.jpg'),
-
-    DesignCode(
-        'PE101',
-        'PE',
-        '',
-        '18K WG',
-        1200.00,
-        0.00,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/PE101.jpg'),
-    DesignCode(
-        'PE102',
-        'PE',
-        '',
-        '18K WG',
-        0.00,
-        7.52,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/PE102.jpg'),
-    DesignCode(
-        'PE103',
-        'PE',
-        '',
-        '18K WG',
-        0.00,
-        10.20,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/PE103.jpg'),
-    DesignCode(
-        'PE104',
-        'PE',
-        '',
-        '18K WG',
-        0.00,
-        6.00,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/PE104.jpg'),
-    DesignCode(
-        'PE105',
-        'PE',
-        '',
-        '18K WG',
-        1600.00,
-        0.00,
-        0.00,
-        '',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/PE105.jpg'),
-    DesignCode(
-        'PE106',
-        'PE',
-        '',
-        '18K WG',
-        700.00,
-        0.00,
-        0.00,
-        '50% OFF',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/PE106.jpg'),
-  ];
-
-  final List<ItemMasterList> items = [
-    ItemMasterList('IN00001', 'Item 1', 'Diamond',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/Diamond Necklace.jpg'),
-    ItemMasterList('IN00002', 'Item 2', 'Diamond',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/Diamond Necklace.jpg'),
-    ItemMasterList('IN00003', 'Item 3', 'Diamond',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/Diamond Necklace.jpg'),
-    ItemMasterList('IN00004', 'Item 4', 'Diamond',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/Diamond Necklace.jpg'),
-    ItemMasterList('IN00005', 'Item 5', 'Diamond',
-        'http://42.61.99.57/JEMiSyseShopImage/jewelimages/Diamond Necklace.jpg'),
-    ItemMasterList('IN00006', 'Item 6', 'Diamond',
-        'https://images.unsplash.com/photo-1586882829491-b81178aa622e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2850&q=80'),
-    ItemMasterList('IN00007', 'Item 7', 'Diamond',
-        'https://images.unsplash.com/photo-1586882829491-b81178aa622e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2850&q=80'),
-    ItemMasterList('IN00008', 'Item 8', 'Diamond',
-        'https://images.unsplash.com/photo-1586882829491-b81178aa622e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2850&q=80'),
-  ];
+  TabController _tabController;
 
   List<DesignCode> selDesign = new List<DesignCode>();
   Country sCountry;
-  bool hidetitleMsg = false;
 
   void getDefault() {
     var sitem = country.firstWhere((d) => d.shortCode == _selCountry);
@@ -654,6 +130,67 @@ class _home extends State<Home> with TickerProviderStateMixin {
   }
 
   Widget BannerImage(BuildContext context) {
+    double screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
+    double _height = 100;
+    if (screenWidth > 1600)
+      _height = 650;
+    else if (screenWidth >= 1300)
+      _height = 500;
+    else if (screenWidth >= 1000)
+      _height = 400;
+    else if (screenWidth >= 700)
+      _height = 300;
+    else if (screenWidth >= 500)
+      _height = 200;
+    else if (screenWidth >= 400)
+      _height = 120;
+    if (images.length > 1) {
+      return new Container(
+        child: CarouselSlider.builder(
+          itemCount: images.length,
+          options: CarouselOptions(
+              autoPlay: true,
+              aspectRatio: 2.0,
+              enlargeCenterPage: true,
+              height: _height
+          ),
+          itemBuilder: (context, index) {
+            return Container(
+              child: SizedBox(
+                  child: Image.network(images[index], fit: BoxFit.fitWidth,
+                    width: screenWidth - 30,)
+              ),
+            );
+          },
+        ),
+      );
+    }
+    else {
+      return new Container(
+        child: CarouselSlider.builder(
+          itemCount: images.length,
+          options: CarouselOptions(
+              autoPlay: false,
+              aspectRatio: 2.0,
+              enlargeCenterPage: true,
+              height: _height
+          ),
+          itemBuilder: (context, index) {
+            return Container(
+              child: SizedBox(
+                  child: Image.network(images[index], fit: BoxFit.fitWidth,
+                    width: screenWidth - 30,)
+              ),
+            );
+          },
+        ),
+      );
+    }
+  }
+  Widget BannerImage2(BuildContext context) {
     double screenWidth = MediaQuery
         .of(context)
         .size
@@ -824,7 +361,7 @@ class _home extends State<Home> with TickerProviderStateMixin {
                                       width: 40,
                                       child: Text(item.promotion,
                                         style: TextStyle(
-                                            fontSize: 15, color: Colors.white),
+                                            fontSize: 13, color: Colors.white),
                                       )
 
                                   ),
@@ -867,37 +404,15 @@ class _home extends State<Home> with TickerProviderStateMixin {
               Align(
                   alignment: Alignment.centerRight,
                   child: SizedBox(
-                    width: 105,
+                    width: 80,
                     child: Row(
                       children: [
-                        Visibility(
-                          visible: !isLogin ? true : true,
-                          child: SizedBox(
-                              width: 35,
-                              child: IconButton(
-//                             icon: new Image.asset(
-//                                 isLogin ? 'assets/user_profile.png' : 'assets/login.png', height: 25,),
-                                icon: Icon(Icons.person,
-                                  color: !isLogin ? Colors.white : Colors
-                                      .transparent,),
-                                iconSize: 25,
-                                onPressed: () {
-                                  if (isLogin)
-                                    isLogin = false;
-                                  else
-                                    isLogin = true;
-                                  setState(() {
-
-                                  });
-                                },
-                              )),
-                        ),
                          SizedBox(
-                             width: 35,
+                             width: 40,
                              child: IconButton(
                            key: _keyRed,
-                           icon: new Image.asset('assets/goldRate.png', height: 20,),
-                           iconSize: 25,
+                           icon: new Image.asset('assets/goldRate.png', height: 25,),
+                           iconSize: 30,
 
                            onPressed: () {
                              showGoldRate();
@@ -905,7 +420,7 @@ class _home extends State<Home> with TickerProviderStateMixin {
                          )),
                         Center(
                           child: SizedBox(
-                            width: 35,
+                            width: 40,
                             child: Padding(
                                 padding: const EdgeInsets.only(right: 0.0),
                                 child: Stack(
@@ -914,7 +429,7 @@ class _home extends State<Home> with TickerProviderStateMixin {
                                       IconButton(
                                         icon: new Image.asset(
                                           'assets/shopping_cart.png',
-                                          height: 20,),
+                                          height: 25,),
 //                                     icon: Icon(Icons.cur, color: Colors.white,),
                                         iconSize: 25,
                                         onPressed: () {},),
@@ -960,7 +475,7 @@ class _home extends State<Home> with TickerProviderStateMixin {
   }
 
   Widget titleMessage() {
-    return !hidetitleMsg ? Padding(
+    return !hideTitleMessage ? Padding(
         padding: const EdgeInsets.only(bottom: 1.0),
         child: Container(
           color: primary1Color,
@@ -984,7 +499,7 @@ class _home extends State<Home> with TickerProviderStateMixin {
                       right: 0.0,
                       child: GestureDetector(
                         onTap: () {
-                          hidetitleMsg = true;
+                          hideTitleMessage = true;
                           setState(() {
 
                           });
@@ -1146,23 +661,19 @@ class _home extends State<Home> with TickerProviderStateMixin {
                     child: Padding(
                       padding: const EdgeInsets.only(left: 12.0, top: 9.0),
                       child: Align(
-
-
-
                         alignment: Alignment.bottomCenter,
                         child: Transform.rotate(angle: -pi / 4,
                             child: Wrap(
-                                runSpacing: 5.0,
-                                spacing: 5.0,
+                                //runSpacing: 5.0,
+                                //spacing: 5.0,
                                 direction: Axis.vertical,
                                 children: [
                                   SizedBox(
                                       width: 40,
                                       child: Text(item.promotion,
                                         style: TextStyle(
-                                            fontSize: 15, color: Colors.white),
+                                            fontSize: 13, color: Colors.white),
                                       )
-
                                   ),
                                 ])
                         ),
@@ -1215,11 +726,15 @@ class _home extends State<Home> with TickerProviderStateMixin {
                         _selCategory = dt.description;
                         getDesign();
                         if (index < totindex - 1 && index > 1) {
-                          nindex = index;
-                          print(nindex);
+                          if(_selectedCategoryIndex<index)
+                            nindex = index -1;
+                          else
+                            nindex = index;
+
                           _scrollControllerlist.scrollTo(
                               index: nindex, duration: Duration(seconds: 1));
                         }
+                        _selectedCategoryIndex = index;
                         setState(() {
                         });
                       },
@@ -1279,8 +794,14 @@ class _home extends State<Home> with TickerProviderStateMixin {
   Widget CompanyLogo() {
     return new Container(
       color: primary1Color,
-      child: Text('JEMiSys eShop', style: TextStyle(
-          fontSize: 27, color: Colors.white, fontWeight: FontWeight.normal,)),
+      child: Center(
+        child: Text('JEMiSys eShop',
+            style: GoogleFonts.oswald(
+              textStyle: TextStyle(color: Colors.white, fontSize: 34,),
+            ),
+            //style: TextStyle(fontSize: 27, color: Colors.white, fontWeight: FontWeight.normal,)
+        ),
+      ),
 //      child: SizedBox(
 //        height: 30,
 //        child: new Image.network(
@@ -1297,17 +818,16 @@ class _home extends State<Home> with TickerProviderStateMixin {
     double p = 100.0;
 //    double topp=positionRed.dx;
 //    double rightp=positionRed.dy;
-    if (kIsWeb && hidetitleMsg)
+    if (kIsWeb && hideTitleMessage)
       p = 45.0;
-    else if (kIsWeb && !hidetitleMsg)
+    else if (kIsWeb && !hideTitleMessage)
       p = 75.0;
-    else if (!kIsWeb && hidetitleMsg)
+    else if (!kIsWeb && hideTitleMessage)
       p = 70.0;
     final RenderBox renderBoxRed = _keyRed.currentContext.findRenderObject();
     final positionRed = renderBoxRed.localToGlobal(Offset.zero);
     double topp = positionRed.dy+30;
 //    double rightp = positionRed.dx;
-//        print('$topp and $rightp');
     showGeneralDialog(
         barrierLabel: "Label",
         barrierDismissible: true,
@@ -1376,6 +896,7 @@ class _home extends State<Home> with TickerProviderStateMixin {
                             right: 0.0,
                             child: GestureDetector(
                               onTap: () {
+                                hideGoldRate = true;
                                 Navigator.of(context).pop();
                               },
                               child: Align(
@@ -1406,6 +927,7 @@ class _home extends State<Home> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    _tabController = new TabController(vsync: this, length: hMenuCount,);
 //    DefaultCacheManager manager = new DefaultCacheManager();
 //    manager.emptyCache(); //clears all data in cache.
 //    imageCache.clear();
@@ -1420,9 +942,9 @@ class _home extends State<Home> with TickerProviderStateMixin {
         precacheImage(NetworkImage(imageUrl), context);
       });
     });
-    Future.delayed(Duration.zero, () => showGoldRate());
+    if(hideGoldRate == false)
+      Future.delayed(Duration.zero, () => showGoldRate());
 
-    print('Test11');
     controller = AnimationController(
         duration: const Duration(milliseconds: 1000), vsync: this);
     animation = CurvedAnimation(parent: controller, curve: Curves.easeIn);
@@ -1463,7 +985,9 @@ class _home extends State<Home> with TickerProviderStateMixin {
     int itemCount = GridItemCount(screenSize.width);
     double itemheight = GridItemHeight(screenSize.height, screenSize.width);
 
-    return Scaffold(
+    return DefaultTabController(
+        length: hMenuCount,
+        child: Scaffold(
       key: scaffoldKey,
 //      appBar: pageAppBar(),
       drawer: MenuItemWedget(scaffoldKey: scaffoldKey, isLogin: isLogin),
@@ -1492,13 +1016,12 @@ class _home extends State<Home> with TickerProviderStateMixin {
                       delegate: SliverChildListDelegate(
                         [
                           //PageTitleBar(context),
-
                           SizedBox(
                             height: 5,
                           ),
                           //Menu
                           SizedBox(
-                            height: 30,
+                            height: 37,
                             child: Padding(
                               padding: const EdgeInsets.only(
                                   left: 5.0, right: 5.0),
@@ -1510,7 +1033,7 @@ class _home extends State<Home> with TickerProviderStateMixin {
                                   child:
                                   Stack(
                                       children: <Widget>[
-                                        HorizontalMenuWedget(),
+                                        HorizontalMenuWedget(tabController: _tabController, key: null,),
 //                                        Positioned(
 //                                            right: 0.0,
 //                                            key: _keyRed,
@@ -1660,8 +1183,9 @@ class _home extends State<Home> with TickerProviderStateMixin {
                                 padding: const EdgeInsets.fromLTRB(
                                     10.0, 10.0, 0.0, 10.0),
                                 child: Text('TOP SELLING PRODUCTS',
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 20)),
+//                                  style: GoogleFonts.lato(textStyle: TextStyle(color: Colors.white, fontSize: 16)),
+                                    style: TextStyle(color: Colors.white, fontSize: 16)
+                                ),
                               )
                           ),
                         )
@@ -1717,6 +1241,7 @@ class _home extends State<Home> with TickerProviderStateMixin {
             },
             label: Text('Top'),
           )),
+    )
     );
   }
 }
@@ -1729,11 +1254,11 @@ class ShapesPainter extends CustomPainter {
     // Create a rectangle with size and width same as the canvas
     //var rect = Rect.fromLTWH(0, 0, size.width, size.height);
     // draw the rectangle using the paint
-    paint.color = listLabelbgColor;
+    paint.color = Color(0xFFF96013);
     // create a path
     var path = Path();
-    path.lineTo(0, 80);
-    path.lineTo(80, 0);
+    path.lineTo(0, 90);
+    path.lineTo(90, 0);
     // close the path to form a bounded shape
     path.close();
     canvas.drawPath(path, paint);

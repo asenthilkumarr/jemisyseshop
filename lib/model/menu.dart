@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:jemisyseshop/style.dart';
+import 'package:jemisyseshop/view/TopSellingProducts.dart';
+import 'package:jemisyseshop/view/category.dart';
 import 'package:jemisyseshop/view/home.dart';
 import 'package:jemisyseshop/view/home2.dart';
 import 'package:jemisyseshop/view/home3.dart';
 
+import 'common.dart';
+class menuList{
+  String name;
+  Widget url;
+  menuList(this.name, this.url);
+}
 final List<String> menuitem = [
   'Home',
   'Home 2',
@@ -44,6 +53,7 @@ List<String> MenuItemSplit(String type, double screenwidth) {
     }
   }
   else if (type == 'M') {
+    mainmenucount = 1;
     for (var i in menuitem) {
       if (a >= mainmenucount) {
         _items.add(i);
@@ -77,15 +87,18 @@ void _openPage(menuItem, BuildContext context) {
   else {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       switch (menuItem) {
-        case 'Home':
-          return HomeScreen2();
+        case 'Top Selling':
+          return TopSellingScreen();
           break;
-        case 'Home 2':
+        case 'Category':
+          return CategoryScreen();
+          break;
+        case 'Home 3':
           return HomeScreen3();
           break;
 
         default:
-          return HomeScreen2();
+          return HomeScreen();
       }
     }));
   }
@@ -135,7 +148,6 @@ class MenuItemWedget extends StatelessWidget {
               ListTile(
                   title: Text(item),
                   onTap: () {
-                    print(item);
                     _openPage(item, context);
                   }
               ),
@@ -155,6 +167,45 @@ class MenuItemWedget extends StatelessWidget {
 }
 
 class HorizontalMenuWedget extends StatelessWidget {
+  final TabController tabController;
+
+  HorizontalMenuWedget({Key key, this.tabController}) : super(key: key);
+  List<String> mitem = [
+    'HOME',
+    'CATEGORY',
+    'TOP SELLING PRODUCTS',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final screenSize = MediaQuery
+        .of(context)
+        .size;
+
+    return new TabBar(
+      isScrollable: true,
+      controller: tabController, indicatorColor: listLabelbgColor, tabs: [
+      for(var i in mitem)
+        Tab(
+          child: Text(
+            i,
+            style: TextStyle(fontFamily: "BarlowBold", color: Colors.black),
+          ),
+        ),
+    ],
+      onTap: (index) {
+        if(tabController.index == 0)
+          _openPage('Home', context);
+        else if(tabController.index == 1)
+          _openPage('Category', context);
+        else if(tabController.index == 2)
+          _openPage('Top Selling', context);
+      },
+    );
+  }
+}
+
+class HorizontalMenuWedget2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
