@@ -6,3 +6,4 @@ final List<Country> country = [
 bool hideGoldRate = false;
 bool hideTitleMessage = false;
 int hMenuCount = 3;
+int fMenuCount = 4;

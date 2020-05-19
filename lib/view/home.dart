@@ -16,6 +16,7 @@ import 'package:jemisyseshop/model/tempData.dart';
 import 'package:jemisyseshop/style.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/animation.dart';
+import 'package:jemisyseshop/widget/goldRate.dart';
 
 class HomeScreen extends StatelessWidget {
   // This widget is the root of your application.
@@ -49,8 +50,13 @@ class _home extends State<Home> with TickerProviderStateMixin {
   final formatterint = new NumberFormat('##0', 'en_US');
   AnimationController controller;
   Animation<double> animation;
+  ScrollController _scrollController = new ScrollController();
   ItemScrollController _scrollControllerlist = ItemScrollController();
   TabController _tabController;
+  TabController _tabControllerFilter;
+  GlobalKey _keyGoldRate = GlobalKey();
+  GlobalKey _keyFiltermenu = GlobalKey();
+  GoldRateWedgit objGoldRate = new GoldRateWedgit();
 
   List<DesignCode> selDesign = new List<DesignCode>();
   Country sCountry;
@@ -308,7 +314,7 @@ class _home extends State<Home> with TickerProviderStateMixin {
 //                ),
 //              ),
               Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: const EdgeInsets.only(left:20.0,top:10.0, right:20.0, bottom:30),
                 child: Align(
                   alignment: FractionalOffset.center,
                   child: Image(
@@ -327,21 +333,42 @@ class _home extends State<Home> with TickerProviderStateMixin {
                     color: listbgColor,
                     child: Padding(
                       padding: const EdgeInsets.only(
-                          left: 10.0, right: 10.0, top: 3.0, bottom: 3.0),
-                      child: Row(
-//                  mainAxisAlignment: MainAxisAlignment.end,
+                          left: 10.0, right: 10.0, top: 6.0, bottom: 6.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(item.designCode),
-                          Spacer(),
-                          Text(item.tagPrice > 0 ? '\$${formatterint.format(
-                              item.tagPrice)}' : 'Wt.: ${formatter2dec.format(
-                              item.grossWeight)}g'),
+                          Row(
+                            children: [
+                              SizedBox(child: Text('')),
+                              Spacer(),
+                              item.tagPrice > 0 && item.promotionPrice != 0 ?
+                              Text(item.tagPrice > 0 ? '\$${formatterint.format(
+                                  item.tagPrice)}' : '${formatter2dec.format(
+                                  item.grossWeight)}g',
+                                  style: TextStyle(decoration: TextDecoration.lineThrough))
+                                  : Text(item.goldWeight2 > 0 ? '${formatter2dec.format(
+                                  item.goldWeight2)} -' : ''),
+                            ],
+                          ),
+                          SizedBox(height: 5,),
+                          Row(
+                            children: [
+                              Text(item.designCode),
+                              Spacer(),
+                              item.tagPrice > 0 && item.promotionPrice > 0 ?
+                              Text('\$${formatterint.format(
+                                  item.promotionPrice)}', style: TextStyle(fontWeight: FontWeight.bold))
+                                  : Text(item.tagPrice > 0 ? '\$${formatterint.format(
+                                  item.tagPrice)}' : 'Wt.: ${formatter2dec.format(
+                                  item.grossWeight)}g'),
+                            ],
+                          ),
                         ],
                       ),
                     ),
                   )
               ),
-              item.promotion != "" ? Positioned(
+              item.discountCode != "" ? Positioned(
                 left: 0.0,
                 child: Container(
                   child: CustomPaint(
@@ -359,7 +386,7 @@ class _home extends State<Home> with TickerProviderStateMixin {
                                 children: [
                                   SizedBox(
                                       width: 40,
-                                      child: Text(item.promotion,
+                                      child: Text(item.discountCode,
                                         style: TextStyle(
                                             fontSize: 13, color: Colors.white),
                                       )
@@ -410,12 +437,12 @@ class _home extends State<Home> with TickerProviderStateMixin {
                          SizedBox(
                              width: 40,
                              child: IconButton(
-                           key: _keyRed,
+                           key: _keyGoldRate,
                            icon: new Image.asset('assets/goldRate.png', height: 25,),
                            iconSize: 30,
 
                            onPressed: () {
-                             showGoldRate();
+                             objGoldRate.showGoldRate(context, hideTitleMessage, _keyGoldRate);
                            },
                          )),
                         Center(
@@ -638,21 +665,42 @@ class _home extends State<Home> with TickerProviderStateMixin {
                     color: listbgColor,
                     child: Padding(
                       padding: const EdgeInsets.only(
-                          left: 10.0, right: 10.0, top: 3.0, bottom: 3.0),
-                      child: Row(
-//                  mainAxisAlignment: MainAxisAlignment.end,
+                          left: 10.0, right: 10.0, top: 6.0, bottom: 6.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(item.designCode),
-                          Spacer(),
-                          Text(item.tagPrice > 0 ? '\$${formatterint.format(
-                              item.tagPrice)}' : 'Wt.: ${formatter2dec.format(
-                              item.grossWeight)}g'),
+                          Row(
+                            children: [
+                              SizedBox(child: Text('')),
+                              Spacer(),
+                              item.tagPrice > 0 && item.promotionPrice != 0 ?
+                              Text(item.tagPrice > 0 ? '\$${formatterint.format(
+                                  item.tagPrice)}' : '${formatter2dec.format(
+                                  item.grossWeight)}g',
+                                  style: TextStyle(decoration: TextDecoration.lineThrough))
+                                  : Text(item.goldWeight2 > 0 ? '${formatter2dec.format(
+                                  item.goldWeight2)} -' : ''),
+                            ],
+                          ),
+                          SizedBox(height: 5,),
+                          Row(
+                            children: [
+                              Text(item.designCode),
+                              Spacer(),
+                              item.tagPrice > 0 && item.promotionPrice > 0 ?
+                              Text('\$${formatterint.format(
+                                  item.promotionPrice)}', style: TextStyle(fontWeight: FontWeight.bold))
+                                  : Text(item.tagPrice > 0 ? '\$${formatterint.format(
+                                  item.tagPrice)}' : 'Wt.: ${formatter2dec.format(
+                                  item.grossWeight)}g'),
+                            ],
+                          ),
                         ],
                       ),
                     ),
                   )
               ),
-              item.promotion != "" ? Positioned(
+              item.discountCode != "" ? Positioned(
                 left: 0.0,
                 child: Container(
                   child: CustomPaint(
@@ -670,7 +718,7 @@ class _home extends State<Home> with TickerProviderStateMixin {
                                 children: [
                                   SizedBox(
                                       width: 40,
-                                      child: Text(item.promotion,
+                                      child: Text(item.discountCode,
                                         style: TextStyle(
                                             fontSize: 13, color: Colors.white),
                                       )
@@ -797,7 +845,7 @@ class _home extends State<Home> with TickerProviderStateMixin {
       child: Center(
         child: Text('JEMiSys eShop',
             style: GoogleFonts.oswald(
-              textStyle: TextStyle(color: Colors.white, fontSize: 34,),
+              textStyle: TextStyle(color: Colors.white, fontSize: 31, letterSpacing: 1.5),
             ),
             //style: TextStyle(fontSize: 27, color: Colors.white, fontWeight: FontWeight.normal,)
         ),
@@ -813,121 +861,13 @@ class _home extends State<Home> with TickerProviderStateMixin {
     );
   }
 
-  void showGoldRate() {
-    bool _fromTop = true;
-    double p = 100.0;
-//    double topp=positionRed.dx;
-//    double rightp=positionRed.dy;
-    if (kIsWeb && hideTitleMessage)
-      p = 45.0;
-    else if (kIsWeb && !hideTitleMessage)
-      p = 75.0;
-    else if (!kIsWeb && hideTitleMessage)
-      p = 70.0;
-    final RenderBox renderBoxRed = _keyRed.currentContext.findRenderObject();
-    final positionRed = renderBoxRed.localToGlobal(Offset.zero);
-    double topp = positionRed.dy+30;
-//    double rightp = positionRed.dx;
-    showGeneralDialog(
-        barrierLabel: "Label",
-        barrierDismissible: true,
-        barrierColor: Colors.black.withOpacity(0.5),
-        transitionDuration: Duration(milliseconds: 700),
-        context: context,
-        pageBuilder: (context, anim1, anim2) {
-          return Padding(
-//            padding: EdgeInsets.only(top: p, left:20.0, right:kIsWeb ? 50 : 50),
-            padding: EdgeInsets.only(top: topp, left: 20.0, right: 50),
-            child: Align(
-                alignment: _fromTop ? Alignment.topRight : Alignment
-                    .bottomCenter,
-                child: Material(
-                  type: MaterialType.transparency,
-                  child: new Stack(
-                      children: <Widget>[
-                        Container(
-                          height: 100,
-                          child: SizedBox(width: 200,
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 30.0, top: 10.0),
-                              child: Column(
-                                children: [
-                                  Text('Gold Rate'),
-                                  SizedBox(height: 10,),
-                                  Row(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            right: 15.0),
-                                        child: Text('916 :'),
-                                      ),
-                                      Text('\$55.50'),
-                                    ],
-                                  ),
-                                  SizedBox(height: 10,),
-                                  Row(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            right: 15.0),
-                                        child: Text('999 :'),
-                                      ),
-                                      Text('\$65.50'),
-                                    ],
-                                  ),
-
-                                ],
-                              ),
-                            ),
-                          ),
-//              margin: EdgeInsets.only(top: 80, left: 12, right: 12, bottom: 50),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.only(
-                              topLeft: const Radius.circular(1000.0),
-                              topRight: const Radius.circular(300.0),
-                              bottomLeft: const Radius.circular(150.0),
-                              bottomRight: const Radius.circular(1000.0),
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                            right: 0.0,
-                            child: GestureDetector(
-                              onTap: () {
-                                hideGoldRate = true;
-                                Navigator.of(context).pop();
-                              },
-                              child: Align(
-                                alignment: Alignment.topCenter,
-                                child: CircleAvatar(
-                                  radius: 14.0,
-                                  backgroundColor: Colors.red,
-                                  child: Icon(Icons.close, color: Colors.white),
-                                ),
-                              ),
-                            )),
-                      ]),
-                )
-            ),
-          );
-        });
-  }
-
   var scaffoldKey = GlobalKey<ScaffoldState>();
-  GlobalKey _keyRed = GlobalKey();
-
-  _getPositions() {
-    final RenderBox renderBoxRed = _keyRed.currentContext.findRenderObject();
-    final positionRed = renderBoxRed.localToGlobal(Offset.zero);
-    print("POSITION of Red: $positionRed ");
-  }
 
   @override
   void initState() {
     super.initState();
     _tabController = new TabController(vsync: this, length: hMenuCount,);
+    _tabControllerFilter = new TabController(vsync: this, length: fMenuCount,);
 //    DefaultCacheManager manager = new DefaultCacheManager();
 //    manager.emptyCache(); //clears all data in cache.
 //    imageCache.clear();
@@ -943,7 +883,7 @@ class _home extends State<Home> with TickerProviderStateMixin {
       });
     });
     if(hideGoldRate == false)
-      Future.delayed(Duration.zero, () => showGoldRate());
+      Future.delayed(Duration.zero, () => objGoldRate.showGoldRate(context, hideTitleMessage, _keyGoldRate));
 
     controller = AnimationController(
         duration: const Duration(milliseconds: 1000), vsync: this);
@@ -973,126 +913,100 @@ class _home extends State<Home> with TickerProviderStateMixin {
 //    );
 
   }
-  ScrollController _scrollController = new ScrollController();
 
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery
         .of(context)
         .size;
-//    double screenheight = screenSize.height;
+    //    double screenheight = screenSize.height;
 //    if (!kIsWeb) screenheight = screenSize.height - 24;
     int itemCount = GridItemCount(screenSize.width);
     double itemheight = GridItemHeight(screenSize.height, screenSize.width);
+    print(screenSize.width / itemCount + 55);
 
-    return DefaultTabController(
-        length: hMenuCount,
-        child: Scaffold(
+    return Scaffold(
       key: scaffoldKey,
 //      appBar: pageAppBar(),
       drawer: MenuItemWedget(scaffoldKey: scaffoldKey, isLogin: isLogin),
       body: SafeArea(
-          child: Container(
-              color: Colors.white,
-              child: Scrollbar(
-                child: CustomScrollView(
-                  controller: _scrollController,
-                  slivers: <Widget>[
-                    SliverToBoxAdapter(
-                      child: titleMessage(), //CompanyLogo(),
-                    ),
-                    SliverToBoxAdapter(
-                      child: titleBar(), //CompanyLogo(),
-                    ),
+      child: Container(
+          color: Colors.white,
+          child: Scrollbar(
+            child: CustomScrollView(
+              controller: _scrollController,
+              slivers: <Widget>[
+                SliverToBoxAdapter(
+                  child: titleMessage(), //CompanyLogo(),
+                ),
+                SliverToBoxAdapter(
+                  child: titleBar(), //CompanyLogo(),
+                ),
 
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 5.0, right: 5.0),
-                        child: BannerImage(context),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+                    child: BannerImage(context),
+                  ),
+                ),
+
+                SliverList(
+                  delegate: SliverChildListDelegate(
+                    [
+                      //PageTitleBar(context),
+                      SizedBox(
+                        height: 5,
                       ),
-                    ),
-
-                    SliverList(
-                      delegate: SliverChildListDelegate(
-                        [
-                          //PageTitleBar(context),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          //Menu
-                          SizedBox(
-                            height: 37,
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 5.0, right: 5.0),
-                              child: Container(
-                                  decoration: BoxDecoration(
-                                      border: Border.all(color: listbgColor)
-                                  ),
-                                  //child: HorizontalMenu(menuitem, context),
-                                  child:
-                                  Stack(
-                                      children: <Widget>[
-                                        HorizontalMenuWedget(tabController: _tabController, key: null,),
-//                                        Positioned(
-//                                            right: 0.0,
-//                                            key: _keyRed,
-//                                            child: GestureDetector(
-//                                              onTap: () {
-//                                                showGoldRate();
-//                                                setState(() {});
-//                                              },
-//                                              //child: Icon( Image.asset('assets/goldRate.png', height: 20,)),
-////                                            child: Icon(Icons.close, color: primary1Color, size: 18,),
-//                                              child: Padding(
-//                                                padding: const EdgeInsets.only(
-//                                                    top: 2.0),
-//                                                child: Container(
-//                                                    color: listLabelbgColor,
-//                                                    child: Padding(
-//                                                      padding: const EdgeInsets
-//                                                          .all(2.0),
-//                                                      child: Image.asset(
-//                                                        'assets/goldRate.png',
-//                                                        height: 17,),
-//                                                    )),
-//                                              ),
-//                                            )),
-                                      ]
-                                  )
+                      //Menu
+                      SizedBox(
+                        height: 37,
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              left: 5.0, right: 5.0),
+                          child: Container(
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: listbgColor)
                               ),
-                            ),
+                              //child: HorizontalMenu(menuitem, context),
+                              child:
+                              Stack(
+                                  children: <Widget>[
+                                    HorizontalMenuWedget(tabController: _tabController, key: null,),
+                                  ]
+                              )
                           ),
+                        ),
+                      ),
 
-                        ],
+                    ],
+                  ),
+                ),
+                SliverList(
+                  delegate: SliverChildListDelegate(
+                    [
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 5.0, right: 5.0),
+                        child: Container(
+                            height: 120,
+                            color: listbgColor,
+                            child: FutureBuilder<List<ItemMasterList>>(
+                              //future: _fetchData(),
+                              builder: (context, snapshot) {
+                                if (categoryList.length > 0) {
+                                  List<Category> data = categoryList;
+                                  return CategoryListView(data);
+                                } else if (snapshot.hasError) {
+                                  return Text("${snapshot.error}");
+                                }
+                                return Container();
+                              },
+                            )
+                        ),
                       ),
-                    ),
-                    SliverList(
-                      delegate: SliverChildListDelegate(
-                        [
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                left: 5.0, right: 5.0),
-                            child: Container(
-                                height: 120,
-                                color: listbgColor,
-                                child: FutureBuilder<List<ItemMasterList>>(
-                                  //future: _fetchData(),
-                                  builder: (context, snapshot) {
-                                    if (categoryList.length > 0) {
-                                      List<Category> data = categoryList;
-                                      return CategoryListView(data);
-                                    } else if (snapshot.hasError) {
-                                      return Text("${snapshot.error}");
-                                    }
-                                    return Container();
-                                  },
-                                )
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    ],
+                  ),
+                ),
 //                    SliverList(
 //                      delegate: SliverChildListDelegate(
 //                        [
@@ -1119,129 +1033,159 @@ class _home extends State<Home> with TickerProviderStateMixin {
 //                        ],
 //                      ),
 //                    ),
-                    //Space
-                    SliverToBoxAdapter(
-                      child: SizedBox(height: 3,),
-                    ),
-                    //Design Title
-                    SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              left: 5.0, right: 5.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                                border: Border.all(color: listbgColor),
-                                color: listLabelbgColor
+                //Space
+                SliverToBoxAdapter(
+                  child: SizedBox(height: 3,),
+                ),
+                //Design Title
+                SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 5.0, right: 5.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(color: listbgColor),
+                            color: listLabelbgColor
+                        ),
+                        child: Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                  10.0, 8.0, 0.0, 8.0),
+                              child: Text(_selCategory,
+                                  style: TextStyle(
+                                      fontSize: 17,
+                                      color: Colors.white, fontWeight: FontWeight.bold)),
                             ),
-                            child: Row(
+                            Spacer(),
+                            SizedBox(
+                              height: 37, width: 35,
+                              child: IconButton(
+                                  icon: new Image.asset(
+                                    'assets/filter_icon.png', height: 20,),
+//                                                iconSize: 20,
+                                  onPressed: () {
+                                    print('filter');
+                                  }
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                ),
+                //Filer
+                SliverToBoxAdapter(
+                  child: SizedBox(height: 3,),
+                ),
+        SliverList(
+          delegate: SliverChildListDelegate(
+          [
+                    SizedBox(
+                      height: 37,
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                            left: 5.0, right: 5.0),
+                        child: Stack(
+                          children: [
+                            Row(
                               children: [
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                      10.0, 0.0, 0.0, 0.0),
-                                  child: Text(_selCategory,
-                                      style: TextStyle(
-                                          color: Colors.white)),
-                                ),
-                                Spacer(),
-                                IconButton(
-                                    icon: new Image.asset(
-                                      'assets/filter_icon.png', height: 20,),
-                                    iconSize: 30,
-                                    onPressed: () {
-                                      print('filter');
-                                    }
-                                ),
+                                FilterMenuWedget(tabController: _tabControllerFilter, key: null,),
                               ],
                             ),
-                          ),
-                        )
-                    ),
-                    //Design List
-                    SliverGrid(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: itemCount,
-                        childAspectRatio: itemheight - 0.15,
-                      ),
-                      delegate: SliverChildListDelegate(
-                        [
-                          for(var i in selDesign)
-                            DesignGridWidgets(i),
-                        ],
-                      ),
-                    ),
 
-                    SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              left: 5.0, right: 5.0),
-                          child: Container(
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: Color(0xFF9DB1C6)),
-                                  color: Color(0xFF517295)
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.fromLTRB(
-                                    10.0, 10.0, 0.0, 10.0),
-                                child: Text('TOP SELLING PRODUCTS',
-//                                  style: GoogleFonts.lato(textStyle: TextStyle(color: Colors.white, fontSize: 16)),
-                                    style: TextStyle(color: Colors.white, fontSize: 16)
-                                ),
-                              )
-                          ),
-                        )
-                    ),
-                    SliverList(
-                      delegate: SliverChildListDelegate(
-                        [
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                left: 5.0, right: 5.0),
-                            child: Container(
-                                height: screenSize.width / itemCount + 25,
-                                color: Color(0xFFD6DFE4),
-                                child: FutureBuilder<List<DesignCode>>(
-                                  //future: _fetchData(),
-                                  builder: (context, snapshot) {
-                                    if (categoryList.length > 0) {
-                                      List<DesignCode> data = topSelling;
-                                      return TopSellingListView(data);
-                                    } else if (snapshot.hasError) {
-                                      return Text("${snapshot.error}");
-                                    }
-                                    return Container();
-                                  },
-                                )
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                    SliverToBoxAdapter(
-                      child: SizedBox(height: 50,),
-                    ),
-                  ],
+                  ]
+                )
                 ),
-              )
+                //Design List
+                SliverGrid(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: itemCount,
+                    childAspectRatio: itemheight - 0.25,
+                  ),
+                  delegate: SliverChildListDelegate(
+                    [
+                      for(var i in selDesign)
+                        DesignGridWidgets(i),
+                    ],
+                  ),
+                ),
+
+                SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 5.0, right: 5.0),
+                      child: Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Color(0xFF9DB1C6)),
+                              color: Color(0xFF517295)
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(
+                                10.0, 10.0, 0.0, 10.0),
+                            child: Text('COMING SOON',
+//                                  style: GoogleFonts.lato(textStyle: TextStyle(color: Colors.white, fontSize: 16)),
+                                style: TextStyle(color: Colors.white, fontSize: 16)
+                            ),
+                          )
+                      ),
+                    )
+                ),
+                SliverList(
+                  delegate: SliverChildListDelegate(
+                    [
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 5.0, right: 5.0),
+                        child: Container(
+                            height: screenSize.width / itemCount + 75,
+                            color: Color(0xFFD6DFE4),
+                            child: FutureBuilder<List<DesignCode>>(
+                              //future: _fetchData(),
+                              builder: (context, snapshot) {
+                                if (categoryList.length > 0) {
+                                  List<DesignCode> data = topSelling;
+                                  return TopSellingListView(data);
+                                } else if (snapshot.hasError) {
+                                  return Text("${snapshot.error}");
+                                }
+                                return Container();
+                              },
+                            )
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: SizedBox(height: 50,),
+                ),
+              ],
+            ),
           )
+      )
       ),
       floatingActionButton: new Container(
-          height: 30,
-          child: FloatingActionButton.extended(
-            backgroundColor: listLabelbgColor,
-            icon: Icon(Icons.arrow_drop_up,),
-            onPressed: () {
-              setState(() {
+      height: 30,
+      child: FloatingActionButton.extended(
+        backgroundColor: listLabelbgColor,
+        icon: Icon(Icons.arrow_drop_up,),
+        onPressed: () {
+          setState(() {
 //              _messages.insert(0, new Text("message ${_messages.length}"));
-              });
-              _scrollController.animateTo(
-                0.0,
-                curve: Curves.easeOut,
-                duration: const Duration(milliseconds: 300),
-              );
-            },
-            label: Text('Top'),
-          )),
-    )
+          });
+          _scrollController.animateTo(
+            0.0,
+            curve: Curves.easeOut,
+            duration: const Duration(milliseconds: 300),
+          );
+        },
+        label: Text('Top'),
+      )),
     );
   }
 }

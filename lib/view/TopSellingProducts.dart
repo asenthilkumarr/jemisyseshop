@@ -16,30 +16,31 @@ import 'package:jemisyseshop/model/tempData.dart';
 import 'package:jemisyseshop/style.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/animation.dart';
+import 'package:jemisyseshop/widget/goldRate.dart';
 
 class TopSellingScreen extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Top Selling',
+      title: 'Top Sales',
       theme: ThemeData(
         textTheme: GoogleFonts.latoTextTheme(
           Theme.of(context).textTheme,
         ),
       ),
-      home: TopSelling(),
+      home: TopSellingPage(),
       debugShowCheckedModeBanner: false,
     );
   }
 }
 
-class TopSelling extends StatefulWidget{
+class TopSellingPage extends StatefulWidget{
   @override
-  _topSelling createState() => _topSelling();
+  _topSellingPage createState() => _topSellingPage();
 }
 
-class _topSelling extends State<TopSelling> with TickerProviderStateMixin {
+class _topSellingPage extends State<TopSellingPage> with TickerProviderStateMixin {
   bool isLogin = false;
   String _selcategoryCode = '';
   String _selCountry = 'SG';
@@ -50,6 +51,8 @@ class _topSelling extends State<TopSelling> with TickerProviderStateMixin {
   Animation<double> animation;
   ItemScrollController _scrollControllerlist = ItemScrollController();
   TabController _tabController;
+  GlobalKey _keyGoldRate = GlobalKey();
+  GoldRateWedgit objGoldRate = new GoldRateWedgit();
 
   List<DesignCode> selDesign = new List<DesignCode>();
   Country sCountry;
@@ -223,12 +226,12 @@ class _topSelling extends State<TopSelling> with TickerProviderStateMixin {
                         SizedBox(
                             width: 40,
                             child: IconButton(
-                              key: _keyRed,
+                              key: _keyGoldRate,
                               icon: new Image.asset('assets/goldRate.png', height: 25,),
                               iconSize: 30,
 
                               onPressed: () {
-                                showGoldRate();
+                                objGoldRate.showGoldRate(context, hideTitleMessage, _keyGoldRate);
                               },
                             )),
                         Center(
@@ -422,17 +425,8 @@ class _topSelling extends State<TopSelling> with TickerProviderStateMixin {
             ),
             child: Stack(
                 children: <Widget>[
-//              CustomPaint(
-//                painter: ShapesPainter(),
-//                child: Center(
-//                  child: Transform.rotate(angle: - pi / 4,
-//                    child: Text("50%\nOFF", style: TextStyle(fontSize: 22, ),
-//                    ),
-//                  ),
-//                ),
-//              ),
                   Padding(
-                    padding: const EdgeInsets.all(20.0),
+                    padding: const EdgeInsets.only(left:20.0,top:10.0, right:20.0, bottom:30),
                     child: Align(
                       alignment: FractionalOffset.center,
                       child: Image(
@@ -451,21 +445,42 @@ class _topSelling extends State<TopSelling> with TickerProviderStateMixin {
                         color: listbgColor,
                         child: Padding(
                           padding: const EdgeInsets.only(
-                              left: 10.0, right: 10.0, top: 3.0, bottom: 3.0),
-                          child: Row(
-//                  mainAxisAlignment: MainAxisAlignment.end,
+                              left: 10.0, right: 10.0, top: 6.0, bottom: 6.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(item.designCode),
-                              Spacer(),
-                              Text(item.tagPrice > 0 ? '\$${formatterint.format(
-                                  item.tagPrice)}' : 'Wt.: ${formatter2dec.format(
-                                  item.grossWeight)}g'),
+                              Row(
+                                children: [
+                                  SizedBox(child: Text('')),
+                                  Spacer(),
+                                  item.tagPrice > 0 && item.promotionPrice != 0 ?
+                                  Text(item.tagPrice > 0 ? '\$${formatterint.format(
+                                      item.tagPrice)}' : '${formatter2dec.format(
+                                      item.grossWeight)}g',
+                                      style: TextStyle(decoration: TextDecoration.lineThrough))
+                                      : Text(item.goldWeight2 > 0 ? '${formatter2dec.format(
+                                      item.goldWeight2)} -' : ''),
+                                ],
+                              ),
+                              SizedBox(height: 5,),
+                              Row(
+                                children: [
+                                  Text(item.designCode),
+                                  Spacer(),
+                                  item.tagPrice > 0 && item.promotionPrice > 0 ?
+                                  Text('\$${formatterint.format(
+                                      item.promotionPrice)}', style: TextStyle(fontWeight: FontWeight.bold))
+                                      : Text(item.tagPrice > 0 ? '\$${formatterint.format(
+                                      item.tagPrice)}' : 'Wt.: ${formatter2dec.format(
+                                      item.grossWeight)}g'),
+                                ],
+                              ),
                             ],
                           ),
                         ),
                       )
                   ),
-                  item.promotion != "" ? Positioned(
+                  item.discountCode != "" ? Positioned(
                     left: 0.0,
                     child: Container(
                       child: CustomPaint(
@@ -483,7 +498,7 @@ class _topSelling extends State<TopSelling> with TickerProviderStateMixin {
                                     children: [
                                       SizedBox(
                                           width: 40,
-                                          child: Text(item.promotion,
+                                          child: Text(item.discountCode,
                                             style: TextStyle(
                                                 fontSize: 13, color: Colors.white),
                                           )
@@ -524,115 +539,8 @@ class _topSelling extends State<TopSelling> with TickerProviderStateMixin {
     );
   }
 
-  void showGoldRate() {
-    bool _fromTop = true;
-    double p = 100.0;
-//    double topp=positionRed.dx;
-//    double rightp=positionRed.dy;
-    if (kIsWeb && hideTitleMessage)
-      p = 45.0;
-    else if (kIsWeb && !hideTitleMessage)
-      p = 75.0;
-    else if (!kIsWeb && hideTitleMessage)
-      p = 70.0;
-    final RenderBox renderBoxRed = _keyRed.currentContext.findRenderObject();
-    final positionRed = renderBoxRed.localToGlobal(Offset.zero);
-    double topp = positionRed.dy+30;
-//    double rightp = positionRed.dx;
-    showGeneralDialog(
-        barrierLabel: "Label",
-        barrierDismissible: true,
-        barrierColor: Colors.black.withOpacity(0.5),
-        transitionDuration: Duration(milliseconds: 700),
-        context: context,
-        pageBuilder: (context, anim1, anim2) {
-          return Padding(
-//            padding: EdgeInsets.only(top: p, left:20.0, right:kIsWeb ? 50 : 50),
-            padding: EdgeInsets.only(top: topp, left: 20.0, right: 50),
-            child: Align(
-                alignment: _fromTop ? Alignment.topRight : Alignment
-                    .bottomCenter,
-                child: Material(
-                  type: MaterialType.transparency,
-                  child: new Stack(
-                      children: <Widget>[
-                        Container(
-                          height: 100,
-                          child: SizedBox(width: 200,
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 30.0, top: 10.0),
-                              child: Column(
-                                children: [
-                                  Text('Gold Rate'),
-                                  SizedBox(height: 10,),
-                                  Row(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            right: 15.0),
-                                        child: Text('916 :'),
-                                      ),
-                                      Text('\$55.50'),
-                                    ],
-                                  ),
-                                  SizedBox(height: 10,),
-                                  Row(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            right: 15.0),
-                                        child: Text('999 :'),
-                                      ),
-                                      Text('\$65.50'),
-                                    ],
-                                  ),
-
-                                ],
-                              ),
-                            ),
-                          ),
-//              margin: EdgeInsets.only(top: 80, left: 12, right: 12, bottom: 50),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.only(
-                              topLeft: const Radius.circular(1000.0),
-                              topRight: const Radius.circular(300.0),
-                              bottomLeft: const Radius.circular(150.0),
-                              bottomRight: const Radius.circular(1000.0),
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                            right: 0.0,
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Align(
-                                alignment: Alignment.topCenter,
-                                child: CircleAvatar(
-                                  radius: 14.0,
-                                  backgroundColor: Colors.red,
-                                  child: Icon(Icons.close, color: Colors.white),
-                                ),
-                              ),
-                            )),
-                      ]),
-                )
-            ),
-          );
-        });
-  }
-
   var scaffoldKey = GlobalKey<ScaffoldState>();
-  GlobalKey _keyRed = GlobalKey();
 
-  _getPositions() {
-    final RenderBox renderBoxRed = _keyRed.currentContext.findRenderObject();
-    final positionRed = renderBoxRed.localToGlobal(Offset.zero);
-    print("POSITION of Red: $positionRed ");
-  }
 
   @override
   void initState() {
@@ -746,19 +654,23 @@ class _topSelling extends State<TopSelling> with TickerProviderStateMixin {
                                   children: [
                                     Padding(
                                       padding: const EdgeInsets.fromLTRB(
-                                          10.0, 0.0, 0.0, 0.0),
-                                      child: Text('TOP SELLING PRODUCTS',
+                                          10.0, 8.0, 0.0, 8.0),
+                                      child: Text('TOP SALES',
                                           style: TextStyle(
-                                              color: Colors.white)),
+                                              fontSize: 17,
+                                              color: Colors.white, fontWeight: FontWeight.bold),),
                                     ),
                                     Spacer(),
-                                    IconButton(
-                                        icon: new Image.asset(
-                                          'assets/filter_icon.png', height: 20,),
-                                        iconSize: 30,
-                                        onPressed: () {
-                                          print('filter');
-                                        }
+                                    SizedBox(
+                                      height: 37, width: 35,
+                                      child: IconButton(
+                                          icon: new Image.asset(
+                                            'assets/filter_icon.png', height: 20,),
+//                                                iconSize: 20,
+                                          onPressed: () {
+                                            print('filter');
+                                          }
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -776,7 +688,7 @@ class _topSelling extends State<TopSelling> with TickerProviderStateMixin {
                         SliverGrid(
                           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: itemCount,
-                            childAspectRatio: itemheight - 0.15,
+                            childAspectRatio: itemheight - 0.25,
                           ),
                           delegate: SliverChildListDelegate(
                             [

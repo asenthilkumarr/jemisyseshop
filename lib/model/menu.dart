@@ -15,7 +15,7 @@ class menuList{
 final List<String> menuitem = [
   'Home',
   'Home 2',
-  'Home 3',
+//  'Home 3',
   'Diamond',
   'Engagement',
   'Wedding',
@@ -23,6 +23,11 @@ final List<String> menuitem = [
   'Jewellery',
   'About us',
   'Contact us'
+];
+List<String> hitem = [
+  'HOME',
+  'CATEGORY',
+  'TOP SALES',
 ];
 List<String> MenuItemSplit(String type, double screenwidth) {
   int mainmenucount = 0,
@@ -65,7 +70,10 @@ List<String> MenuItemSplit(String type, double screenwidth) {
 }
 
 void _openPage(menuItem, BuildContext context) {
-  if(menuItem == 'Home' || menuItem == 'Home 2' || menuItem == 'Home 3') {
+  print(menuItem);
+  if(menuItem == 'Home' || menuItem == 'Home 2' || menuItem == 'Home 3'
+      || menuItem == 'Category' || menuItem == 'Top Sales') {
+    print('AAAAAAAAAAAAAA');
     Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) {
           switch (menuItem) {
@@ -75,8 +83,11 @@ void _openPage(menuItem, BuildContext context) {
             case 'Home 2':
               return HomeScreen2();
               break;
-            case 'Home 3':
-              return HomeScreen3();
+            case 'Top Sales':
+              return TopSellingScreen();
+              break;
+            case 'Category':
+              return CategoryScreen();
               break;
 
             default:
@@ -87,7 +98,7 @@ void _openPage(menuItem, BuildContext context) {
   else {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       switch (menuItem) {
-        case 'Top Selling':
+        case 'Top Sales':
           return TopSellingScreen();
           break;
         case 'Category':
@@ -170,11 +181,6 @@ class HorizontalMenuWedget extends StatelessWidget {
   final TabController tabController;
 
   HorizontalMenuWedget({Key key, this.tabController}) : super(key: key);
-  List<String> mitem = [
-    'HOME',
-    'CATEGORY',
-    'TOP SELLING PRODUCTS',
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -185,7 +191,7 @@ class HorizontalMenuWedget extends StatelessWidget {
     return new TabBar(
       isScrollable: true,
       controller: tabController, indicatorColor: listLabelbgColor, tabs: [
-      for(var i in mitem)
+      for(var i in hitem)
         Tab(
           child: Text(
             i,
@@ -199,7 +205,46 @@ class HorizontalMenuWedget extends StatelessWidget {
         else if(tabController.index == 1)
           _openPage('Category', context);
         else if(tabController.index == 2)
-          _openPage('Top Selling', context);
+          _openPage('Top Sales', context);
+      },
+    );
+  }
+}
+
+class FilterMenuWedget extends StatelessWidget {
+  final TabController tabController;
+
+  FilterMenuWedget({Key key, this.tabController}) : super(key: key);
+  List<String> mitem = [
+    'ALL',
+    'POPULAR',
+    'LATEST',
+    'TOP SALES',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final screenSize = MediaQuery
+        .of(context)
+        .size;
+    return new TabBar(
+      isScrollable: true,
+      controller: tabController,
+      indicatorColor: listLabelbgColor,
+      tabs: [
+        for(var i in mitem)
+          Tab(
+            child: Text(
+              i,
+              style: TextStyle(
+                  fontFamily: "BarlowBold", color: Colors.black),
+            ),
+          ),
+      ],
+      labelPadding: EdgeInsets.only(left: 10, right:10),
+//      indicatorWeight: 1.0,
+      onTap: (index) {
+
       },
     );
   }

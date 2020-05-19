@@ -17,10 +17,13 @@ class DesignCode{
   double tagPrice;
   double grossWeight;
   double goldWeight;
-  String promotion;
+  double goldWeight2;
+  String discountCode;
+  double promotionPrice;
+  bool promotion;
   String imageUrl;
   DesignCode(this.designCode, this.categoryCode, this.designName, this.classCode,
-      this.tagPrice, this.grossWeight, this.goldWeight, this.promotion, this.imageUrl);
+      this.tagPrice, this.grossWeight, this.goldWeight, this.goldWeight2, this.discountCode, this.promotionPrice, this.promotion, this.imageUrl);
 }
 class ItemMasterList{
   String inventoryCode;
