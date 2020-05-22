@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_widgets/flutter_widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/model/menu.dart';
@@ -41,10 +42,15 @@ class Home extends StatefulWidget{
 }
 
 class _home extends State<Home> with TickerProviderStateMixin {
+  DataService dataService = DataService();
+  List<Group> groupdt = List<Group>();
+  List<Product> productdt = List<Product>();
+  Group selDt = new Group();
+
   bool isLogin = false;
-  String _selcategoryCode = '';
-  String _selCategory = "";
+  String _selgroup = '';
   String _selCountry = 'SG';
+  String _filter = "*ALL", _where = "";
   int _selectedCategoryIndex = 0;
   final formatter2dec = new NumberFormat('##0.00', 'en_US');
   final formatterint = new NumberFormat('##0', 'en_US');
@@ -57,13 +63,28 @@ class _home extends State<Home> with TickerProviderStateMixin {
   GlobalKey _keyGoldRate = GlobalKey();
   GlobalKey _keyFiltermenu = GlobalKey();
   GoldRateWedgit objGoldRate = new GoldRateWedgit();
+  var scaffoldKey = GlobalKey<ScaffoldState>();
 
-  List<DesignCode> selDesign = new List<DesignCode>();
+  List<Product> selDesign = new List<Product>();
   Country sCountry;
 
-  void getDefault() {
+  Future<void> getDefault() {
     var sitem = country.firstWhere((d) => d.shortCode == _selCountry);
     sCountry = sitem;
+  }
+  Future<List<Group>> getGroup() async {
+    var dt = await dataService.GetGroup();
+    groupdt = dt;
+    return dt;
+  }
+  Future<List<Product>> getProduct() async {
+    ProductParam param = new ProductParam();
+    param.productType = _selgroup;
+    param.filter = _filter;
+    param.where = _where;
+    var dt = await dataService.GetProduct(param);
+    productdt = dt;
+    return dt;
   }
 
   void _showPopupMenu() async {
@@ -92,9 +113,9 @@ class _home extends State<Home> with TickerProviderStateMixin {
   }
 
   void getDesign() {
-    var sitem = design.where((d) => d.categoryCode == _selcategoryCode)
+    var sitem = productdt.where((d) => d.groupName == _selgroup)
         .toList();
-    selDesign = new List<DesignCode>();
+    selDesign = new List<Product>();
     selDesign = sitem;
   }
 
@@ -294,7 +315,7 @@ class _home extends State<Home> with TickerProviderStateMixin {
     }
   }
 
-  Widget DesignGridWidgets(DesignCode item) {
+  Widget DesignGridWidgets(Product item) {
     return Card(
         shape: RoundedRectangleBorder(
           side: BorderSide(
@@ -304,22 +325,13 @@ class _home extends State<Home> with TickerProviderStateMixin {
         ),
         child: Stack(
             children: <Widget>[
-//              CustomPaint(
-//                painter: ShapesPainter(),
-//                child: Center(
-//                  child: Transform.rotate(angle: - pi / 4,
-//                    child: Text("50%\nOFF", style: TextStyle(fontSize: 22, ),
-//                    ),
-//                  ),
-//                ),
-//              ),
               Padding(
                 padding: const EdgeInsets.only(left:20.0,top:10.0, right:20.0, bottom:30),
                 child: Align(
                   alignment: FractionalOffset.center,
                   child: Image(
                     image: CachedNetworkImageProvider(
-                      item.imageUrl,
+                      item.imageFile1,
                     ),
                     fit: BoxFit.fitHeight,
                   ),
@@ -330,6 +342,7 @@ class _home extends State<Home> with TickerProviderStateMixin {
               Align(
                   alignment: FractionalOffset.bottomCenter,
                   child: Container(
+//                    height: 100,
                     color: listbgColor,
                     child: Padding(
                       padding: const EdgeInsets.only(
@@ -341,13 +354,13 @@ class _home extends State<Home> with TickerProviderStateMixin {
                             children: [
                               SizedBox(child: Text('')),
                               Spacer(),
-                              item.tagPrice > 0 && item.promotionPrice != 0 ?
-                              Text(item.tagPrice > 0 ? '\$${formatterint.format(
-                                  item.tagPrice)}' : '${formatter2dec.format(
-                                  item.grossWeight)}g',
+                              item.listingPrice > 0 && item.onlinePrice != 0 ?
+                              Text(item.listingPrice > 0 ? '\$${formatterint.format(
+                                  item.listingPrice)}' : '${formatter2dec.format(
+                                  item.weightTo)}g',
                                   style: TextStyle(decoration: TextDecoration.lineThrough))
-                                  : Text(item.goldWeight2 > 0 ? '${formatter2dec.format(
-                                  item.goldWeight2)} -' : ''),
+                                  : Text(item.weightFrom > 0 ? '${formatter2dec.format(
+                                  item.weightFrom)} -' : ''),
                             ],
                           ),
                           SizedBox(height: 5,),
@@ -355,12 +368,12 @@ class _home extends State<Home> with TickerProviderStateMixin {
                             children: [
                               Text(item.designCode),
                               Spacer(),
-                              item.tagPrice > 0 && item.promotionPrice > 0 ?
+                              item.listingPrice > 0 && item.onlinePrice > 0 ?
                               Text('\$${formatterint.format(
-                                  item.promotionPrice)}', style: TextStyle(fontWeight: FontWeight.bold))
-                                  : Text(item.tagPrice > 0 ? '\$${formatterint.format(
-                                  item.tagPrice)}' : 'Wt.: ${formatter2dec.format(
-                                  item.grossWeight)}g'),
+                                  item.onlinePrice)}', style: TextStyle(fontWeight: FontWeight.bold))
+                                  : Text(item.listingPrice > 0 ? '\$${formatterint.format(
+                                  item.listingPrice)}' : 'Wt.: ${formatter2dec.format(
+                                  item.weightTo)}g'),
                             ],
                           ),
                         ],
@@ -368,7 +381,7 @@ class _home extends State<Home> with TickerProviderStateMixin {
                     ),
                   )
               ),
-              item.discountCode != "" ? Positioned(
+              item.discountPercentage > 0 ? Positioned(
                 left: 0.0,
                 child: Container(
                   child: CustomPaint(
@@ -386,7 +399,7 @@ class _home extends State<Home> with TickerProviderStateMixin {
                                 children: [
                                   SizedBox(
                                       width: 40,
-                                      child: Text(item.discountCode,
+                                      child: Text("${item.discountPercentage}% OFF",
                                         style: TextStyle(
                                             fontSize: 13, color: Colors.white),
                                       )
@@ -746,10 +759,10 @@ class _home extends State<Home> with TickerProviderStateMixin {
       );
   }
 
-  Widget CategoryListitem(BuildContext context, Category dt, int index, int totindex) {
+  Widget CategoryListitem(BuildContext context, Group dt, int index, int totindex) {
     int nindex = index;
 
-    if (dt.categoryCode != null) {
+    if (dt.groupName != null) {
       return Container(
         width: 110,
 //        color: selectedColor,
@@ -770,8 +783,7 @@ class _home extends State<Home> with TickerProviderStateMixin {
                   children: <Widget>[
                     InkWell(
                       onTap: () {
-                        _selcategoryCode = dt.categoryCode;
-                        _selCategory = dt.description;
+                        _selgroup = dt.groupName;
                         getDesign();
                         if (index < totindex - 1 && index > 1) {
                           if(_selectedCategoryIndex<index)
@@ -789,7 +801,7 @@ class _home extends State<Home> with TickerProviderStateMixin {
                       child: _sizedContainer(
                         Image(
                           image: CachedNetworkImageProvider(
-                            dt.imageUrl,
+                            dt.imageFileName,
                           ),
                         ),
                       ),
@@ -804,7 +816,7 @@ class _home extends State<Home> with TickerProviderStateMixin {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text('${dt.description}',
+                      Text('${dt.groupName}',
                         style: TextStyle(color: Colors.white),),
                       //Spacer(),
                     ],
@@ -820,7 +832,7 @@ class _home extends State<Home> with TickerProviderStateMixin {
       return new Text('ERROR');
     }
   }
-  Widget CategoryListView(List<Category> data) {
+  Widget CategoryListView(List<Group> data) {
     return
       new ScrollablePositionedList.builder(
         itemScrollController: _scrollControllerlist,
@@ -861,20 +873,15 @@ class _home extends State<Home> with TickerProviderStateMixin {
     );
   }
 
-  var scaffoldKey = GlobalKey<ScaffoldState>();
-
   @override
   void initState() {
     super.initState();
     _tabController = new TabController(vsync: this, length: hMenuCount,);
     _tabControllerFilter = new TabController(vsync: this, length: fMenuCount,);
-//    DefaultCacheManager manager = new DefaultCacheManager();
-//    manager.emptyCache(); //clears all data in cache.
-//    imageCache.clear();
+
     getDefault();
-    if (categoryList.length > 0) {
-      _selcategoryCode = categoryList[0].categoryCode;
-      _selCategory = categoryList[0].description;
+    if (groupdt.length > 0) {
+      _selgroup = groupdt[0].groupName;
       getDesign();
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -990,11 +997,11 @@ class _home extends State<Home> with TickerProviderStateMixin {
                         child: Container(
                             height: 120,
                             color: listbgColor,
-                            child: FutureBuilder<List<ItemMasterList>>(
-                              //future: _fetchData(),
+                            child: FutureBuilder<List<Group>>(
+                              future: getGroup(),
                               builder: (context, snapshot) {
-                                if (categoryList.length > 0) {
-                                  List<Category> data = categoryList;
+                                if (groupdt.length > 0) {
+                                  List<Group> data = groupdt;
                                   return CategoryListView(data);
                                 } else if (snapshot.hasError) {
                                   return Text("${snapshot.error}");
@@ -1052,7 +1059,7 @@ class _home extends State<Home> with TickerProviderStateMixin {
                             Padding(
                               padding: const EdgeInsets.fromLTRB(
                                   10.0, 8.0, 0.0, 8.0),
-                              child: Text(_selCategory,
+                              child: Text(_selgroup,
                                   style: TextStyle(
                                       fontSize: 17,
                                       color: Colors.white, fontWeight: FontWeight.bold)),

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:jemisyseshop/test.dart';
 import 'package:jemisyseshop/view/home.dart';
-import 'package:jemisyseshop/view/home3.dart';
+import 'package:jemisyseshop/view/masterPage.dart';
 
 void main() {
-//  runApp(Test());
-  runApp(HomeScreen());
+  runApp(MasterScreen(currentIndex: 0, key: null,));
+//  runApp(HomeScreen());
   //runApp(MyApp());
 }
 

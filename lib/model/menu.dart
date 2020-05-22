@@ -5,6 +5,7 @@ import 'package:jemisyseshop/view/category.dart';
 import 'package:jemisyseshop/view/home.dart';
 import 'package:jemisyseshop/view/home2.dart';
 import 'package:jemisyseshop/view/home3.dart';
+import 'package:jemisyseshop/view/masterPage.dart';
 
 import 'common.dart';
 class menuList{
@@ -27,7 +28,7 @@ final List<String> menuitem = [
 List<String> hitem = [
   'HOME',
   'CATEGORY',
-  'TOP SALES',
+  'MOST POPULAR',
 ];
 List<String> MenuItemSplit(String type, double screenwidth) {
   int mainmenucount = 0,
@@ -73,12 +74,11 @@ void _openPage(menuItem, BuildContext context) {
   print(menuItem);
   if(menuItem == 'Home' || menuItem == 'Home 2' || menuItem == 'Home 3'
       || menuItem == 'Category' || menuItem == 'Top Sales') {
-    print('AAAAAAAAAAAAAA');
     Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) {
           switch (menuItem) {
             case 'Home':
-              return HomeScreen();
+              return MasterScreen(currentIndex: 0, key: null,);
               break;
             case 'Home 2':
               return HomeScreen2();
@@ -87,7 +87,7 @@ void _openPage(menuItem, BuildContext context) {
               return TopSellingScreen();
               break;
             case 'Category':
-              return CategoryScreen();
+              return MasterScreen(currentIndex: 1, key: null,);
               break;
 
             default:
@@ -211,15 +211,39 @@ class HorizontalMenuWedget extends StatelessWidget {
   }
 }
 
+class HorizontalMenuWedget2 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final screenSize = MediaQuery
+        .of(context)
+        .size;
+
+    return new TabBar(
+      indicatorColor: listLabelbgColor, tabs: [
+      for(var i in hitem)
+        Tab(
+          child: Text(
+            i,
+            style: TextStyle(fontFamily: "BarlowBold", color: Colors.black),
+          ),
+        ),
+    ],
+      onTap: (index) {
+
+      },
+    );
+  }
+}
+
 class FilterMenuWedget extends StatelessWidget {
   final TabController tabController;
 
   FilterMenuWedget({Key key, this.tabController}) : super(key: key);
   List<String> mitem = [
     'ALL',
-    'POPULAR',
     'LATEST',
-    'TOP SALES',
+    'SALE',
+    'MOST POPULAR',
   ];
 
   @override
@@ -250,7 +274,7 @@ class FilterMenuWedget extends StatelessWidget {
   }
 }
 
-class HorizontalMenuWedget2 extends StatelessWidget {
+class HorizontalMenuWedget3 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
@@ -287,7 +311,6 @@ class HorizontalMenuWedget2 extends StatelessWidget {
     );
   }
 }
-
 
 class MenuNavigate extends StatelessWidget {
 

@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_widgets/flutter_widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/model/menu.dart';
@@ -20,6 +21,7 @@ import 'package:jemisyseshop/widget/goldRate.dart';
 
 class CategoryScreen extends StatelessWidget {
   // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -36,11 +38,15 @@ class CategoryScreen extends StatelessWidget {
 }
 
 class CategoryPage extends StatefulWidget{
+
   @override
   _categoryPage createState() => _categoryPage();
 }
 
 class _categoryPage extends State<CategoryPage> with TickerProviderStateMixin {
+  DataService dataService = DataService();
+  List<Group> groupdt = List<Group>();
+  Group selDt = new Group();
   bool isLogin = false;
   String _selcategoryCode = '';
   String _selCountry = 'SG';
@@ -60,6 +66,11 @@ class _categoryPage extends State<CategoryPage> with TickerProviderStateMixin {
   void getDefault() {
     var sitem = country.firstWhere((d) => d.shortCode == _selCountry);
     sCountry = sitem;
+  }
+  Future<List<Group>> getGroup() async {
+    var dt = await dataService.GetGroup();
+    groupdt = dt;
+    return dt;
   }
 
   void _showPopupMenu() async {
