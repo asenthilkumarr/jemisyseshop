@@ -16,7 +16,10 @@ import 'package:jemisyseshop/model/menu.dart';
 import 'package:jemisyseshop/model/tempData.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:jemisyseshop/view/category.dart';
+import 'package:jemisyseshop/view/productDetails.dart';
 import 'package:jemisyseshop/widget/goldRate.dart';
+import 'package:jemisyseshop/widget/titleBar.dart';
+import 'package:jemisyseshop/widget/offerTagPainter.dart';
 
 import '../style.dart';
 import 'home.dart';
@@ -56,22 +59,20 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   List<Product> mostPopularProductlist = new List<Product>();
   Group selDt = new Group();
 
-  bool isLogin = false;
   String _selgroup = 'RINGS';
   String _selCountry = 'SG';
-  String _filter = "ALL", _where;
+  String _filter = "ALL", _filterType = "BYGROUP", _where;
   int _selectedCategoryIndex = 0;
   final formatter2dec = new NumberFormat('##0.00', 'en_US');
   final formatterint = new NumberFormat('##0', 'en_US');
-  AnimationController controller;
-  Animation<double> animation;
   ScrollController _scrollController = new ScrollController();
   ItemScrollController _scrollControllerlist = ItemScrollController();
   TabController _tabController;
   TabController _tabControllerFilter;
+  GoldRateWedgit objGoldRate = new GoldRateWedgit();
+
   GlobalKey _keyGoldRate = GlobalKey();
   GlobalKey _keyFiltermenu = GlobalKey();
-  GoldRateWedgit objGoldRate = new GoldRateWedgit();
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
   Country sCountry;
@@ -97,6 +98,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   Future<List<Product>> getProduct() async {
     ProductParam param = new ProductParam();
     param.productType = _selgroup;
+    param.filterType = _filterType;
     param.filter = _filter;
     param.where = _where;
     var dt = await dataService.GetProduct(param);
@@ -107,7 +109,8 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   Future<List<Product>> getMostPopular() async {
     ProductParam param = new ProductParam();
     param.productType = "ALL";
-    param.filter = "MOST POPULAR";
+    param.filterType = _filterType;
+    param.filter = "TOP SELLERS";
     param.where = "";
     var dt = await dataService.GetProduct(param);
     mostPopularProductlist = dt;
@@ -119,7 +122,6 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     selProductlist = new List<Product>();
     selProductlist = sitem;
   }
-
   void _showPopupMenu() async {
     double screenWidth = MediaQuery
         .of(context)
@@ -144,44 +146,12 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
       elevation: 8.0,
     );
   }
-
-  int GridItemCount(double screenwidth) {
-    int itemCount = 0,
-        a = 0;
-    if (screenwidth <= 550)
-      itemCount = 2;
-    else if (screenwidth <= 650)
-      itemCount = 3;
-    else if (screenwidth <= 750)
-      itemCount = 4;
-    else if (screenwidth <= 950)
-      itemCount = 5;
-    else if (screenwidth <= 1100)
-      itemCount = 6;
-    else if (screenwidth <= 1250)
-      itemCount = 7;
-    else if (screenwidth <= 1400)
-      itemCount = 8;
-    else
-      itemCount = 10;
-
-    return itemCount;
+  void _product_onTap(Product selItem){
+    Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ProductDetailPage(designCode: selItem.designCode, version: selItem.version),)
+    );
   }
-
-  double GridItemHeight(double screenHeight, double screenWidth) {
-    double itemHeight = 0.55;
-    if (screenHeight > 880)
-      itemHeight = 0.90;
-    else if (screenHeight > 780)
-      itemHeight = 0.75;
-    else if (screenHeight > 580)
-      itemHeight = 0.75;
-    else if (screenHeight > 270 && screenWidth > 350)
-      itemHeight = 0.70;
-    itemHeight = 1;
-    return itemHeight;
-  }
-
   Widget BannerImage(BuildContext context) {
     double screenWidth = MediaQuery
         .of(context)
@@ -243,212 +213,6 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
       );
     }
   }
-
-  Widget DesignGridWidgets(Product item) {
-    return Card(
-        shape: RoundedRectangleBorder(
-          side: BorderSide(
-            color: listbgColor,
-            width: 1.0,
-          ),
-        ),
-        child: Stack(
-            children: <Widget>[
-              Column(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left:20.0,top:10.0, right:20.0, bottom:5),
-                      child: Align(
-                        alignment: FractionalOffset.center,
-                        child: Image(
-                          image: CachedNetworkImageProvider(
-                            item.imageFile1,
-                          ),
-                          fit: BoxFit.fitHeight,
-                        ),
-//                  child: Image.network(
-//                    item.imageUrl, fit: BoxFit.fitHeight,),
-                      ),
-                    ),
-                  ),
-                  Align(
-                      alignment: FractionalOffset.bottomCenter,
-                      child: Container(
-//                    height: 100,
-                        color: listbgColor,
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              left: 10.0, right: 10.0, top: 6.0, bottom: 6.0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Row(
-                                children: [
-                                  SizedBox(child: Text('')),
-                                  Spacer(),
-                                  item.listingPrice > 0 && item.discountPercentage != 0 ?
-                                  Text(item.listingPrice > 0 ? '\$${formatterint.format(
-                                      item.listingPrice)}' : '${formatter2dec.format(
-                                      item.weightFrom)}g',
-                                      style: TextStyle(decoration: TextDecoration.lineThrough))
-                                      : Text(item.weightFrom > 0 ? '${formatter2dec.format(
-                                      item.weightFrom)} -' : ''),
-                                ],
-                              ),
-                              SizedBox(height: 5,),
-                              Row(
-                                children: [
-                                  Text(item.designCode),
-                                  Spacer(),
-                                  item.listingPrice > 0 && item.discountPercentage > 0 ?
-                                  Text('\$${formatterint.format(
-                                      item.onlinePrice)}', style: TextStyle(fontWeight: FontWeight.bold))
-                                      : Text(item.listingPrice > 0 ? '\$${formatterint.format(
-                                      item.listingPrice)}' : 'Wt.: ${formatter2dec.format(
-                                      item.weightTo)}g'),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                  ),
-                ],
-              ),
-              item.discountPercentage > 0 ? Positioned(
-                left: 0.0,
-                child: Container(
-                  child: CustomPaint(
-                    painter: ShapesPainter(),
-//                      painter: DrawTriangle(),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 12.0, top: 6.0),
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        child: Transform.rotate(angle: -pi / 4,
-                            child: Wrap(
-                                runSpacing: 5.0,
-                                spacing: 5.0,
-                                direction: Axis.vertical,
-                                children: [
-                                  SizedBox(
-                                      width: 40,
-                                      child: Text("${formatterint.format(item.discountPercentage)}% OFF",
-                                        style: TextStyle(
-                                            fontSize: 12, color: Colors.white),
-                                      )
-
-                                  ),
-                                ])
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ) : SizedBox(height: 1, width: 1,),
-            ]
-        )
-    );
-  }
-
-  Widget titleBar() {
-    return Container(
-      color: primary1Color,
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: IconButton(
-                  icon: Icon(Icons.menu, color: Colors.white,),
-                  iconSize: 25,
-
-                  onPressed: () {
-                    scaffoldKey.currentState.openDrawer();
-                  },
-                ),
-              ),
-              Spacer(),
-              Align(
-                alignment: Alignment.center,
-                child: CompanyLogo(),
-              ),
-              Spacer(),
-              Align(
-                  alignment: Alignment.centerRight,
-                  child: SizedBox(
-                    width: 80,
-                    child: Row(
-                      children: [
-                        SizedBox(
-                            width: 40,
-                            child: IconButton(
-                              key: _keyGoldRate,
-                              icon: new Image.asset('assets/goldRate.png', height: 25,),
-                              iconSize: 30,
-
-                              onPressed: () {
-                                objGoldRate.showGoldRate(context, hideTitleMessage, _keyGoldRate);
-                              },
-                            )),
-                        Center(
-                          child: SizedBox(
-                            width: 40,
-                            child: Padding(
-                                padding: const EdgeInsets.only(right: 0.0),
-                                child: Stack(
-                                    children: <Widget>[
-                                      //new IconButton(icon: Icon(Icons.shopping_cart, size: 35, color: Colors.white,),
-                                      IconButton(
-                                        icon: new Image.asset(
-                                          'assets/shopping_cart.png',
-                                          height: 25,),
-//                                     icon: Icon(Icons.cur, color: Colors.white,),
-                                        iconSize: 25,
-                                        onPressed: () {},),
-                                      new Positioned( // draw a red marble
-                                        top: 5.0,
-                                        right: 10.0,
-                                        child: Container(
-                                          alignment: Alignment.center,
-                                          decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              shape: BoxShape.circle
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(3.0),
-                                            child: new Text(
-                                              '5',
-                                              style: new TextStyle(
-                                                color: Colors.red,
-                                                fontSize: 9,
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                    ]
-                                )),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-              )
-
-
-            ],
-          ),
-
-        ],
-      ),
-
-    );
-  }
-
   Widget titleMessage() {
     return !hideTitleMessage ? Padding(
         padding: const EdgeInsets.only(bottom: 1.0),
@@ -489,7 +253,6 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
         ))
         : Container();
   }
-
   Widget pageAppBar() {
     return AppBar(
 //      title: Text("JEMiSys eShop"),
@@ -566,6 +329,155 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
         ]
     );
   }
+
+  double GridItemHeight(double screenHeight, double screenWidth) {
+    double itemHeight = 0.55;
+    if (screenHeight > 880)
+      itemHeight = 0.90;
+    else if (screenHeight > 780)
+      itemHeight = 0.75;
+    else if (screenHeight > 580)
+      itemHeight = 0.75;
+    else if (screenHeight > 270 && screenWidth > 350)
+      itemHeight = 0.70;
+    itemHeight = 1;
+    return itemHeight;
+  }
+  int GridItemCount(double screenwidth) {
+    int itemCount = 0,
+        a = 0;
+    if (screenwidth <= 550)
+      itemCount = 2;
+    else if (screenwidth <= 650)
+      itemCount = 3;
+    else if (screenwidth <= 750)
+      itemCount = 4;
+    else if (screenwidth <= 950)
+      itemCount = 5;
+    else if (screenwidth <= 1100)
+      itemCount = 6;
+    else if (screenwidth <= 1250)
+      itemCount = 7;
+    else if (screenwidth <= 1400)
+      itemCount = 8;
+    else
+      itemCount = 10;
+
+    return itemCount;
+  }
+  Widget DesignGridWidgets(Product item) {
+    return Card(
+        shape: RoundedRectangleBorder(
+          side: BorderSide(
+            color: listbgColor,
+            width: 1.0,
+          ),
+        ),
+        child: Stack(
+            children: <Widget>[
+              GestureDetector(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left:20.0,top:10.0, right:20.0, bottom:5),
+                        child: Align(
+                          alignment: FractionalOffset.center,
+                          child: Image(
+                            image: CachedNetworkImageProvider(
+                              item.imageFile1,
+                            ),
+                            fit: BoxFit.fitHeight,
+                          ),
+//                  child: Image.network(
+//                    item.imageUrl, fit: BoxFit.fitHeight,),
+                        ),
+                      ),
+                    ),
+                    Align(
+                        alignment: FractionalOffset.bottomCenter,
+                        child: Container(
+//                    height: 100,
+                          color: listbgColor,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: 10.0, right: 10.0, top: 6.0, bottom: 6.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Row(
+                                  children: [
+                                    SizedBox(child: Text('')),
+                                    Spacer(),
+                                    item.listingPrice > 0 && item.discountPercentage != 0 ?
+                                    Text(item.listingPrice > 0 ? '$currencysymbol${formatterint.format(
+                                        item.listingPrice)}' : '${formatter2dec.format(
+                                        item.weightFrom)}g',
+                                        style: TextStyle(decoration: TextDecoration.lineThrough))
+                                        : Text(item.weightFrom > 0 ? '${formatter2dec.format(
+                                        item.weightFrom)} -' : ''),
+                                  ],
+                                ),
+                                SizedBox(height: 5,),
+                                Row(
+                                  children: [
+                                    Text(item.designCode),
+                                    Spacer(),
+                                    item.listingPrice > 0 && item.discountPercentage > 0 ?
+                                    Text('$currencysymbol${formatterint.format(
+                                        item.onlinePrice)}', style: TextStyle(fontWeight: FontWeight.bold))
+                                        : Text(item.listingPrice > 0 ? '$currencysymbol${formatterint.format(
+                                        item.listingPrice)}' : 'Wt.: ${formatter2dec.format(
+                                        item.weightTo)}g'),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                    ),
+                  ],
+                ),
+                onTap: (){
+                  _product_onTap(item);
+                },
+              ),
+              item.discountPercentage > 0 ? Positioned(
+                left: 0.0,
+                child: Container(
+                  child: CustomPaint(
+                    painter: ShapesPainter(),
+//                      painter: DrawTriangle(),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 12.0, top: 6.0),
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: Transform.rotate(angle: -pi / 4,
+                            child: Wrap(
+                                runSpacing: 5.0,
+                                spacing: 5.0,
+                                direction: Axis.vertical,
+                                children: [
+                                  SizedBox(
+                                      width: 40,
+                                      child: Text("${formatterint.format(item.discountPercentage)}% OFF",
+                                        style: TextStyle(
+                                            fontSize: 12, color: Colors.white),
+                                      )
+
+                                  ),
+                                ])
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ) : SizedBox(height: 1, width: 1,),
+            ]
+        )
+    );
+  }
+
   Widget TopSellingListitem(DesignCode item) {
     final screenSize = MediaQuery
         .of(context)
@@ -621,7 +533,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                                   SizedBox(child: Text('')),
                                   Spacer(),
                                   item.tagPrice > 0 && item.promotionPrice != 0 ?
-                                  Text(item.tagPrice > 0 ? '\$${formatterint.format(
+                                  Text(item.tagPrice > 0 ? '$currencysymbol${formatterint.format(
                                       item.tagPrice)}' : '${formatter2dec.format(
                                       item.grossWeight)}g',
                                       style: TextStyle(decoration: TextDecoration.lineThrough))
@@ -635,9 +547,9 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                                   Text(item.designCode),
                                   Spacer(),
                                   item.tagPrice > 0 && item.promotionPrice > 0 ?
-                                  Text('\$${formatterint.format(
+                                  Text('$currencysymbol${formatterint.format(
                                       item.promotionPrice)}', style: TextStyle(fontWeight: FontWeight.bold))
-                                      : Text(item.tagPrice > 0 ? '\$${formatterint.format(
+                                      : Text(item.tagPrice > 0 ? '$currencysymbol${formatterint.format(
                                       item.tagPrice)}' : 'Wt.: ${formatter2dec.format(
                                       item.grossWeight)}g'),
                                 ],
@@ -843,27 +755,6 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     );
   }
 
-  Widget CompanyLogo() {
-    return new Container(
-      color: primary1Color,
-      child: Center(
-        child: Text('JEMiSys eShop',
-          style: GoogleFonts.oswald(
-            textStyle: TextStyle(color: Colors.white, fontSize: 31, letterSpacing: 1.5),
-          ),
-          //style: TextStyle(fontSize: 27, color: Colors.white, fontWeight: FontWeight.normal,)
-        ),
-      ),
-//      child: SizedBox(
-//        height: 30,
-//        child: new Image.network(
-//          'http://42.61.99.57/JEMiSyseShopImage/Banner3.png',
-//          //"http://42.61.99.57/JEMiSyseShopImage/logo.png",
-//          fit: BoxFit.fitHeight,
-//        ),
-//      ),
-    );
-  }
   Widget HorizontalMenuHomeWedget(BuildContext context) {
     final screenSize = MediaQuery
         .of(context)
@@ -1372,32 +1263,6 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     if(hideGoldRate == false)
       Future.delayed(Duration.zero, () => objGoldRate.showGoldRate(context, hideTitleMessage, _keyGoldRate));
 
-    controller = AnimationController(
-        duration: const Duration(milliseconds: 1000), vsync: this);
-    animation = CurvedAnimation(parent: controller, curve: Curves.easeIn);
-
-    /*animation.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        controller.reverse();
-      } else if (status == AnimationStatus.dismissed) {
-        controller.forward();
-      }
-    });*/
-
-    controller.forward();
-
-//    return Container(
-//        color: Colors.white,
-//        child: FadeTransition(
-//            opacity: animation,
-//            child: Row(
-//                mainAxisAlignment: MainAxisAlignment.center,
-//                children:[
-//                  Icon(Icons.check, size: 100.0,color: Colors.green,),
-//                ]
-//            )
-//        )
-//    );
 
   }
 
@@ -1421,7 +1286,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                 child: Column(
                   children: [
                     titleMessage(),
-                    titleBar(),
+                    titleBar(context, scaffoldKey, _keyGoldRate),
 
                     mainContainer(itemCount, itemheight, screenSize.width),
                   ],
@@ -1451,37 +1316,5 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   }
 }
 
-  class ShapesPainter extends CustomPainter {
-    @override
-    void paint(Canvas canvas, Size size) {
-      final paint = Paint();
-      // set the paint color to be white
-      // Create a rectangle with size and width same as the canvas
-      //var rect = Rect.fromLTWH(0, 0, size.width, size.height);
-      // draw the rectangle using the paint
-      paint.color = Color(0xFFF96013);
-      // create a path
-      var path = Path();
-      path.lineTo(0, 80);
-      path.lineTo(80, 0);
-      // close the path to form a bounded shape
-      path.close();
-      canvas.drawPath(path, paint);
-      paint.color = Colors.white;
-      path = Path();
-      path.lineTo(0, 25);
-      path.lineTo(25, 0);
-      path.close();
-      canvas.drawPath(path, paint);
-      // set the color property of the paint
-      paint.color = Colors.deepOrange;
-      // center of the canvas is (x,y) => (width/2, height/2)
-      var center = Offset(size.width / 2, size.height / 2);
-      // draw the circle with center having radius 75.0
-//    canvas.drawCircle(center, 75.0, paint);
-    }
 
-    @override
-    bool shouldRepaint(CustomPainter oldDelegate) => false;
-  }
 

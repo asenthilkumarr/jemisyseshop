@@ -5,6 +5,7 @@ import 'package:jemisyseshop/model/common.dart';
 
 class GoldRateWedgit{
   Future<void> showGoldRate(BuildContext context, bool hideTitleMessage, GlobalKey _keyGoldRate) {
+    hideGoldRate =true;
     bool _fromTop = true;
     double p = 100.0;
 //    double topp=positionRed.dx;

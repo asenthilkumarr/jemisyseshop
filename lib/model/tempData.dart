@@ -8,22 +8,22 @@ final List<String> images = [
 ];
 
 final List<Category> categoryList = [
-//  Category('R', 'RING',
-//      'http://42.61.99.57/JEMiSyseShopImage/jewelimages/Ring.jpg'),
-//  Category('ER', 'EARRING',
-//      'http://42.61.99.57/JEMiSyseShopImage/jewelimages/Earring.png'),
-//  Category('PE', 'PENDANT',
-//      'http://42.61.99.57/JEMiSyseShopImage/jewelimages/Pendant.jpg'),
-//  Category('NE', 'NECKLACE',
-//      'http://42.61.99.57/JEMiSyseShopImage/jewelimages/Necklace.jpg'),
-//  Category('BR', 'BRACELET',
-//      'http://42.61.99.57/JEMiSyseShopImage/jewelimages/Bracelet.jpg'),
-//  Category('BA', 'BANGLE',
-//      'http://42.61.99.57/JEMiSyseShopImage/jewelimages/Bangle.jpg'),
-//  Category('GC', 'CHAIN',
-//      'http://42.61.99.57/JEMiSyseShopImage/jewelimages/Chain.jpg'),
-//  Category('WA', 'WATCH',
-//      'http://42.61.99.57/JEMiSyseShopImage/jewelimages/Watch.jpg')
+  Category('R', 'RING',
+      'http://42.61.99.57/JEMiSyseShopImage/jewelimages/Ring.jpg'),
+  Category('ER', 'EARRING',
+      'http://42.61.99.57/JEMiSyseShopImage/jewelimages/Earring.png'),
+  Category('PE', 'PENDANT',
+      'http://42.61.99.57/JEMiSyseShopImage/jewelimages/Pendant.jpg'),
+  Category('NE', 'NECKLACE',
+      'http://42.61.99.57/JEMiSyseShopImage/jewelimages/Necklace.jpg'),
+  Category('BR', 'BRACELET',
+      'http://42.61.99.57/JEMiSyseShopImage/jewelimages/Bracelet.jpg'),
+  Category('BA', 'BANGLE',
+      'http://42.61.99.57/JEMiSyseShopImage/jewelimages/Bangle.jpg'),
+  Category('GC', 'CHAIN',
+      'http://42.61.99.57/JEMiSyseShopImage/jewelimages/Chain.jpg'),
+  Category('WA', 'WATCH',
+      'http://42.61.99.57/JEMiSyseShopImage/jewelimages/Watch.jpg')
 ];
 final List<DesignCode> topSelling = [
   DesignCode(
