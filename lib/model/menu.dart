@@ -28,7 +28,7 @@ final List<String> menuitem = [
 List<String> hitem = [
   'HOME',
   'CATEGORY',
-  'MOST POPULAR',
+  'TOP SELLERS',
 ];
 List<String> MenuItemSplit(String type, double screenwidth) {
   int mainmenucount = 0,

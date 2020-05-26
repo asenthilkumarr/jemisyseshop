@@ -17,6 +17,7 @@ import 'package:jemisyseshop/model/tempData.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:jemisyseshop/view/category.dart';
 import 'package:jemisyseshop/view/productDetails.dart';
+import 'package:jemisyseshop/view/productList.dart';
 import 'package:jemisyseshop/widget/goldRate.dart';
 import 'package:jemisyseshop/widget/titleBar.dart';
 import 'package:jemisyseshop/widget/offerTagPainter.dart';
@@ -56,6 +57,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   List<Group> groupdt = List<Group>();
   List<Product> productdt = List<Product>();
   List<Product> selProductlist = new List<Product>();
+//  List<Product> productdetaildt = List<Product>();
   List<Product> mostPopularProductlist = new List<Product>();
   Group selDt = new Group();
 
@@ -63,8 +65,6 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   String _selCountry = 'SG';
   String _filter = "ALL", _filterType = "BYGROUP", _where;
   int _selectedCategoryIndex = 0;
-  final formatter2dec = new NumberFormat('##0.00', 'en_US');
-  final formatterint = new NumberFormat('##0', 'en_US');
   ScrollController _scrollController = new ScrollController();
   ItemScrollController _scrollControllerlist = ItemScrollController();
   TabController _tabController;
@@ -106,6 +106,18 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     selProductlist = dt;
     return dt;
   }
+  Future<List<Product>> getProductDetail(String designCode, int version) async {
+    ProductParam param = new ProductParam();
+    param.designCode = designCode;
+    param.version = version;
+    param.where = _where;
+    var dt = await dataService.GetProductDetails(param);
+    setState(() {
+
+    });
+    return dt;
+  }
+
   Future<List<Product>> getMostPopular() async {
     ProductParam param = new ProductParam();
     param.productType = "ALL";
@@ -146,11 +158,22 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
       elevation: 8.0,
     );
   }
-  void _product_onTap(Product selItem){
-    Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => ProductDetailPage(designCode: selItem.designCode, version: selItem.version),)
-    );
+  Future<void> _product_onTap(Product selItem) async {
+    var productdetail = await getProductDetail(selItem.designCode, selItem.version);
+    print(productdetail.length);
+    if(productdetail.length>1){
+      Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ProductListPage(productdt: productdetail,),)
+      );
+    }
+    else{
+      Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ProductDetailPage(product: productdetail[0], title: productdetail[0].designCode,),)
+      );
+    }
+
   }
   Widget BannerImage(BuildContext context) {
     double screenWidth = MediaQuery
@@ -788,9 +811,9 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   Widget subMenu(){
     List<String> smitem = [
       'ALL',
-      'LATEST',
+      'NEW ARRIVAL',
       'SALE',
-      'MOST POPULAR',
+      'TOP SELLERS',
     ];
     return new TabBar(
       isScrollable: true,
@@ -979,7 +1002,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
             delegate: SliverChildListDelegate(
               [
                 for(var i in selProductlist)
-                  DesignGridWidgets(i),
+                    DesignGridWidgets(i),
               ],
             ),
           ),
