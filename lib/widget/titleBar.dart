@@ -240,7 +240,7 @@ Widget CompanyLogo() {
   return new Container(
     color: primary1Color,
     child: Center(
-      child: Text('JEMiSys eShop',
+      child: Text(appTitle,
         style: GoogleFonts.oswald(
           textStyle: TextStyle(color: Colors.white, fontSize: 31, letterSpacing: 1.5),
         ),

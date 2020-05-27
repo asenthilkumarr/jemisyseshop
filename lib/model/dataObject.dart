@@ -1,8 +1,56 @@
 import 'dart:convert';
 
 import 'package:jemisyseshop/model/common.dart';
+class GoldRate {
+  String goldType;
+  double buyRate;
+  double sellRate;
+  DateTime lastUpdated;
 
+  GoldRate({ this.goldType, this.buyRate, this.sellRate, this.lastUpdated});
 
+  factory GoldRate.fromJson(Map<String, dynamic> json) {
+    return GoldRate(
+      goldType: json['goldType'],
+      buyRate: json['buyRate'],
+      sellRate: json['sellRate'],
+      lastUpdated: json['lastUpdated'],
+    );
+  }
+}
+class DefaultData {
+  String docType;
+  String title;
+  String imageFileName;
+  String procedureName;
+
+  DefaultData(
+      { this.docType, this.title, this.imageFileName, this.procedureName});
+
+  factory DefaultData.fromJson(Map<String, dynamic> json) {
+    return DefaultData(
+      docType: json['docType'],
+      title: json['title'],
+      imageFileName: json['imageFileName'],
+      procedureName: json['procedureName'],
+    );
+  }
+}
+class Setting {
+  String appName;
+  String currCode;
+  String loadingImageName;
+
+  Setting({ this.appName, this.currCode, this.loadingImageName});
+
+  factory Setting.fromJson(Map<String, dynamic> json) {
+    return Setting(
+      appName: json['appName'],
+      currCode: json['currCode'],
+      loadingImageName: bannerimageUrl+json['loadingImageName'],
+    );
+  }
+}
 class Product {
   String groupName;
   String designCode;

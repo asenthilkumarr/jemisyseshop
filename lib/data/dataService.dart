@@ -13,6 +13,60 @@ class DataService {
     "APIKey": "SkVNaVN5czo1MzU2NDNBVDk4NjU0MzU2"
   };
 
+  Future<List<GoldRate>> GetGoldSellingRate() async {
+    List<GoldRate> result = [];
+    http.Response response = await http.get(
+        apiurl + "GoldRate/GetGoldSellingRate",
+        headers: userheaders,
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      for (Map i in data) {
+        var iRow = GoldRate.fromJson(i);
+        result.add(iRow);
+      }
+      return result;
+    }
+    else {
+      return result;
+    }
+  }
+  Future<List<Setting>> GetSetting() async {
+    List<Setting> result = [];
+    http.Response response = await http.get(
+      apiurl + "Setting/GetSetting",
+      headers: userheaders,
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      for (Map i in data) {
+        var iRow = Setting.fromJson(i);
+        result.add(iRow);
+      }
+      return result;
+    }
+    else {
+      return result;
+    }
+  }
+  Future<List<DefaultData>> GetDefaultData() async {
+    List<DefaultData> result = [];
+    http.Response response = await http.get(
+      apiurl + "Setting/GetDefaultData",
+      headers: userheaders,
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      for (Map i in data) {
+        var iRow = DefaultData.fromJson(i);
+        result.add(iRow);
+      }
+      return result;
+    }
+    else {
+      return result;
+    }
+  }
   Future<List<Product>> GetProductDetails(ProductParam param) async {
     List<Product> result = [];
     http.Response response = await http.post(
