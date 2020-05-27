@@ -1,10 +1,20 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:jemisyseshop/model/common.dart';
+import 'package:jemisyseshop/style.dart';
 import 'package:jemisyseshop/test.dart';
 import 'package:jemisyseshop/view/home.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
 
+import 'data/dataService.dart';
+import 'model/dataObject.dart';
+import 'model/dialogs.dart';
+
 void main() {
-  runApp(MasterScreen(currentIndex: 0, key: null,));
+  runApp(MaterialApp(
+      home: SplashScreen()));
+//  runApp(MasterScreen(currentIndex: 0, key: null,));
 //  runApp(HomeScreen());
   //runApp(MyApp());
 }
@@ -120,5 +130,149 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+}
+
+class SplashScreen extends StatefulWidget{
+  @override
+  _splashScreen createState() => _splashScreen();
+}
+class _splashScreen extends State<SplashScreen>{
+  DataService dataService = DataService();
+  List<Setting> sDT = List<Setting>();
+  final GlobalKey<State> _keyLoader = new GlobalKey<State>();
+
+  route() async{
+    if (_keyLoader.currentWidget != null) {
+      Navigator.of(_keyLoader.currentContext,rootNavigator: true).pop();//close the dialoge
+    }
+
+    Navigator.pushReplacement(context, MaterialPageRoute(
+        builder: (context) => MasterScreen(currentIndex: 0, key: null,)
+    ));
+  }
+
+  Future<List<Setting>> getSetting() async {
+    var dt = await dataService.GetSetting();
+    sDT = dt;
+    if(dt.length>0){
+      appTitle = dt[0].appName;
+      currencysymbol = dt[0].currCode;
+    }
+
+    setState(() {
+
+    });
+    return dt;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    Timer(
+      Duration(seconds: 5),route,
+    );
+    //Future.delayed(Duration.zero, () => Dialogs.showLoadingOnlyDialog(context, _keyLoader));
+
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Builder(
+        builder: (context)
+    {
+      final screenSize = MediaQuery
+          .of(context)
+          .size;
+      getSetting();
+      return Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          sDT.length > 0 ? Container(
+            decoration: BoxDecoration(
+              // Box decoration takes a gradient
+              image: DecorationImage(
+                image: NetworkImage(sDT[0].loadingImageName),
+                fit: BoxFit.fill,
+              ),
+            ),
+          ) : Container(
+//            decoration: BoxDecoration(
+//              // Box decoration takes a gradient
+//              gradient: LinearGradient(
+//                // Where the linear gradient begins and ends
+//                begin: Alignment.topLeft,
+//                end: Alignment.bottomRight,
+//                // Add one stop for each color. Stops should increase from 0 to 1
+//                stops: [0, 1],
+//                colors: [
+//                  // Colors are easy thanks to Flutter's Colors class.
+//                  pageColortop,
+//                  pageColorbottom
+//                ],
+//              ),
+//            ),
+          color: Colors.white,
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Expanded(
+                flex: 2,
+                child: Container(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      CircleAvatar(
+                          backgroundColor: Colors.white,
+                          radius: 50.0,
+                          child: Image(image: AssetImage("assets/logo.png"),
+                          )
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 10.0),
+                      ),
+                      Text(
+                        "Shopping Store",
+                        style: TextStyle(color: Colors.white,
+                            fontSize: 24.0,
+                            fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    CircularProgressIndicator(
+                      valueColor: new AlwaysStoppedAnimation<Color>(
+                          Colors.redAccent),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 20),
+                    ),
+                    Text(
+                      "POS for retail store \n V1.0.0.0",
+                      style: TextStyle(color: Colors.white,
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
+        ],
+      );
+    }
+    )
+    );
+    //return
   }
 }

@@ -19,6 +19,7 @@ import 'package:jemisyseshop/view/category.dart';
 import 'package:jemisyseshop/view/productDetails.dart';
 import 'package:jemisyseshop/view/productList.dart';
 import 'package:jemisyseshop/widget/goldRate.dart';
+import 'package:jemisyseshop/widget/productGridWidget.dart';
 import 'package:jemisyseshop/widget/titleBar.dart';
 import 'package:jemisyseshop/widget/offerTagPainter.dart';
 
@@ -160,7 +161,6 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   }
   Future<void> _product_onTap(Product selItem) async {
     var productdetail = await getProductDetail(selItem.designCode, selItem.version);
-    print(productdetail.length);
     if(productdetail.length>1){
       Navigator.push(
           context,
@@ -173,8 +173,8 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
           MaterialPageRoute(builder: (context) => ProductDetailPage(product: productdetail[0], title: productdetail[0].designCode,),)
       );
     }
-
   }
+
   Widget BannerImage(BuildContext context) {
     double screenWidth = MediaQuery
         .of(context)
@@ -352,7 +352,6 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
         ]
     );
   }
-
   double GridItemHeight(double screenHeight, double screenWidth) {
     double itemHeight = 0.55;
     if (screenHeight > 880)
@@ -388,119 +387,6 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
 
     return itemCount;
   }
-  Widget DesignGridWidgets(Product item) {
-    return Card(
-        shape: RoundedRectangleBorder(
-          side: BorderSide(
-            color: listbgColor,
-            width: 1.0,
-          ),
-        ),
-        child: Stack(
-            children: <Widget>[
-              GestureDetector(
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left:20.0,top:10.0, right:20.0, bottom:5),
-                        child: Align(
-                          alignment: FractionalOffset.center,
-                          child: Image(
-                            image: CachedNetworkImageProvider(
-                              item.imageFile1,
-                            ),
-                            fit: BoxFit.fitHeight,
-                          ),
-//                  child: Image.network(
-//                    item.imageUrl, fit: BoxFit.fitHeight,),
-                        ),
-                      ),
-                    ),
-                    Align(
-                        alignment: FractionalOffset.bottomCenter,
-                        child: Container(
-//                    height: 100,
-                          color: listbgColor,
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 10.0, right: 10.0, top: 6.0, bottom: 6.0),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Row(
-                                  children: [
-                                    SizedBox(child: Text('')),
-                                    Spacer(),
-                                    item.listingPrice > 0 && item.discountPercentage != 0 ?
-                                    Text(item.listingPrice > 0 ? '$currencysymbol${formatterint.format(
-                                        item.listingPrice)}' : '${formatter2dec.format(
-                                        item.weightFrom)}g',
-                                        style: TextStyle(decoration: TextDecoration.lineThrough))
-                                        : Text(item.weightFrom > 0 ? '${formatter2dec.format(
-                                        item.weightFrom)} -' : ''),
-                                  ],
-                                ),
-                                SizedBox(height: 5,),
-                                Row(
-                                  children: [
-                                    Text(item.designCode),
-                                    Spacer(),
-                                    item.listingPrice > 0 && item.discountPercentage > 0 ?
-                                    Text('$currencysymbol${formatterint.format(
-                                        item.onlinePrice)}', style: TextStyle(fontWeight: FontWeight.bold))
-                                        : Text(item.listingPrice > 0 ? '$currencysymbol${formatterint.format(
-                                        item.listingPrice)}' : 'Wt.: ${formatter2dec.format(
-                                        item.weightTo)}g'),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        )
-                    ),
-                  ],
-                ),
-                onTap: (){
-                  _product_onTap(item);
-                },
-              ),
-              item.discountPercentage > 0 ? Positioned(
-                left: 0.0,
-                child: Container(
-                  child: CustomPaint(
-                    painter: ShapesPainter(),
-//                      painter: DrawTriangle(),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 12.0, top: 6.0),
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        child: Transform.rotate(angle: -pi / 4,
-                            child: Wrap(
-                                runSpacing: 5.0,
-                                spacing: 5.0,
-                                direction: Axis.vertical,
-                                children: [
-                                  SizedBox(
-                                      width: 40,
-                                      child: Text("${formatterint.format(item.discountPercentage)}% OFF",
-                                        style: TextStyle(
-                                            fontSize: 12, color: Colors.white),
-                                      )
-
-                                  ),
-                                ])
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ) : SizedBox(height: 1, width: 1,),
-            ]
-        )
-    );
-  }
-
   Widget TopSellingListitem(DesignCode item) {
     final screenSize = MediaQuery
         .of(context)
@@ -617,7 +503,6 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
         )
     );
   }
-
   Widget TopSellingListView(List<DesignCode> data) {
     return
       new ListView.builder(
@@ -627,7 +512,6 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
             TopSellingListitem(data[index]),
       );
   }
-
   Widget CategoryListitem(BuildContext context, Group dt, int index, int totindex) {
     int nindex = index;
 
@@ -667,6 +551,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                               index: nindex, duration: Duration(seconds: 1));
                         }
                         _selectedCategoryIndex = index;
+
                         setState(() {
                         });
                       },
@@ -790,7 +675,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
         Tab(
           child: Text(
             i,
-            style: TextStyle(fontFamily: "BarlowBold", color: Colors.black),
+            style: TextStyle(color: Colors.black),
           ),
         ),
     ],
@@ -825,7 +710,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
             child: Text(
               i,
               style: TextStyle(
-                  fontFamily: "BarlowBold", color: Colors.black, fontSize: 13, fontWeight: FontWeight.normal ),
+                  color: Colors.black, fontSize: 13, fontWeight: FontWeight.normal ),
             ),
           ),
       ],
@@ -1002,7 +887,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
             delegate: SliverChildListDelegate(
               [
                 for(var i in selProductlist)
-                    DesignGridWidgets(i),
+                  ProductGridWidgetHome(item: i,),
               ],
             ),
           ),
@@ -1218,7 +1103,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(
                             10.0, 8.0, 0.0, 8.0),
-                        child: Text('MOST POPULAR',
+                        child: Text('TOP SELLERS',
                           style: TextStyle(
                               fontSize: 17,
                               color: Colors.white, fontWeight: FontWeight.bold),),
@@ -1256,7 +1141,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
             delegate: SliverChildListDelegate(
               [
                 for(var i in mostPopularProductlist)
-                  DesignGridWidgets(i),
+                  ProductGridWidgetHome(item: i,),
               ],
             ),
           ),
@@ -1338,6 +1223,4 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     );
   }
 }
-
-
 
