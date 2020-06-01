@@ -60,7 +60,7 @@ class _FullscreenSliderIndicatorState extends State<FullscreenSliderIndicator> {
           final double height = MediaQuery
               .of(context)
               .size
-              .height;
+              .width - 70;
           return Container(
             color: Colors.white,
             child: Stack(
@@ -69,8 +69,9 @@ class _FullscreenSliderIndicatorState extends State<FullscreenSliderIndicator> {
                   options: CarouselOptions(
                       height: height,
                       autoPlay: false,
+                      aspectRatio: 16/9,
                       viewportFraction: 1.0,
-                      enlargeCenterPage: false,
+                      enlargeCenterPage: true,
                       onPageChanged: (index, reason) {
                         _current = index;
                         setState(() {
@@ -87,8 +88,8 @@ class _FullscreenSliderIndicatorState extends State<FullscreenSliderIndicator> {
                         },
                           child: Container(
                         child: Center(
-                        child: Image.network(item, fit: BoxFit.fitWidth,
-                          height: height,)
+                        child: Image.network(item, fit: BoxFit.fitHeight,
+                          width: height,)
                         ),
                       ),
 
@@ -104,15 +105,16 @@ class _FullscreenSliderIndicatorState extends State<FullscreenSliderIndicator> {
                       children: widget.imgList.map((url) {
                         int index = widget.imgList.indexOf(url);
                         return Container(
-                          width: 8.0,
-                          height: 8.0,
+                          width: 7.0,
+                          height: 7.0,
                           margin: EdgeInsets.symmetric(
                               vertical: 10.0, horizontal: 2.0),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: _current == index
-                                ? Color.fromRGBO(0, 0, 0, 0.9)
-                                : Color.fromRGBO(0, 0, 0, 0.4),
+                              color: _current == index ? Color(0xFF83B791) : Color(0xFFE6E3E3),
+//                            color: _current == index
+//                                ? Color.fromRGBO(0, 0, 0, 0.9)
+//                                : Color.fromRGBO(0, 0, 0, 0.4),
                           ),
                         );
                       }).toList(),

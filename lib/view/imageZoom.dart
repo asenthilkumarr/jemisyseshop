@@ -31,8 +31,8 @@ class ImageZoomPage extends StatelessWidget {
               )
           ),
                 Positioned(
-                    right: 1.0,
-                    top: 1.0,
+                    right: 3.0,
+                    bottom: 3.0,
                     child: GestureDetector(
                       onTap: () {
                         Navigator.of(context).pop();

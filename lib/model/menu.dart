@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:jemisyseshop/style.dart';
-import 'package:jemisyseshop/view/TopSellingProducts.dart';
-import 'package:jemisyseshop/view/category.dart';
 import 'package:jemisyseshop/view/home.dart';
 import 'package:jemisyseshop/view/home2.dart';
 import 'package:jemisyseshop/view/home3.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
-
 import 'common.dart';
+
 class menuList{
   String name;
   Widget url;
@@ -83,9 +81,9 @@ void _openPage(menuItem, BuildContext context) {
             case 'Home 2':
               return HomeScreen2();
               break;
-            case 'Top Sales':
-              return TopSellingScreen();
-              break;
+//            case 'Top Sales':
+//              return TopSellingScreen();
+//              break;
             case 'Category':
               return MasterScreen(currentIndex: 1, key: null,);
               break;
@@ -98,12 +96,12 @@ void _openPage(menuItem, BuildContext context) {
   else {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       switch (menuItem) {
-        case 'Top Sales':
-          return TopSellingScreen();
-          break;
-        case 'Category':
-          return CategoryScreen();
-          break;
+//        case 'Top Sales':
+//          return TopSellingScreen();
+//          break;
+//        case 'Category':
+//          return CategoryScreen();
+//          break;
         case 'Home 3':
           return HomeScreen3();
           break;

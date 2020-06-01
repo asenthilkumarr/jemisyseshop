@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 const String FontNameDefault = 'Montserrat';
 
@@ -15,6 +17,7 @@ const Color tagpricebgColor = Color(0xFFF3F3F3);
 
 const double textborderRadius = 15.0;
 
+
 const Body1Style = TextStyle(
   fontFamily: FontNameDefault,
 //fontWeight: FontWeight.w300,
@@ -23,6 +26,8 @@ const Body1Style = TextStyle(
 );
 
 const titleTextStyle = TextStyle(color: title1Color, fontSize: 20.0,);
+
+TextStyle dFont = GoogleFonts.lato();
 
 //title menu
 const Color titlebgColor = Color(0xFFFF8752);//Colors.redAccent;

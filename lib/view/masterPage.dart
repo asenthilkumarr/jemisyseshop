@@ -13,6 +13,7 @@ import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/model/menu.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:jemisyseshop/view/contactUs.dart';
 import 'package:jemisyseshop/view/productDetails.dart';
 import 'package:jemisyseshop/view/productList.dart';
 import 'package:jemisyseshop/widget/goldRate.dart';
@@ -20,9 +21,8 @@ import 'package:jemisyseshop/widget/productGridWidget.dart';
 import 'package:jemisyseshop/widget/scrollingText.dart';
 import 'package:jemisyseshop/widget/titleBar.dart';
 import 'package:jemisyseshop/widget/offerTagPainter.dart';
-
 import '../style.dart';
-import 'home.dart';
+
 class MasterScreen extends StatelessWidget {
   // This widget is the root of your application.
   final int currentIndex;
@@ -283,13 +283,10 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                       child: GestureDetector(
                         onTap: () {
                           hideTitleMessage = true;
-                          setState(() {
-
-                          });
+                          setState(() { });
                         },
                         child: Icon(
                           Icons.close, color: Colors.white, size: 18,),
-
                       )),
                 ]
             ),
@@ -300,7 +297,6 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   Widget pageAppBar() {
     return AppBar(
 //      title: Text("JEMiSys eShop"),
-
         elevation: 0.0,
         backgroundColor: primary1Color,
         centerTitle: true,
@@ -712,6 +708,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
         ),
     ],
       onTap: (index) async {
+        print(index);
         menuSelected = index;
         if(index == 0){
           _tabControllerFilter.index = 0;
@@ -1236,6 +1233,231 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
 
           )
       ),
+      bottomNavigationBar: BottomAppBar(
+        child: new Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
+          children: <Widget>[
+            SizedBox(
+               width: 50.0,
+              child: FlatButton(
+                color: Colors.white,
+                padding: const EdgeInsets.fromLTRB(0.0,0.0,0.0,0.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(2.0,0.0,2.0,0.0),
+                      child: Icon(
+                        Icons.home,
+                        color: Colors.grey,
+                        size: 24.0,
+                      ),
+                    ),
+                    SizedBox(height: 0,),
+                    Padding(
+                      padding: const EdgeInsets.all(0.0),
+                      child: Text(
+                        "Home",
+                        style: TextStyle(
+                            color: Color(0xFF656665),
+                            fontSize: 9
+                          //fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                onPressed: () async {
+                  menuSelected = 0;
+                  _tabControllerFilter.index = 0;
+                  _tabController.index = 0;
+                  _filter="ALL";
+                  await getProduct();
+                  _scrollController.animateTo(
+                    0.0,
+                    curve: Curves.easeOut,
+                    duration: const Duration(milliseconds: 300),
+                  );
+                  setState(() {
+
+                  });
+                },
+              ),
+            ),
+            SizedBox(
+              width: 65.0,
+              child: FlatButton(
+                color: Colors.white,
+                padding: const EdgeInsets.fromLTRB(0.0,0.0,0.0,0.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(2.0,0.0,2.0,0.0),
+                      child: Container(
+                        width: 33,
+                        height: 24,
+                        child: Stack(
+                          children: [
+                            Positioned(
+                              bottom: 1,
+                              left: 1,
+                              child: Icon(
+                                Icons.call,
+                                color: Colors.grey,
+                                size: 20.0,
+                              ),
+                            ),
+                            Positioned(
+                              top: 0,
+                              right: 1,
+                              child: Icon(
+                                Icons.message,
+                                color: Colors.grey,
+                                size: 14.0,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+
+                    ),
+                    SizedBox(height: 0,),
+                    Padding(
+                      padding: const EdgeInsets.all(0.0),
+                      child: Text(
+                        "Contact Us",
+                        style: TextStyle(
+                            color: Color(0xFF656665),
+                            fontSize: 9
+                          //fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                      builder: (context) => ContactUsPage(),));
+                },
+              ),
+            ),
+            SizedBox(
+               width: 70.0,
+              child: FlatButton(
+                color: Colors.white,
+                padding: const EdgeInsets.fromLTRB(0.0,0.0,0.0,0.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(2.0,0.0,2.0,0.0),
+                      child: Icon(
+                        Icons.home,
+                        color: Colors.grey,
+                        size: 24.0,
+                      ),
+                    ),
+                    SizedBox(height: 0,),
+                    Padding(
+                      padding: const EdgeInsets.all(0.0),
+                      child: Text(
+                        "Home Try On",
+                        style: TextStyle(
+                            color: Color(0xFF656665),
+                            fontSize: 9
+                          //fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                onPressed: () async {
+                },
+              ),
+            ),
+            SizedBox(
+               width: 50.0,
+              child: FlatButton(
+                color: Colors.white,
+                padding: const EdgeInsets.fromLTRB(0.0,0.0,0.0,0.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(2.0,0.0,2.0,0.0),
+                      child: Icon(
+                        Icons.more_vert,
+                        color: Colors.grey,
+                        size: 24.0,
+                      ),
+                    ),
+                    SizedBox(height: 0,),
+                    Padding(
+                      padding: const EdgeInsets.all(0.0),
+                      child: Text(
+                        "More",
+                        style: TextStyle(
+                            color: Color(0xFF656665),
+                            fontSize: 9
+                          //fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                onPressed: () async {
+                },
+              ),
+            ),
+            SizedBox(
+              width: 50.0,
+              child: FlatButton(
+                color: Colors.white,
+                padding: const EdgeInsets.fromLTRB(0.0,0.0,0.0,0.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(2.0,0.0,2.0,0.0),
+                      child: Icon(
+                        Icons.arrow_drop_up,
+                        color: Colors.grey,
+                        size: 24.0,
+                      ),
+                    ),
+                    SizedBox(height: 0,),
+                    Padding(
+                      padding: const EdgeInsets.all(0.0),
+                      child: Text(
+                        "Top",
+                        style: TextStyle(
+                            color: Color(0xFF656665),
+                            fontSize: 9
+                          //fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                onPressed: () {
+                  setState(() { });
+                  _scrollController.animateTo(
+                    0.0,
+                    curve: Curves.easeOut,
+                    duration: const Duration(milliseconds: 300),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+      /*
       floatingActionButton: new Container(
           height: 30,
           child: FloatingActionButton.extended(
@@ -1253,6 +1475,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
             },
             label: Text('Top'),
           )),
+      */
     );
   }
 }

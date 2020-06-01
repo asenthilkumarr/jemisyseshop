@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/common.dart';
@@ -161,6 +162,54 @@ class _productListPage extends State<ProductListPage> {
     );
   }
 
+  Widget filterWidget(){
+    return SafeArea(
+      child: Container(
+        color: Colors.white,
+        child: Row(
+          children: [
+            Flexible(
+              flex: 1,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(
+                    color: Color(0xFFe2e8ec),
+                    width: 1,
+                  ),
+                ),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 50,
+                      ),
+                      FlatButton(
+                        child: Text("Metal Type"),
+                      ),
+                      FlatButton(
+                        child: Text("Brand            "),
+                      ),
+                      FlatButton(
+                        child: Text("Price Range"),
+                      ),
+                      FlatButton(
+                        child: Text("Weight Range"),
+                      ),
+                    ]
+                ),
+              ),
+            ),
+            Flexible(
+              flex: 1,
+              child: Container(),
+            )
+          ],
+
+        ),
+      ),
+    );
+  }
   @override
   void initState() {
     super.initState();
@@ -189,7 +238,7 @@ class _productListPage extends State<ProductListPage> {
       home: Scaffold(
         key: scaffoldKey,
 //      appBar: pageAppBar(),
-        drawer: MenuItemWedget(scaffoldKey: scaffoldKey, isLogin: isLogin),
+        drawer: filterWidget(),
         body: SafeArea(
             child: Container(
                 color: Colors.white,
@@ -203,52 +252,60 @@ class _productListPage extends State<ProductListPage> {
                           children: [
                             Flexible(
                               flex: 1,
-                              child: Container(
+                              child: InkWell(
+                                onTap: (){
+                                  scaffoldKey.currentState.openDrawer();
+                                },
+                                child: Container(
 //                              color: listLabelbgColor,
-                                decoration: BoxDecoration(
-                                  color: listLabelbgColor,
-                                  border: Border.all(
-                                    color: Colors.grey,
-                                    width: 1,
+                                  decoration: BoxDecoration(
+                                    color: listLabelbgColor,
+                                    border: Border.all(
+                                      color: Colors.grey,
+                                      width: 1,
+                                    ),
                                   ),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: <Widget>[
-                                    Spacer(),
-                                    Transform.rotate(
-                                        angle: 90 * pi / 180,
-                                        child: Icon(Icons.swap_horiz, color: Colors.white,)),Text('SORT', style: TextStyle(color: Colors.white),),
-                                    Spacer(),
-                                  ],
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: <Widget>[
+                                      Spacer(),
+                                      Padding(
+                                        padding: const EdgeInsets.only(left:8.0, right:6.0),
+                                        child: Image(image: AssetImage("assets/filter_icon.png"),width: 16, height: 16,),
+                                      ),
+                                      Text('FILTER', style: TextStyle(color: Colors.white),),
+                                      Spacer(),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
                             Flexible(
                               flex: 1,
-                              child: Container(
+                              child: InkWell(
+                                onTap: () {},
+                                child: Container(
 //                              color: listLabelbgColor,
-                                decoration: BoxDecoration(
-                                  color: listLabelbgColor,
-                                  border: Border.all(
-                                    color: Colors.grey,
-                                    width: 1,
+                                  decoration: BoxDecoration(
+                                    color: listLabelbgColor,
+                                    border: Border.all(
+                                      color: Colors.grey,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: <Widget>[
+                                      Spacer(),
+                                      Transform.rotate(
+                                          angle: 90 * pi / 180,
+                                          child: Icon(Icons.swap_horiz, color: Colors.white,)),Text('SORT', style: TextStyle(color: Colors.white),),
+                                      Spacer(),
+                                    ],
                                   ),
                                 ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: <Widget>[
-                                    Spacer(),
-                                    Padding(
-                                      padding: const EdgeInsets.only(left:8.0, right:6.0),
-                                      child: Image(image: AssetImage("assets/filter_icon.png"),width: 16, height: 16,),
-                                    ),
-                                    Text('FILTER', style: TextStyle(color: Colors.white),),
-                                    Spacer(),
-                                  ],
-                                ),
                               ),
-                            )
+                            ),
                           ],
                         ),
                       ),

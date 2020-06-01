@@ -1,9 +1,8 @@
 import 'dart:async';
 
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:jemisyseshop/model/common.dart';
-import 'package:jemisyseshop/style.dart';
-import 'package:jemisyseshop/test.dart';
 import 'package:jemisyseshop/view/home.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
 
@@ -179,6 +178,9 @@ class _splashScreen extends State<SplashScreen>{
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
     return Scaffold(
       body: Builder(
         builder: (context)

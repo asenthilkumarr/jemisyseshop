@@ -62,7 +62,7 @@ class _productDetailPage extends State<ProductDetailPage> {
     }
     if (!kIsWeb) {
       if (screenSize.height > screenSize.width)
-        imgHeight = (screenSize.height / 4) * 2.5;
+        imgHeight = (screenSize.height / 4) * 2.0;
       else
         imgHeight = (screenSize.width / 4) * 1.9;
     }
@@ -135,7 +135,7 @@ class _productDetailPage extends State<ProductDetailPage> {
                               ),
                               child: ConstrainedBox(
                                 constraints: BoxConstraints(
-                                    minHeight: 100, maxHeight: imgHeight+50,
+                                    minHeight: 100, maxHeight: imgHeight,
                                     maxWidth: imgHeight),
                                 child: Padding(
                                   padding: const EdgeInsets.only(
@@ -287,6 +287,8 @@ class _productDetailPage extends State<ProductDetailPage> {
 
                           ],
                         ),
+                        /*
+                        //Quantity
                         Padding(
                           padding: const EdgeInsets.only(left:2.0, right:2.0, bottom:5.0),
                           child: Align(
@@ -389,6 +391,7 @@ class _productDetailPage extends State<ProductDetailPage> {
                             ),
                           ),
                         ),
+                        */
                       ],
                     )),
                     ConstrainedBox(
@@ -477,7 +480,7 @@ class _productDetailPage extends State<ProductDetailPage> {
                                                 width: 100,
                                                 child: Align(
                                                     alignment: Alignment.centerRight,
-                                                    child: Text("Metal type : ")
+                                                    child: Text("Metal Type : ")
                                                 ),
                                               ),
                                               Flexible(
@@ -1304,6 +1307,58 @@ class _productDetailPage extends State<ProductDetailPage> {
               ),
 
             ),
+          bottomNavigationBar: BottomAppBar(
+              child: Container(
+                child: Padding(
+                  padding: const EdgeInsets.only(left:15.0, right: 15.0),
+                  child: new Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Expanded(
+                          child: RaisedButton(
+
+                            color: listLabelbgColor,
+                            padding: const EdgeInsets.fromLTRB(0.0,0.0,0.0,0.0),
+                            child: Text(
+                    "Home Try On",
+                    style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14
+                      //fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                            onPressed: () async {
+
+                            },
+                          ),
+                        ),
+                        SizedBox(width: 1),
+                        Expanded(
+                          child: RaisedButton(
+                            color: listLabelbgColor,
+                            padding: const EdgeInsets.fromLTRB(0.0,0.0,0.0,0.0),
+                            child: Padding(
+                              padding: const EdgeInsets.all(0.0),
+                              child: Text(
+                                "Buy Now",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14
+                                  //fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            onPressed: () async {
+
+                            },
+                          ),
+                        ),
+                      ]
+                  ),
+                ),
+              )
+          ),
 
         )
     );
