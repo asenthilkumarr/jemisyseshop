@@ -1,4 +1,5 @@
 
+import 'dart:async';
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -7,19 +8,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_widgets/flutter_widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 import 'package:jemisyseshop/data/dataService.dart';
-import 'package:jemisyseshop/main.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/model/menu.dart';
-import 'package:jemisyseshop/model/tempData.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:jemisyseshop/view/category.dart';
 import 'package:jemisyseshop/view/productDetails.dart';
 import 'package:jemisyseshop/view/productList.dart';
 import 'package:jemisyseshop/widget/goldRate.dart';
 import 'package:jemisyseshop/widget/productGridWidget.dart';
+import 'package:jemisyseshop/widget/scrollingText.dart';
 import 'package:jemisyseshop/widget/titleBar.dart';
 import 'package:jemisyseshop/widget/offerTagPainter.dart';
 
@@ -61,6 +59,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
 //  List<Product> productdetaildt = List<Product>();
   List<Product> mostPopularProductlist = new List<Product>();
   Group selDt = new Group();
+  List<DefaultData> dDt = new List<DefaultData>();
 
   String _selgroup = 'RINGS';
   String _selCountry = 'SG';
@@ -79,15 +78,36 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   Country sCountry;
   int menuSelected = 0;
   int submenuSelectedIndex = 0;
+
+  CarouselController buttonCarouselController = CarouselController();
+
   Future<void> getDefault() async {
     var sitem = country.firstWhere((d) => d.shortCode == _selCountry);
     sCountry = sitem;
 
+    await getDefaultData();
     await getGroup();
     await getProduct();
     await getMostPopular();
+
+    if(titMessage == "") hideTitleMessage = true;
+
+    if(hideGoldRate == false){
+      Timer(
+        Duration(seconds: 1),showGoldRate,
+      );
+    }
     setState(() {
     });
+
+  }
+  Future<List<DefaultData>> getDefaultData() async {
+    DefaultDataParam param = new DefaultDataParam();
+    param.docType = "BANNER";
+    param.mode = "ACTIVE";
+    var dt = await dataService.GetDefaultData(param);
+    dDt = dt;
+    return dt;
   }
   Future<List<Group>> getGroup() async {
     var dt = await dataService.GetGroup();
@@ -107,8 +127,9 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     selProductlist = dt;
     return dt;
   }
-  Future<List<Product>> getProductDetail(String designCode, int version) async {
+  Future<List<Product>> getProductDetail(String productType, String designCode, int version) async {
     ProductParam param = new ProductParam();
+    param.productType = productType;
     param.designCode = designCode;
     param.version = version;
     param.where = _where;
@@ -159,20 +180,31 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
       elevation: 8.0,
     );
   }
-  Future<void> _product_onTap(Product selItem) async {
-    var productdetail = await getProductDetail(selItem.designCode, selItem.version);
-    if(productdetail.length>1){
+  Future<void> _group_onTap(String productType, BuildContext context) async {
+    var productdetail = await getProductDetail(productType, "", 1);
+    if (productdetail.length > 1) {
       Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ProductListPage(productdt: productdetail,),)
+          MaterialPageRoute(
+            builder: (context) => ProductListPage(productdt: productdetail, title: productType,),)
       );
     }
-    else{
+    else if (productdetail.length > 0) {
       Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ProductDetailPage(product: productdetail[0], title: productdetail[0].designCode,),)
+          MaterialPageRoute(builder: (context) =>
+              ProductDetailPage(product: productdetail[0],
+                title: productdetail[0].designCode,),)
       );
     }
+//    else {
+//      Navigator.push(
+//          context,
+//          MaterialPageRoute(builder: (context) =>
+//              ProductDetailPage(product: item,
+//                title: item.designCode,),)
+//      );
+//    }
   }
 
   Widget BannerImage(BuildContext context) {
@@ -180,7 +212,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
         .of(context)
         .size
         .width;
-    double _height = 100;
+    double _height = 70;
     if (screenWidth > 1600)
       _height = 650;
     else if (screenWidth >= 1300)
@@ -193,46 +225,39 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
       _height = 200;
     else if (screenWidth >= 400)
       _height = 120;
-    if (images.length > 1) {
+    print(screenWidth);
+    print(_height);
+    if (dDt.length > 0) {
       return new Container(
-        child: CarouselSlider.builder(
-          itemCount: images.length,
+        child: CarouselSlider(
           options: CarouselOptions(
-              autoPlay: true,
-              aspectRatio: 2.0,
-              enlargeCenterPage: true,
-              height: _height
+            autoPlay: true,
+            height: _height,
+            aspectRatio: 16/9,
+            viewportFraction: 0.8,
+            initialPage: 0,
+            enableInfiniteScroll: true,
+            reverse: false,
+            autoPlayInterval: Duration(seconds: 3),
+            //autoPlayAnimationDuration: Duration(milliseconds: 0),
+            //autoPlayCurve: Curves.fastOutSlowIn,
+            enlargeCenterPage: true,
+//            onPageChanged: callbackFunction,
+            scrollDirection: Axis.horizontal,
           ),
-          itemBuilder: (context, index) {
-            return Container(
-              child: SizedBox(
-                  child: Image.network(images[index], fit: BoxFit.fitWidth,
-                    width: screenWidth - 30,)
-              ),
-            );
-          },
+          items: dDt.map((item) =>
+              Container(
+                child: Center(
+                    child: Image.network(item.imageFileName, fit: BoxFit.cover,
+                      width: screenWidth - 30,)
+                ),
+              )
+          ).toList(),
         ),
       );
     }
     else {
       return new Container(
-        child: CarouselSlider.builder(
-          itemCount: images.length,
-          options: CarouselOptions(
-              autoPlay: false,
-              aspectRatio: 2.0,
-              enlargeCenterPage: true,
-              height: _height
-          ),
-          itemBuilder: (context, index) {
-            return Container(
-              child: SizedBox(
-                  child: Image.network(images[index], fit: BoxFit.fitWidth,
-                    width: screenWidth - 30,)
-              ),
-            );
-          },
-        ),
       );
     }
   }
@@ -246,16 +271,12 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                 left: 8.0, top: 8.0, bottom: 8.0, right: 5.0),
             child: Stack(
                 children: <Widget>[
-                  Wrap(
-                    runSpacing: 5.0,
-                    spacing: 5.0,
-                    direction: Axis.horizontal,
-                    children: [
-                      Center(
-                        child: Text("FREE SHIPPING ON EVERY ORDER",
-                            style: TextStyle(color: Colors.white)),
-                      ),
-                    ],
+                  Center(
+                    child: Container(
+                      height: 20,
+                      child: ScrollingText(text: titMessage,
+                          textStyle: TextStyle(color: Colors.white),),
+                    ),
                   ),
                   Positioned(
                       right: 0.0,
@@ -608,14 +629,26 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     return Container(
         width: screenSize.width / count-4,
         //color: Colors.grey,
-        child: Card(
-            shape: RoundedRectangleBorder(
-              side: BorderSide(
-                color: listbgColor,
-                width: 1.0,
+        child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(
+                color: Color(0xFFe2e8ec),
+                width: 1,
               ),
+              //borderRadius: BorderRadius.circular(12),
             ),
-            child: Stack(
+//            shape: RoundedRectangleBorder(
+//              side: BorderSide(
+//                color: listbgColor,
+//                width: 1.0,
+//              ),
+//            ),
+            child: GestureDetector(
+                onTap: (){
+                  _group_onTap(item.groupName, context);
+                },
+                child: Stack(
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.only(left:20.0, right:20.0, bottom:25.0, top:10.0),
@@ -650,11 +683,10 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                   ),
 
                 ]
-            )
+            ))
         )
     );
   }
-
   Widget _sizedContainer(Widget child) {
     return SizedBox(
       width: 80.0,
@@ -887,7 +919,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
             delegate: SliverChildListDelegate(
               [
                 for(var i in selProductlist)
-                  ProductGridWidgetHome(item: i,),
+                  ProductGridWidgetHome(productType: "", item: i,),
               ],
             ),
           ),
@@ -1141,7 +1173,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
             delegate: SliverChildListDelegate(
               [
                 for(var i in mostPopularProductlist)
-                  ProductGridWidgetHome(item: i,),
+                  ProductGridWidgetHome(productType: "", item: i,),
               ],
             ),
           ),
@@ -1151,6 +1183,9 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
         ],
       ),
     );
+  }
+  void showGoldRate(){
+    Future.delayed(Duration.zero, () => objGoldRate.showGoldRate(context, hideTitleMessage, _keyGoldRate));
   }
 
   @override
@@ -1163,13 +1198,12 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
 
     getDefault();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      images.forEach((imageUrl) {
-        precacheImage(NetworkImage(imageUrl), context);
-      });
-    });
-    if(hideGoldRate == false)
-      Future.delayed(Duration.zero, () => objGoldRate.showGoldRate(context, hideTitleMessage, _keyGoldRate));
+    //    WidgetsBinding.instance.addPostFrameCallback((_) {
+//      images.forEach((imageUrl) {
+//        precacheImage(NetworkImage(imageUrl), context);
+//      });
+//    });
+
 
 
   }
@@ -1193,13 +1227,12 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
               color: Colors.white,
                 child: Column(
                   children: [
-                    titleMessage(),
+                    titMessage != "" ?  titleMessage() : Container(),
                     titleBar(context, scaffoldKey, _keyGoldRate),
 
                     mainContainer(itemCount, itemheight, screenSize.width),
                   ],
                 )
-
 
           )
       ),

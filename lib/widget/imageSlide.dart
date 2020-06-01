@@ -2,6 +2,8 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:jemisyseshop/model/dataObject.dart';
+import 'package:jemisyseshop/view/imageZoom.dart';
 
 final List<String> imgList2 = [
   'https://images.unsplash.com/photo-1520342868574-5fa3804e551c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=6ff92caffcdd63681a35134a6770ed3b&auto=format&fit=crop&w=1951&q=80',
@@ -66,6 +68,7 @@ class _FullscreenSliderIndicatorState extends State<FullscreenSliderIndicator> {
                 CarouselSlider(
                   options: CarouselOptions(
                       height: height,
+                      autoPlay: false,
                       viewportFraction: 1.0,
                       enlargeCenterPage: false,
                       onPageChanged: (index, reason) {
@@ -73,15 +76,24 @@ class _FullscreenSliderIndicatorState extends State<FullscreenSliderIndicator> {
                         setState(() {
                         });
                       }
-//                   autoPlay: true,
                   ),
                   items: widget.imgList.map((item) =>
-                      Container(
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ImageZoomPage(imgUrl: item,),));
+                        },
+                          child: Container(
                         child: Center(
-                            child: Image.network(item, fit: BoxFit.fitWidth,
-                              height: height,)
+                        child: Image.network(item, fit: BoxFit.fitWidth,
+                          height: height,)
                         ),
-                      )).toList(),
+                      ),
+
+                      )
+                  ).toList(),
                 ),
                 Positioned(
 //                bottom: 5.0,

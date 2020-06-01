@@ -2,8 +2,13 @@ import 'package:intl/intl.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 
 final String apiurl = 'http://42.61.99.57/JEMiSyseShopAPI/api/';
-final String imageUrl = 'http://42.61.99.57/JEMiSyseShopImage/jewelimages/';
-final String bannerimageUrl = 'http://42.61.99.57/JEMiSyseShopImage/banner/';
+final String imageDefaultUrl = 'http://42.61.99.57/JEMiSyseShopImage/';
+String imgFolderName = "";
+String imageUrl = "";
+String bannerimageUrl = '';
+String startupimageUrl = "";
+
+String titMessage = "";
 
 final List<Country> country = [
   Country('Singapore', 'SG', 'SGD', 'assets/SG.png'),

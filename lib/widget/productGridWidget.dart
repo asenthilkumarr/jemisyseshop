@@ -35,7 +35,7 @@ class ProductGridWidget extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(
-                  color: listbgColor,
+                  color: Color(0xFFe2e8ec),
                   width: 1,
                 ),
                 //borderRadius: BorderRadius.circular(12),
@@ -158,19 +158,18 @@ class ProductGridWidget extends StatelessWidget {
 
 class ProductGridWidgetHome extends StatelessWidget {
   final Product item;
-  ProductGridWidgetHome({this.item});
+  final String productType;
+  ProductGridWidgetHome({this.item, this.productType});
   String _where="ALL";
   DataService dataService = DataService();
 
-  Future<void> _product_onTap(Product selItem, BuildContext context) async {
-    var productdetail = await getProductDetail(
-        selItem.designCode, selItem.version);
-    print(productdetail.length);
+  Future<void> _product_onTap(String productType, Product selItem, BuildContext context) async {
+    var productdetail = await getProductDetail(productType, selItem.designCode, selItem.version);
     if (productdetail.length > 1) {
       Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ProductListPage(productdt: productdetail,),)
+            builder: (context) => ProductListPage(productdt: productdetail, title: selItem.designCode,),)
       );
     }
     else if (productdetail.length > 0) {
@@ -190,8 +189,9 @@ class ProductGridWidgetHome extends StatelessWidget {
 //      );
 //    }
   }
-  Future<List<Product>> getProductDetail(String designCode, int version) async {
+  Future<List<Product>> getProductDetail(String productType, String designCode, int version) async {
     ProductParam param = new ProductParam();
+    param.productType = productType;
     param.designCode = designCode;
     param.version = version;
     param.where = _where;
@@ -217,10 +217,14 @@ class ProductGridWidgetHome extends StatelessWidget {
                   color: listbgColor,
                   width: 1.0,
                 ),
+                  borderRadius: BorderRadius.circular(4.0)
               ),
               child: Stack(
                   children: <Widget>[
                     GestureDetector(
+                      onTap: (){
+                        _product_onTap(productType, item, context);
+                      },
                       child: Column(
                         children: [
                           Expanded(
@@ -283,9 +287,7 @@ class ProductGridWidgetHome extends StatelessWidget {
                           ),
                         ],
                       ),
-                      onTap: (){
-                        _product_onTap(item, context);
-                      },
+
                     ),
                     item.discountPercentage > 0 ? Positioned(
                       left: 0.0,

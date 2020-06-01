@@ -13,10 +13,12 @@ import 'package:jemisyseshop/style.dart';
 import 'package:jemisyseshop/widget/offerTagPainter.dart';
 import 'package:jemisyseshop/widget/productGridWidget.dart';
 import 'package:jemisyseshop/widget/titleBar.dart';
+//import 'package:collection/collection.dart';
 
 class ProductListPage extends StatefulWidget{
   final List<Product> productdt;
-  ProductListPage({this.productdt});
+  final String title;
+  ProductListPage({this.productdt, this.title});
   @override
   _productListPage createState() => _productListPage();
 }
@@ -93,7 +95,40 @@ class _productListPage extends State<ProductListPage> {
 
     return itemCount;
   }
-
+  List<String> getFilterBrands(){
+    var col0 = widget.productdt.map<String>((row) => row.brand).toList(growable: false);
+    var brand = col0.toSet().toList();
+    print("Brand: ${brand.length}");
+    return brand;
+  }
+  List<String> getFilterMetalType(){
+    var col0 = widget.productdt.map<String>((row) => row.metalType).toList(growable: false);
+    var metalType = col0.toSet().toList();
+    print("Brand: ${metalType.length}");
+    return metalType;
+  }
+  List<double> getFilterPricerange(){
+    var col0 = widget.productdt.map<double>((row) => row.listingPrice).toList(growable: false);
+    var listingprice = col0.toSet().toList();
+    var minval = listingprice.reduce(min);
+    var maxval = listingprice.reduce(max);
+    List<double> reslut = List<double>();
+    reslut.add(minval);
+    reslut.add(maxval);
+    print("Max : $maxval Min : $minval");
+    return reslut;
+  }
+  List<double> getFilterWeightrange(){
+    var col0 = widget.productdt.map<double>((row) => row.goldWeight).toList(growable: false);
+    var goldWeight = col0.toSet().toList();
+    var minval = goldWeight.reduce(min);
+    var maxval = goldWeight.reduce(max);
+    List<double> reslut = List<double>();
+    reslut.add(minval);
+    reslut.add(maxval);
+    print("Maxwt : $maxval Minwt : $minval");
+    return reslut;
+  }
   Widget homeWidget(double screenHeight, double screenWidth) {
     double itemHeight = GridItemHeight(screenHeight, screenWidth);
     int itemCount = GridItemCount(screenWidth);
@@ -103,62 +138,6 @@ class _productListPage extends State<ProductListPage> {
             child: CustomScrollView(
                 controller: _scrollController,
                 slivers: <Widget>[
-                  SliverToBoxAdapter(
-                    child: Container(
-                      height: 40,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Flexible(
-                            flex: 1,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(
-                                  color: listbgColor,
-                                  width: 1,
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                children: <Widget>[
-                                  Spacer(),
-                                  Transform.rotate(
-                                      angle: 90 * pi / 180,
-                                      child: Icon(Icons.swap_horiz)),Text('SORT'),
-                                  Spacer(),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Flexible(
-                            flex: 1,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(
-                                  color: listbgColor,
-                                  width: 1,
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                children: <Widget>[
-                                  Spacer(),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left:8.0, right:6.0),
-                                    child: Image(image: AssetImage("assets/filter_icon2.png"),width: 16, height: 16,),
-                                  ),
-                                  Text('FILTER'),
-                                  Spacer(),
-                                ],
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
                   SliverGrid(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: itemCount,
@@ -186,6 +165,10 @@ class _productListPage extends State<ProductListPage> {
   void initState() {
     super.initState();
     getProductDetail();
+    getFilterBrands();
+    getFilterMetalType();
+    getFilterPricerange();
+    getFilterWeightrange();
   }
 
   @override
@@ -212,8 +195,63 @@ class _productListPage extends State<ProductListPage> {
                 color: Colors.white,
                 child: Column(
                     children: [
-                      Customtitle(context, designCode),
-
+                      Customtitle(context, widget.title),
+                      Container(
+                        height: 40,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Flexible(
+                              flex: 1,
+                              child: Container(
+//                              color: listLabelbgColor,
+                                decoration: BoxDecoration(
+                                  color: listLabelbgColor,
+                                  border: Border.all(
+                                    color: Colors.grey,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: <Widget>[
+                                    Spacer(),
+                                    Transform.rotate(
+                                        angle: 90 * pi / 180,
+                                        child: Icon(Icons.swap_horiz, color: Colors.white,)),Text('SORT', style: TextStyle(color: Colors.white),),
+                                    Spacer(),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Flexible(
+                              flex: 1,
+                              child: Container(
+//                              color: listLabelbgColor,
+                                decoration: BoxDecoration(
+                                  color: listLabelbgColor,
+                                  border: Border.all(
+                                    color: Colors.grey,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: <Widget>[
+                                    Spacer(),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left:8.0, right:6.0),
+                                      child: Image(image: AssetImage("assets/filter_icon.png"),width: 16, height: 16,),
+                                    ),
+                                    Text('FILTER', style: TextStyle(color: Colors.white),),
+                                    Spacer(),
+                                  ],
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
                       homeWidget(screenSize.height, screenSize.width),
                     ]
                 )

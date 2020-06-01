@@ -14,7 +14,7 @@ class GoldRate {
       goldType: json['goldType'],
       buyRate: json['buyRate'],
       sellRate: json['sellRate'],
-      lastUpdated: json['lastUpdated'],
+      //lastUpdated: json['lastUpdated'],
     );
   }
 }
@@ -31,26 +31,46 @@ class DefaultData {
     return DefaultData(
       docType: json['docType'],
       title: json['title'],
-      imageFileName: json['imageFileName'],
+      imageFileName: bannerimageUrl + json['imageFileName'],
       procedureName: json['procedureName'],
     );
   }
 }
+class DefaultDataParam {
+  String docType;
+  String mode;
+  Map<String, dynamic> toParam() =>
+      {
+        'docType': docType,
+        'mode': mode,
+      };
+}
 class Setting {
   String appName;
   String currCode;
-  String loadingImageName;
+  String message;
+  String startupImageName;
+  String imageFolderName;
+  String fontName;
 
-  Setting({ this.appName, this.currCode, this.loadingImageName});
+  Setting({ this.appName, this.currCode, this.startupImageName, this.imageFolderName, this.fontName, this.message});
 
   factory Setting.fromJson(Map<String, dynamic> json) {
+    imgFolderName = json['imageFolderName'];
+    imageUrl = imageDefaultUrl + imgFolderName+"/JewelImages/";
+    startupimageUrl = imageDefaultUrl + imgFolderName+"/Startup/";
+    bannerimageUrl = imageDefaultUrl + imgFolderName+"/Banner/";
     return Setting(
       appName: json['appName'],
       currCode: json['currCode'],
-      loadingImageName: bannerimageUrl+json['loadingImageName'],
+      message: json['message'],
+      startupImageName: startupimageUrl+json['startupImageName'],
+      imageFolderName: json['imageFolderName'],
+      fontName: json['fontName'],
     );
   }
 }
+
 class Product {
   String groupName;
   String designCode;
