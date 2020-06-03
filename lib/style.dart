@@ -32,3 +32,18 @@ TextStyle dFont = GoogleFonts.lato();
 //title menu
 const Color titlebgColor = Color(0xFFFF8752);//Colors.redAccent;
 const titleMenuText = TextStyle(color: title1Color, fontSize: 16.0,);
+
+
+Color overlayColor = Colors.grey;
+Color activeTrackColor = Colors.grey;
+Color inactiveTrackColor = Colors.grey;
+Color thumbColor = Colors.grey;
+Color valueIndicatorColor = Colors.grey;
+Color activeTickMarkColor = Colors.grey;
+
+const Color defaultActiveTrackColor = const Color(0xFF0175c2);
+const Color defaultInactiveTrackColor = const Color(0x3d0175c2);
+const Color defaultActiveTickMarkColor = const Color(0x8a0175c2);
+const Color defaultThumbColor = const Color(0xFF0175c2);
+const Color defaultValueIndicatorColor = const Color(0xFF0175c2);
+const Color defaultOverlayColor = const Color(0x290175c2);

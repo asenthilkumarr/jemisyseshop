@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jemisyseshop/style.dart';
+import 'package:jemisyseshop/test.dart';
 import 'package:jemisyseshop/view/home.dart';
 import 'package:jemisyseshop/view/home2.dart';
 import 'package:jemisyseshop/view/home3.dart';
@@ -69,7 +70,7 @@ List<String> MenuItemSplit(String type, double screenwidth) {
 }
 
 void _openPage(menuItem, BuildContext context) {
-  print(menuItem);
+
   if(menuItem == 'Home' || menuItem == 'Home 2' || menuItem == 'Home 3'
       || menuItem == 'Category' || menuItem == 'Top Sales') {
     Navigator.of(context).pushAndRemoveUntil(
@@ -96,9 +97,9 @@ void _openPage(menuItem, BuildContext context) {
   else {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       switch (menuItem) {
-//        case 'Top Sales':
-//          return TopSellingScreen();
-//          break;
+        case 'Test':
+          return Test();
+          break;
 //        case 'Category':
 //          return CategoryScreen();
 //          break;
@@ -166,6 +167,12 @@ class MenuItemWedget extends StatelessWidget {
                   _openPage('Sign out', context);
                 }
             ) : Container(),
+            ListTile(
+                title: Text('Test'),
+                onTap: () {
+                  _openPage('Test', context);
+                }
+            ),
           ],
         ),
       );

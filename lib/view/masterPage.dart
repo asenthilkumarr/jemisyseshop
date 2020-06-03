@@ -122,6 +122,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     param.filterType = _filterType;
     param.filter = _filter;
     param.where = _where;
+
     var dt = await dataService.GetProduct(param);
     productdt = dt;
     selProductlist = dt;
@@ -213,10 +214,11 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
         .size
         .width;
     double _height = 70;
+    print(screenWidth);
     if (screenWidth > 1600)
-      _height = 650;
+      _height = 400;
     else if (screenWidth >= 1300)
-      _height = 500;
+      _height = 300;
     else if (screenWidth >= 1000)
       _height = 400;
     else if (screenWidth >= 700)
@@ -225,8 +227,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
       _height = 200;
     else if (screenWidth >= 400)
       _height = 120;
-    print(screenWidth);
-    print(_height);
+
     if (dDt.length > 0) {
       return new Container(
         child: CarouselSlider(
@@ -708,7 +709,6 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
         ),
     ],
       onTap: (index) async {
-        print(index);
         menuSelected = index;
         if(index == 0){
           _tabControllerFilter.index = 0;
@@ -1366,7 +1366,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                     Padding(
                       padding: const EdgeInsets.all(0.0),
                       child: Text(
-                        "Home Try On",
+                        "Home Try-On",
                         style: TextStyle(
                             color: Color(0xFF656665),
                             fontSize: 9
@@ -1391,7 +1391,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(2.0,0.0,2.0,0.0),
                       child: Icon(
-                        Icons.more_vert,
+                        Icons.person,
                         color: Colors.grey,
                         size: 24.0,
                       ),
@@ -1400,7 +1400,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                     Padding(
                       padding: const EdgeInsets.all(0.0),
                       child: Text(
-                        "More",
+                        "Login",
                         style: TextStyle(
                             color: Color(0xFF656665),
                             fontSize: 9
@@ -1425,7 +1425,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(2.0,0.0,2.0,0.0),
                       child: Icon(
-                        Icons.arrow_drop_up,
+                        Icons.menu,
                         color: Colors.grey,
                         size: 24.0,
                       ),
@@ -1434,7 +1434,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                     Padding(
                       padding: const EdgeInsets.all(0.0),
                       child: Text(
-                        "Top",
+                        "More",
                         style: TextStyle(
                             color: Color(0xFF656665),
                             fontSize: 9
@@ -1445,19 +1445,14 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                   ],
                 ),
                 onPressed: () {
-                  setState(() { });
-                  _scrollController.animateTo(
-                    0.0,
-                    curve: Curves.easeOut,
-                    duration: const Duration(milliseconds: 300),
-                  );
+                  scaffoldKey.currentState.openDrawer();
                 },
               ),
             ),
           ],
         ),
       ),
-      /*
+
       floatingActionButton: new Container(
           height: 30,
           child: FloatingActionButton.extended(
@@ -1475,7 +1470,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
             },
             label: Text('Top'),
           )),
-      */
+
     );
   }
 }

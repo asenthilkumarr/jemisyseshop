@@ -73,6 +73,7 @@ class Setting {
 
 class Product {
   String groupName;
+  String onlineName;
   String designCode;
   int version;
   String metalType;
@@ -107,18 +108,20 @@ class Product {
   int noOfImages;
   bool isShowEvenIfStockIsNull;
   int quantity;
+  bool homeTryOn;
 
   Product(
-      {this.groupName, this.designCode, this.version, this.metalType, this.onSale, this.listingPrice,
+      {this.groupName, this.onlineName, this.designCode, this.version, this.metalType, this.onSale, this.listingPrice,
         this.onlinePrice, this.discountPercentage, this.salesType, this.weightFrom, this.weightTo, this.productType,
         this.imageFile1, this.imageFile2, this.imageFile3, this.imageFile4, this.imageFile5,
         this.itemCode, this.tax, this.sellRate, this.goldWeight, this.labourPrice, this.designName, this.brand,
         this.shortDescription, this.description, this.shippingDays, this.labelLine1, this.labelLine2, this.labelLine3, this.labelLine4, this.labelLine5,
-        this.noOfImages, this.isShowEvenIfStockIsNull});
+        this.noOfImages, this.isShowEvenIfStockIsNull, this.homeTryOn});
 
   Map<String, dynamic> toJson() =>
       {
         'groupName': groupName,
+        'onlineName': onlineName,
         'designCode': designCode,
         'version': version,
         'metalType': metalType,
@@ -134,12 +137,14 @@ class Product {
         'imageFile2': imageFile2,
         'imageFile3': imageFile3,
         'imageFile4': imageFile4,
-        'imageFile5': imageFile5
+        'imageFile5': imageFile5,
+        "homeTryon": homeTryOn == false ? 0 : 1
       };
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
       groupName: json['groupName'],
+      onlineName: json['onlineName'],
       designCode: json['designCode'],
       version: json['version'],
       metalType: json['metalType'],
@@ -175,6 +180,7 @@ class Product {
       isShowEvenIfStockIsNull: json['isShowEvenIfStockIsNull'] == 0
           ? false
           : true,
+      homeTryOn: json['homeTryon'] == 0 ? false : true,
     );
   }
 }

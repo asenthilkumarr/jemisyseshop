@@ -87,10 +87,11 @@ class ProductGridWidget extends StatelessWidget {
                                               softWrap: true,),
                                           ]
                                       ),
-                                      Text("${item.itemCode}"),
-                                      SizedBox(height: 5,),
+//                                      SizedBox(height: 5,),
+                                      Text("${item.itemCode}", style: TextStyle(fontSize: 12, color: Colors.grey)),
+//                                      SizedBox(height: 5,),
                                       item.goldWeight > 0 ? Text("Weight : ${formatter2dec.format(item.goldWeight)}g") : Container(),
-                                      SizedBox(height: 5,),
+//                                      SizedBox(height: 5,),
                                       item.listingPrice > 0 && item.discountPercentage > 0 && item.onlinePrice>0 ?
                                       Text('$currencysymbol${formatterint.format(
                                           item.onlinePrice)}', style: TextStyle(fontWeight: FontWeight.bold))
@@ -205,6 +206,7 @@ class ProductGridWidgetHome extends StatelessWidget {
 //    print("onlinePrice ${item.onlinePrice}");
 //    print("discountPercentage ${item.discountPercentage}");
 //    print("goldWeight ${item.goldWeight}");
+
     return Scaffold(
       body: Builder(
         builder: (context) {
@@ -255,22 +257,37 @@ class ProductGridWidgetHome extends StatelessWidget {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Row(
+                                        mainAxisSize: MainAxisSize.max,
                                         children: [
-                                          SizedBox(child: Text('')),
+                                          Text(item.onlineName),
                                           Spacer(),
                                           item.listingPrice > 0 && item.discountPercentage != 0 ?
-                                          Text(item.listingPrice > 0 ? '$currencysymbol${formatterint.format(
-                                              item.listingPrice)}' : '${formatter2dec.format(
+                                          Text(item.listingPrice > 0 ? '' : '${formatter2dec.format(
                                               item.weightFrom)}g',
-                                              style: TextStyle(decoration: TextDecoration.lineThrough))
+                                              style: TextStyle(decoration: TextDecoration.lineThrough,fontSize: 12, color: Colors.grey))
                                               : Text(item.weightFrom > 0 ? '${formatter2dec.format(
                                               item.weightFrom)} -' : ''),
+//                                          item.listingPrice > 0 && item.discountPercentage != 0 ?
+//                                          Text(item.listingPrice > 0 ? '$currencysymbol${formatterint.format(
+//                                              item.listingPrice)}' : '${formatter2dec.format(
+//                                              item.weightFrom)}g',
+//                                              style: TextStyle(decoration: TextDecoration.lineThrough,fontSize: 12, color: Colors.grey))
+//                                              : Text(item.weightFrom > 0 ? '${formatter2dec.format(
+//                                              item.weightFrom)} -' : ''),
                                         ],
                                       ),
                                       SizedBox(height: 5,),
                                       Row(
                                         children: [
-                                          Text(item.designCode),
+
+                                          item.listingPrice > 0 && item.discountPercentage != 0 ?
+                                          Text(item.listingPrice > 0 ? '$currencysymbol${formatterint.format(
+                                              item.listingPrice)}' : '${formatter2dec.format(
+                                              item.weightFrom)}g',
+                                              style: TextStyle(decoration: TextDecoration.lineThrough,fontSize: 12, color: Color(0xFF7F7F7B)))
+                                              : Container(),
+                                          Spacer(),
+                                          Text(item.designCode, style: TextStyle(fontSize: 10, color: Colors.grey),),
                                           Spacer(),
                                           item.listingPrice > 0 && item.discountPercentage > 0 ?
                                           Text('$currencysymbol${formatterint.format(

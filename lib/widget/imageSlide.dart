@@ -89,7 +89,7 @@ class _FullscreenSliderIndicatorState extends State<FullscreenSliderIndicator> {
                           child: Container(
                         child: Center(
                         child: Image.network(item, fit: BoxFit.fitHeight,
-                          width: height,)
+                          width: height - 50, height: height - 50,)
                         ),
                       ),
 

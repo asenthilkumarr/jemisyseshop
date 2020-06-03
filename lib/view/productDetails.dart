@@ -1,13 +1,11 @@
 import 'dart:math';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
@@ -31,6 +29,7 @@ class _productDetailPage extends State<ProductDetailPage> {
   var scaffoldKey = GlobalKey<ScaffoldState>();
   final txtQtyController = TextEditingController();
   bool favorite = false;
+
   Widget productDetailWidget(Product item) {
     final screenSize = MediaQuery
         .of(context)
@@ -256,7 +255,7 @@ class _productDetailPage extends State<ProductDetailPage> {
                                   children: [
                                     Spacer(),
                                     Text(
-                                      "${item.description}",
+                                      "${item.onlineName}",
                                       softWrap: true,),
                                     Text(" - ${item.itemCode}",
                                       softWrap: true, style: TextStyle(fontSize: 12, color: Colors.grey)),
@@ -1267,6 +1266,7 @@ class _productDetailPage extends State<ProductDetailPage> {
   void initState() {
     super.initState();
     txtQtyController.text = "1";
+    print(widget.product.toJson());
   }
   @override
   Widget build(BuildContext context) {
@@ -1308,50 +1308,59 @@ class _productDetailPage extends State<ProductDetailPage> {
 
             ),
           bottomNavigationBar: BottomAppBar(
+
               child: Container(
+                height: 50,
                 child: Padding(
-                  padding: const EdgeInsets.only(left:15.0, right: 15.0),
+                  padding: const EdgeInsets.only(left:8.0, right: 8.0),
                   child: new Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Expanded(
-                          child: RaisedButton(
+                        widget.product.homeTryOn == true ? Expanded(
+                          child: SizedBox(
+                            height:50,
+                            child: RaisedButton(
 
-                            color: listLabelbgColor,
-                            padding: const EdgeInsets.fromLTRB(0.0,0.0,0.0,0.0),
-                            child: Text(
-                    "Home Try On",
-                    style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14
-                      //fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                            onPressed: () async {
-
-                            },
-                          ),
-                        ),
-                        SizedBox(width: 1),
-                        Expanded(
-                          child: RaisedButton(
-                            color: listLabelbgColor,
-                            padding: const EdgeInsets.fromLTRB(0.0,0.0,0.0,0.0),
-                            child: Padding(
-                              padding: const EdgeInsets.all(0.0),
+                              color: Color(0xFF517295),
+                              padding: const EdgeInsets.fromLTRB(0.0,0.0,0.0,0.0),
                               child: Text(
-                                "Buy Now",
+                                "Home Try-On",
                                 style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14
-                                  //fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            ),
-                            onPressed: () async {
+                              onPressed: () async {
 
-                            },
+                              },
+                            ),
+                          ),
+                        ) :
+                        Container(),
+                        widget.product.homeTryOn == true ? SizedBox(width: 1) :
+                        Container(),
+                        Expanded(
+                          child: SizedBox(
+                            height:50,
+                            child: RaisedButton(
+                              color: Color(0xFF517295),
+                              padding: const EdgeInsets.fromLTRB(0.0,0.0,0.0,0.0),
+                              child: Padding(
+                                padding: const EdgeInsets.all(0.0),
+                                child: Text(
+                                  "Buy Now",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 15, fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              onPressed: () async {
+
+                              },
+                            ),
                           ),
                         ),
                       ]

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -11,10 +12,10 @@ import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/model/menu.dart';
 import 'package:jemisyseshop/style.dart';
+import 'package:jemisyseshop/view/filter.dart';
 import 'package:jemisyseshop/widget/offerTagPainter.dart';
 import 'package:jemisyseshop/widget/productGridWidget.dart';
 import 'package:jemisyseshop/widget/titleBar.dart';
-//import 'package:collection/collection.dart';
 
 class ProductListPage extends StatefulWidget{
   final List<Product> productdt;
@@ -30,6 +31,14 @@ class _productListPage extends State<ProductListPage> {
   String designCode = "Design";
   List<Product> productdt = new List<Product>();
   ScrollController _scrollController = new ScrollController();
+  RangeValues values = RangeValues(1,100);
+  String filterSelect ="Metal Type";
+  List<String> _metal;
+  List<String> _brand;
+  List<double> _price;
+  List<double> _weight;
+  int totItem = 0;
+  bool totisVisable = true;
 
   Future<List<Product>> getProductDetail() async {
 //    ProductParam param = new ProductParam();
@@ -44,7 +53,6 @@ class _productListPage extends State<ProductListPage> {
     });
     return productdt;
   }
-
   double GridItemHeight(double screenHeight, double screenWidth) {
     double itemHeight = 0.55;
     itemHeight = 1;
@@ -70,7 +78,6 @@ class _productListPage extends State<ProductListPage> {
     }
     return itemHeight;
   }
-
   int GridItemCount(double screenwidth) {
     int itemCount = 0;
     if (!kIsWeb) {
@@ -130,6 +137,50 @@ class _productListPage extends State<ProductListPage> {
     print("Maxwt : $maxval Minwt : $minval");
     return reslut;
   }
+  void Filter_Click() {
+    FilterValue result = new FilterValue();
+    FilterSelValue item;
+    List<FilterSelValue> items = List<FilterSelValue>();
+
+    result.minprice = _price[0];
+    result.maxprice = _price[1];
+    result.minweight = _weight[0];
+    result.maxweight = _weight[1];
+
+    for(var i in _metal){
+      if(i!=""){
+        item = new FilterSelValue(isChecked: false, value: i);
+        items.add(item);
+      }
+
+    }
+    result.metal = items;
+
+    items = List<FilterSelValue>();
+    for(var i in _brand){
+      if(i!=""){
+        item = new FilterSelValue(isChecked: false, value: i);
+        items.add(item);
+      }
+    }
+    result.brand = items;
+
+//    Navigator.push(
+//        context,
+//        MaterialPageRoute(
+//          builder: (context) =>
+//              FilterPage(fValue: result,),)
+//    );
+
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (c, a1, a2) => FilterPage(fValue: result,),
+        transitionsBuilder: (c, anim, a2, child) => FadeTransition(opacity: anim, child: child),
+        transitionDuration: Duration(milliseconds: 300),
+      ),
+    );
+  }
   Widget homeWidget(double screenHeight, double screenWidth) {
     double itemHeight = GridItemHeight(screenHeight, screenWidth);
     int itemCount = GridItemCount(screenWidth);
@@ -139,6 +190,7 @@ class _productListPage extends State<ProductListPage> {
             child: CustomScrollView(
                 controller: _scrollController,
                 slivers: <Widget>[
+
                   SliverGrid(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: itemCount,
@@ -161,11 +213,33 @@ class _productListPage extends State<ProductListPage> {
         )
     );
   }
-
-  Widget filterWidget(){
+  _scrollListener() {
+    if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
+        !_scrollController.position.outOfRange) {
+      setState(() {
+        totisVisable = true;
+        _hideNotification();
+      });
+    }
+    if (_scrollController.offset <= _scrollController.position.minScrollExtent &&
+        !_scrollController.position.outOfRange) {
+      setState(() {
+        totisVisable = true;
+        _hideNotification();
+      });
+    }
+  }
+  _hideNotification() {
+    Timer(Duration(seconds: 2), () {
+      setState(() {
+        totisVisable = false;
+      });
+    });
+  }
+  Widget filterWidget2(double _min, double _max){
     return SafeArea(
       child: Container(
-        color: Colors.white,
+        color: Colors.grey,
         child: Row(
           children: [
             Flexible(
@@ -179,22 +253,38 @@ class _productListPage extends State<ProductListPage> {
                   ),
                 ),
                 child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       SizedBox(
                         height: 50,
                       ),
                       FlatButton(
                         child: Text("Metal Type"),
+                        onPressed: (){
+                          filterSelect ="Metal Type";
+                          setState(() { });
+                        },
                       ),
                       FlatButton(
                         child: Text("Brand            "),
+                        onPressed: (){
+                          filterSelect ="Brand";
+                          setState(() { });
+                        },
                       ),
                       FlatButton(
                         child: Text("Price Range"),
+                        onPressed: (){
+                          filterSelect ="Price";
+                          setState(() { });
+                        },
                       ),
                       FlatButton(
                         child: Text("Weight Range"),
+                        onPressed: (){
+                          filterSelect ="Weight";
+                          setState(() { });
+                        },
                       ),
                     ]
                 ),
@@ -202,7 +292,32 @@ class _productListPage extends State<ProductListPage> {
             ),
             Flexible(
               flex: 1,
-              child: Container(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  filterSelect == "Metal Type" ? Container() :
+                  filterSelect == "Brand" ? Container() :
+                  filterSelect == "Price" ? Container(
+                    width: double.infinity,
+                    child: RangeSlider(
+                      min: 1,
+                      max: 100,
+                      values: values,
+                      divisions: 10,
+                      onChanged: (value) {
+                        print("Start: ${value.start}, End: ${value.end}");
+                        setState(() {
+                          values = value;
+                        });
+                      },
+                    ),
+                  ) :
+                  filterSelect == "Weight" ? Container(
+                    height: 20,
+                  ) :
+                  Container(),
+                ],
+              ),
             )
           ],
 
@@ -210,14 +325,20 @@ class _productListPage extends State<ProductListPage> {
       ),
     );
   }
+
   @override
   void initState() {
-    super.initState();
     getProductDetail();
-    getFilterBrands();
-    getFilterMetalType();
-    getFilterPricerange();
-    getFilterWeightrange();
+    _metal = getFilterMetalType();
+    _brand = getFilterBrands();
+    _price=  getFilterPricerange();
+    _weight = getFilterWeightrange();
+
+    totItem = widget.productdt.length;
+    _scrollController = ScrollController();
+    _scrollController.addListener(_scrollListener);
+    _hideNotification();
+    super.initState();
   }
 
   @override
@@ -238,79 +359,108 @@ class _productListPage extends State<ProductListPage> {
       home: Scaffold(
         key: scaffoldKey,
 //      appBar: pageAppBar(),
-        drawer: filterWidget(),
+//        drawer: filterWidget(),
+//        drawer: filterWidget2(1,100),
         body: SafeArea(
             child: Container(
                 color: Colors.white,
-                child: Column(
-                    children: [
-                      Customtitle(context, widget.title),
-                      Container(
-                        height: 40,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Flexible(
-                              flex: 1,
-                              child: InkWell(
-                                onTap: (){
-                                  scaffoldKey.currentState.openDrawer();
-                                },
-                                child: Container(
+                child: Stack(
+                  children: [
+                    Column(
+                        children: [
+                          Customtitle(context, widget.title),
+                          Container(
+                            height: 40,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Flexible(
+                                  flex: 1,
+                                  child: InkWell(
+                                    onTap: () {
+                                      Filter_Click();
+                                      //scaffoldKey.currentState.openDrawer();
+                                    },
+                                    child: Container(
 //                              color: listLabelbgColor,
-                                  decoration: BoxDecoration(
-                                    color: listLabelbgColor,
-                                    border: Border.all(
-                                      color: Colors.grey,
-                                      width: 1,
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    children: <Widget>[
-                                      Spacer(),
-                                      Padding(
-                                        padding: const EdgeInsets.only(left:8.0, right:6.0),
-                                        child: Image(image: AssetImage("assets/filter_icon.png"),width: 16, height: 16,),
+                                      decoration: BoxDecoration(
+                                        color: listLabelbgColor,
+                                        border: Border.all(
+                                          color: Colors.grey,
+                                          width: 1,
+                                        ),
                                       ),
-                                      Text('FILTER', style: TextStyle(color: Colors.white),),
-                                      Spacer(),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Flexible(
-                              flex: 1,
-                              child: InkWell(
-                                onTap: () {},
-                                child: Container(
-//                              color: listLabelbgColor,
-                                  decoration: BoxDecoration(
-                                    color: listLabelbgColor,
-                                    border: Border.all(
-                                      color: Colors.grey,
-                                      width: 1,
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.max,
+                                        children: <Widget>[
+                                          Spacer(),
+                                          Padding(
+                                            padding: const EdgeInsets.only(left:8.0, right:6.0),
+                                            child: Image(image: AssetImage("assets/filter_icon.png"),width: 16, height: 16,),
+                                          ),
+                                          Text('FILTER', style: TextStyle(color: Colors.white),),
+                                          Spacer(),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    children: <Widget>[
-                                      Spacer(),
-                                      Transform.rotate(
-                                          angle: 90 * pi / 180,
-                                          child: Icon(Icons.swap_horiz, color: Colors.white,)),Text('SORT', style: TextStyle(color: Colors.white),),
-                                      Spacer(),
-                                    ],
+                                ),
+                                Flexible(
+                                  flex: 1,
+                                  child: InkWell(
+                                    onTap: () {},
+                                    child: Container(
+//                              color: listLabelbgColor,
+                                      decoration: BoxDecoration(
+                                        color: listLabelbgColor,
+                                        border: Border.all(
+                                          color: Colors.grey,
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.max,
+                                        children: <Widget>[
+                                          Spacer(),
+                                          Transform.rotate(
+                                              angle: 90 * pi / 180,
+                                              child: Icon(Icons.swap_horiz, color: Colors.white,)),Text('SORT', style: TextStyle(color: Colors.white),),
+                                          Spacer(),
+                                        ],
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                          homeWidget(screenSize.height, screenSize.width),
+
+                        ]
+                    ),
+                    Align(
+                      alignment: Alignment.topCenter,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top:50.0),
+                        child: Visibility(
+                            visible: totisVisable,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Color(0xFFF2F1EB),
+//                                border: Border.all(
+//                                    width: 0.0
+//                                ),
+                                borderRadius: BorderRadius.all(
+                                    Radius.circular(15.0) //         <--- border radius here
+                                ),
+                              ),
+//                            color: Colors.grey,
+                              height: 50,
+                                width: 100,
+                                child: Center(child: Text("${totItem} items",)))),
                       ),
-                      homeWidget(screenSize.height, screenSize.width),
-                    ]
+                    ),
+                  ]
                 )
             )
         ),
@@ -334,4 +484,10 @@ class _productListPage extends State<ProductListPage> {
       ),
     );
   }
+}
+
+class Entry {
+  const Entry(this.title, [this.children = const <Entry>[]]);
+  final String title;
+  final List<Entry> children;
 }
