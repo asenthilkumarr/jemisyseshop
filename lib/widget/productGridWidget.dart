@@ -230,19 +230,30 @@ class ProductGridWidgetHome extends StatelessWidget {
                       child: Column(
                         children: [
                           Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(left:20.0,top:10.0, right:20.0, bottom:5),
-                              child: Align(
-                                alignment: FractionalOffset.center,
-                                child: Image(
-                                  image: CachedNetworkImageProvider(
-                                    item.imageFile1,
-                                  ),
-                                  fit: BoxFit.fitHeight,
-                                ),
+                            child: Stack(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left:20.0,top:10.0, right:20.0, bottom:5),
+                                  child: Align(
+                                    alignment: FractionalOffset.center,
+                                    child: Image(
+                                      image: CachedNetworkImageProvider(
+                                        item.imageFile1,
+                                      ),
+                                      fit: BoxFit.fitHeight,
+                                    ),
 //                  child: Image.network(
 //                    item.imageUrl, fit: BoxFit.fitHeight,),
-                              ),
+                                  ),
+                                ),
+                                Align(
+                                  alignment: FractionalOffset.bottomRight,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(bottom:1.0, right: 2.0),
+                                    child: Text(item.designCode, style: TextStyle(fontSize: 10, color: Color(0xFFD0CECE)),),
+                                  ),
+                                ),
+                              ]
                             ),
                           ),
                           Align(
@@ -252,21 +263,20 @@ class ProductGridWidgetHome extends StatelessWidget {
                                 color: listbgColor,
                                 child: Padding(
                                   padding: const EdgeInsets.only(
-                                      left: 10.0, right: 10.0, top: 6.0, bottom: 6.0),
+                                      left: 10.0, right: 10.0, top: 2.0, bottom: 2.0),
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Row(
                                         mainAxisSize: MainAxisSize.max,
                                         children: [
-                                          Text(item.onlineName),
-                                          Spacer(),
-                                          item.listingPrice > 0 && item.discountPercentage != 0 ?
-                                          Text(item.listingPrice > 0 ? '' : '${formatter2dec.format(
-                                              item.weightFrom)}g',
-                                              style: TextStyle(decoration: TextDecoration.lineThrough,fontSize: 12, color: Colors.grey))
-                                              : Text(item.weightFrom > 0 ? '${formatter2dec.format(
-                                              item.weightFrom)} -' : ''),
+                                          Expanded(
+                                            child: Text(item.onlineName, style: TextStyle(color: Color(0xFF444444)),
+                                              maxLines: 1, overflow: TextOverflow.ellipsis,
+                                              softWrap: false,),
+                                          ),
+//                                          Spacer(),
+
 //                                          item.listingPrice > 0 && item.discountPercentage != 0 ?
 //                                          Text(item.listingPrice > 0 ? '$currencysymbol${formatterint.format(
 //                                              item.listingPrice)}' : '${formatter2dec.format(
@@ -276,7 +286,7 @@ class ProductGridWidgetHome extends StatelessWidget {
 //                                              item.weightFrom)} -' : ''),
                                         ],
                                       ),
-                                      SizedBox(height: 5,),
+                                      SizedBox(height: 6,),
                                       Row(
                                         children: [
 
@@ -284,17 +294,19 @@ class ProductGridWidgetHome extends StatelessWidget {
                                           Text(item.listingPrice > 0 ? '$currencysymbol${formatterint.format(
                                               item.listingPrice)}' : '${formatter2dec.format(
                                               item.weightFrom)}g',
-                                              style: TextStyle(decoration: TextDecoration.lineThrough,fontSize: 12, color: Color(0xFF7F7F7B)))
+                                              style: TextStyle(decoration: TextDecoration.lineThrough,color: Color(0xFF6F6C6C)))
                                               : Container(),
-                                          Spacer(),
-                                          Text(item.designCode, style: TextStyle(fontSize: 10, color: Colors.grey),),
-                                          Spacer(),
+
+                                          item.listingPrice > 0 && item.discountPercentage > 0 ?
+                                            Spacer()
+                                              : item.listingPrice > 0 ? Spacer() : Container(),
+                                          //Spacer(),
+
                                           item.listingPrice > 0 && item.discountPercentage > 0 ?
                                           Text('$currencysymbol${formatterint.format(
                                               item.onlinePrice)}', style: TextStyle(fontWeight: FontWeight.bold))
                                               : Text(item.listingPrice > 0 ? '$currencysymbol${formatterint.format(
-                                              item.listingPrice)}' : 'Wt.: ${formatter2dec.format(
-                                              item.weightTo)}g'),
+                                              item.listingPrice)}' : 'Wt.: ${formatter2dec.format(item.weightFrom)}-${formatter2dec.format(item.weightTo)}g'),
                                         ],
                                       ),
                                     ],

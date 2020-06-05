@@ -216,8 +216,9 @@ class _splashScreen extends State<SplashScreen>{
 //                ],
 //              ),
 //            ),
-          color: Colors.white,
+//          color: Colors.white,
           ),
+          /*
           Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
@@ -257,6 +258,7 @@ class _splashScreen extends State<SplashScreen>{
               )
             ],
           ),
+          */
         ],
       );
     }

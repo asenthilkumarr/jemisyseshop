@@ -147,6 +147,14 @@ class _productDetailPage extends State<ProductDetailPage> {
                                 ),
                               ),
                             ),
+                            //Design Code
+                            Positioned(
+                              left: 5,
+                              bottom: 4,
+                              child: Container(
+                                child: Text(item.designCode, style: TextStyle(fontSize: 10, color: Color(0xFFD0CECE)),),
+                              ),
+                            ),
                             Positioned(
                               right: 5,
                               top: 4,
@@ -489,6 +497,7 @@ class _productDetailPage extends State<ProductDetailPage> {
 
                                             ],
                                           ) : Container(),
+                                          /*
                                           item.designCode != "" ? Row(
                                             children: [
                                               SizedBox(
@@ -504,13 +513,14 @@ class _productDetailPage extends State<ProductDetailPage> {
                                               )
                                             ],
                                           ) : Container(),
+                                          */
                                           item.designName != "" ? Row(
                                             children: [
                                               SizedBox(
                                                   width: 100,
                                                   child: Align(
                                                     alignment: Alignment.centerRight,
-                                                    child: Text("Design : ", style: TextStyle(color: Colors.transparent),),
+                                                    child: Text("Design : ", ),
                                                   )
                                               ),
                                               Flexible(
@@ -1322,7 +1332,7 @@ class _productDetailPage extends State<ProductDetailPage> {
                             height:50,
                             child: RaisedButton(
 
-                              color: Color(0xFF517295),
+                              color: Color(0xFF509583),
                               padding: const EdgeInsets.fromLTRB(0.0,0.0,0.0,0.0),
                               child: Text(
                                 "Home Try-On",
