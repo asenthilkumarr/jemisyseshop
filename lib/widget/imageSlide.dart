@@ -2,6 +2,8 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:jemisyseshop/model/dataObject.dart';
+import 'package:jemisyseshop/view/imageZoom.dart';
 
 final List<String> imgList2 = [
   'https://images.unsplash.com/photo-1520342868574-5fa3804e551c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=6ff92caffcdd63681a35134a6770ed3b&auto=format&fit=crop&w=1951&q=80',
@@ -58,7 +60,7 @@ class _FullscreenSliderIndicatorState extends State<FullscreenSliderIndicator> {
           final double height = MediaQuery
               .of(context)
               .size
-              .height;
+              .width - 70;
           return Container(
             color: Colors.white,
             child: Stack(
@@ -66,22 +68,33 @@ class _FullscreenSliderIndicatorState extends State<FullscreenSliderIndicator> {
                 CarouselSlider(
                   options: CarouselOptions(
                       height: height,
+                      autoPlay: false,
+                      aspectRatio: 16/9,
                       viewportFraction: 1.0,
-                      enlargeCenterPage: false,
+                      enlargeCenterPage: true,
                       onPageChanged: (index, reason) {
                         _current = index;
                         setState(() {
                         });
                       }
-//                   autoPlay: true,
                   ),
                   items: widget.imgList.map((item) =>
-                      Container(
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ImageZoomPage(imgUrl: item,),));
+                        },
+                          child: Container(
                         child: Center(
-                            child: Image.network(item, fit: BoxFit.fitWidth,
-                              height: height,)
+                        child: Image.network(item, fit: BoxFit.fitHeight,
+                          width: height - 50, height: height - 50,)
                         ),
-                      )).toList(),
+                      ),
+
+                      )
+                  ).toList(),
                 ),
                 Positioned(
 //                bottom: 5.0,
@@ -92,15 +105,16 @@ class _FullscreenSliderIndicatorState extends State<FullscreenSliderIndicator> {
                       children: widget.imgList.map((url) {
                         int index = widget.imgList.indexOf(url);
                         return Container(
-                          width: 8.0,
-                          height: 8.0,
+                          width: 7.0,
+                          height: 7.0,
                           margin: EdgeInsets.symmetric(
                               vertical: 10.0, horizontal: 2.0),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: _current == index
-                                ? Color.fromRGBO(0, 0, 0, 0.9)
-                                : Color.fromRGBO(0, 0, 0, 0.4),
+                              color: _current == index ? Color(0xFF83B791) : Color(0xFFE6E3E3),
+//                            color: _current == index
+//                                ? Color.fromRGBO(0, 0, 0, 0.9)
+//                                : Color.fromRGBO(0, 0, 0, 0.4),
                           ),
                         );
                       }).toList(),

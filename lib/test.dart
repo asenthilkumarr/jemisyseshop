@@ -1,415 +1,311 @@
-import 'dart:math';
-
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_widgets/flutter_widgets.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
-import 'package:jemisyseshop/style.dart';
-import 'package:jemisyseshop/view/home.dart';
-import 'package:jemisyseshop/view/home2.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
-
-import 'model/common.dart';
-import 'model/dataObject.dart';
-import 'model/menu.dart';
+import 'package:flutter_range_slider/flutter_range_slider.dart' as frs;
 class Test extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Home',
-      home: TestHome(),
-      debugShowCheckedModeBanner: false,
+      title: 'RangeSlider Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: RangeSliderSample(),
     );
   }
 }
-class TestHome extends StatefulWidget{
-  _TabBarDemo createState() => _TabBarDemo();
 
-
+class RangeSliderSample extends StatefulWidget {
+  @override
+  _RangeSliderSampleState createState() => _RangeSliderSampleState();
 }
+class _RangeSliderSampleState extends State<RangeSliderSample> {
+  // List of RangeSliders to use, together with their parameters
+  List<RangeSliderData> rangeSliders;
 
+  double _lowerValue = 20.0;
+  double _upperValue = 80.0;
+  double _lowerValueFormatter = 20.0;
+  double _upperValueFormatter = 20.0;
 
+  @override
+  void initState() {
+    super.initState();
+    rangeSliders = _rangeSliderDefinitions();
+  }
 
-class _TabBarDemo extends State<TestHome> {
-  var scaffoldKey = GlobalKey<ScaffoldState>();
-  GlobalKey _keyRed = GlobalKey();
-  bool hidetitleMsg = false;
-  final List<menuList> mnuList = [
-    menuList('Home', HomeScreen()),
-    menuList('Home 2', HomeScreen2()),
-  ];
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      top: false,
+      bottom: false,
+      child: Scaffold(
+        appBar: AppBar(title: Text('RangeSlider Demo')),
+        body: Container(
+          padding: const EdgeInsets.only(top: 50.0, left: 10.0, right: 10.0),
+          child: Column(
+            children: <Widget>[]
+              ..add(
+                //
+                // Simple example
+                //
+                frs.RangeSlider(
+                  min: 0.0,
+                  max: 100.0,
+                  lowerValue: _lowerValue,
+                  upperValue: _upperValue,
+                  divisions: 5,
+                  showValueIndicator: true,
+                  valueIndicatorMaxDecimals: 1,
+                  onChanged: (double newLowerValue, double newUpperValue) {
+                    setState(() {
+                      _lowerValue = newLowerValue;
+                      _upperValue = newUpperValue;
+                    });
+                  },
+                  onChangeStart:
+                      (double startLowerValue, double startUpperValue) {
+                    print(
+                        'Started with values: $startLowerValue and $startUpperValue');
+                  },
+                  onChangeEnd: (double newLowerValue, double newUpperValue) {
+                    print(
+                        'Ended with values: $newLowerValue and $newUpperValue');
+                  },
+                ),
+              )
+            // Add some space
+              ..add(
+                SizedBox(height: 24.0),
+              )
+            //
+            // Add a series of RangeSliders, built as regular Widgets
+            // each one having some specific customizations
+            //
+              ..addAll(_buildRangeSliders())
 
-  Widget titleBar() {
-    return Container(
-      color: primary1Color,
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: IconButton(
-                  icon: Icon(Icons.menu, color: Colors.white,),
-                  iconSize: 25,
+            //
+            // Add a disabled version
+            //
+              ..add(
+                frs.RangeSlider(
+                  min: 0.0,
+                  max: 100.0,
+                  lowerValue: 25.0,
+                  upperValue: 50.0,
+                  divisions: 5,
+                  showValueIndicator: true,
+                  valueIndicatorMaxDecimals: 1,
+                  onChanged: null,
+                ),
+              )
 
-                  onPressed: () {
-                    scaffoldKey.currentState.openDrawer();
+            //
+            // Add custom value formatter
+            //
+              ..add(
+                frs.RangeSlider(
+                  min: 0.0,
+                  max: 100.0,
+                  lowerValue: _lowerValueFormatter,
+                  upperValue: _upperValueFormatter,
+                  divisions: 10,
+                  showValueIndicator: true,
+                  valueIndicatorFormatter: (int index, double value) {
+                    String twoDecimals = value.toStringAsFixed(2);
+                    return '$twoDecimals mm';
+                  },
+                  onChanged: (double newLowerValue, double newUpperValue) {
+                    setState(() {
+                      _lowerValueFormatter = newLowerValue;
+                      _upperValueFormatter = newUpperValue;
+                    });
                   },
                 ),
               ),
-              Spacer(),
-              Align(
-                alignment: Alignment.center,
-                child: CompanyLogo(),
-              ),
-              Spacer(),
-              Align(
-                  alignment: Alignment.centerRight,
-                  child: SizedBox(
-                    width: 105,
-                    child: Row(
-                      children: [
-                        SizedBox(
-                            width: 35,
-                            child: IconButton(
-                              key: _keyRed,
-                              icon: new Image.asset('assets/goldRate.png', height: 20,),
-                              iconSize: 25,
-
-                              onPressed: () {
-                                showGoldRate();
-                              },
-                            )),
-                        Center(
-                          child: SizedBox(
-                            width: 35,
-                            child: Padding(
-                                padding: const EdgeInsets.only(right: 0.0),
-                                child: Stack(
-                                    children: <Widget>[
-                                      //new IconButton(icon: Icon(Icons.shopping_cart, size: 35, color: Colors.white,),
-                                      IconButton(
-                                        icon: new Image.asset(
-                                          'assets/shopping_cart.png',
-                                          height: 20,),
-//                                     icon: Icon(Icons.cur, color: Colors.white,),
-                                        iconSize: 25,
-                                        onPressed: () {},),
-                                      new Positioned( // draw a red marble
-                                        top: 5.0,
-                                        right: 10.0,
-                                        child: Container(
-                                          alignment: Alignment.center,
-                                          decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              shape: BoxShape.circle
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(3.0),
-                                            child: new Text(
-                                              '5',
-                                              style: new TextStyle(
-                                                color: Colors.red,
-                                                fontSize: 9,
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                    ]
-                                )),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-              )
-
-
-            ],
           ),
-
-        ],
-      ),
-
-    );
-  }
-
-  Widget titleMessage() {
-    return !hidetitleMsg ? Padding(
-        padding: const EdgeInsets.only(bottom: 1.0),
-        child: Container(
-          color: primary1Color,
-          child: Padding(
-            padding: const EdgeInsets.only(
-                left: 8.0, top: 8.0, bottom: 8.0, right: 5.0),
-            child: Stack(
-                children: <Widget>[
-                  Wrap(
-                    runSpacing: 5.0,
-                    spacing: 5.0,
-                    direction: Axis.horizontal,
-                    children: [
-                      Center(
-                        child: Text("FREE SHIPPING ON EVERY ORDER",
-                            style: TextStyle(color: Colors.white)),
-                      ),
-                    ],
-                  ),
-                  Positioned(
-                      right: 0.0,
-                      child: GestureDetector(
-                        onTap: () {
-                          hidetitleMsg = true;
-                          setState(() {
-
-                          });
-                        },
-                        child: Icon(
-                          Icons.close, color: Colors.white, size: 18,),
-
-                      )),
-                ]
-            ),
-          ),
-        ))
-        : Container();
-  }
-  Widget CompanyLogo() {
-    return new Container(
-      color: primary1Color,
-      child: Text('JEMiSys eShop',
-        style: GoogleFonts.oswald(
-          textStyle: TextStyle(color: Colors.white, fontSize: 35),
         ),
-        //style: TextStyle(fontSize: 27, color: Colors.white, fontWeight: FontWeight.normal,)
       ),
-//      child: SizedBox(
-//        height: 30,
-//        child: new Image.network(
-//          'http://42.61.99.57/JEMiSyseShopImage/Banner3.png',
-//          //"http://42.61.99.57/JEMiSyseShopImage/logo.png",
-//          fit: BoxFit.fitHeight,
-//        ),
-//      ),
     );
   }
-  void showGoldRate() {
-    bool _fromTop = true;
-    double p = 100.0;
-//    double topp=positionRed.dx;
-//    double rightp=positionRed.dy;
-    if (kIsWeb && hidetitleMsg)
-      p = 45.0;
-    else if (kIsWeb && !hidetitleMsg)
-      p = 75.0;
-    else if (!kIsWeb && hidetitleMsg)
-      p = 70.0;
-    final RenderBox renderBoxRed = _keyRed.currentContext.findRenderObject();
-    final positionRed = renderBoxRed.localToGlobal(Offset.zero);
-    double topp = positionRed.dy+30;
-//    double rightp = positionRed.dx;
-//        print('$topp and $rightp');
-    showGeneralDialog(
-        barrierLabel: "Label",
-        barrierDismissible: true,
-        barrierColor: Colors.black.withOpacity(0.5),
-        transitionDuration: Duration(milliseconds: 700),
-        context: context,
-        pageBuilder: (context, anim1, anim2) {
-          return Padding(
-//            padding: EdgeInsets.only(top: p, left:20.0, right:kIsWeb ? 50 : 50),
-            padding: EdgeInsets.only(top: topp, left: 20.0, right: 50),
-            child: Align(
-                alignment: _fromTop ? Alignment.topRight : Alignment
-                    .bottomCenter,
-                child: Material(
-                  type: MaterialType.transparency,
-                  child: new Stack(
-                      children: <Widget>[
-                        Container(
-                          height: 100,
-                          child: SizedBox(width: 200,
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 30.0, top: 10.0),
-                              child: Column(
-                                children: [
-                                  Text('Gold Rate'),
-                                  SizedBox(height: 10,),
-                                  Row(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            right: 15.0),
-                                        child: Text('916 :'),
-                                      ),
-                                      Text('\$55.50'),
-                                    ],
-                                  ),
-                                  SizedBox(height: 10,),
-                                  Row(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            right: 15.0),
-                                        child: Text('999 :'),
-                                      ),
-                                      Text('\$65.50'),
-                                    ],
-                                  ),
 
-                                ],
-                              ),
-                            ),
-                          ),
-//              margin: EdgeInsets.only(top: 80, left: 12, right: 12, bottom: 50),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.only(
-                              topLeft: const Radius.circular(1000.0),
-                              topRight: const Radius.circular(300.0),
-                              bottomLeft: const Radius.circular(150.0),
-                              bottomRight: const Radius.circular(1000.0),
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                            right: 0.0,
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Align(
-                                alignment: Alignment.topCenter,
-                                child: CircleAvatar(
-                                  radius: 14.0,
-                                  backgroundColor: Colors.red,
-                                  child: Icon(Icons.close, color: Colors.white),
-                                ),
-                              ),
-                            )),
-                      ]),
-                )
-            ),
-          );
+  // -----------------------------------------------
+  // Creates a list of RangeSliders, based on their
+  // definition and SliderTheme customizations
+  // -----------------------------------------------
+  List<Widget> _buildRangeSliders() {
+    List<Widget> children = <Widget>[];
+    for (int index = 0; index < rangeSliders.length; index++) {
+      children
+          .add(rangeSliders[index].build(context, (double lower, double upper) {
+        // adapt the RangeSlider lowerValue and upperValue
+        setState(() {
+          rangeSliders[index].lowerValue = lower;
+          rangeSliders[index].upperValue = upper;
         });
+      }));
+      // Add an extra padding at the bottom of each RangeSlider
+      children.add(SizedBox(height: 8.0));
+    }
+
+    return children;
   }
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: DefaultTabController(
-        length: mnuList.length,
-        child: Scaffold(
-          appBar: PreferredSize(
-              preferredSize: Size.fromHeight(150.0), // here the desired height
-              child: AppBar(
-                title: PreferredSize(
-                    preferredSize: Size.fromHeight(130.0),
-                    child: Column(
-                  children: [
-                    Container(
-                    height: 90,
-                    child: Column(
-                      children: [
-                        Text('Home'),
-                        Text('Home2'),
-                        Text('Home3'),
-                      ],
-                    ),
-                    )
 
-                  ],
-                )),
-                backgroundColor: Colors.deepOrange,
-//                centerTitle: true,
-                leading: IconButton(icon:Icon(Icons.arrow_back),
-                    onPressed:() {
-//                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-////                        InvoiceList()), (Route<dynamic> route) => false);
-                      Navigator.pop(context, false);
-                    }
-                ),
+  // -------------------------------------------------
+  // Creates a list of RangeSlider definitions
+  // -------------------------------------------------
+  List<RangeSliderData> _rangeSliderDefinitions() {
+    return <RangeSliderData>[
+      RangeSliderData(
+          min: 0.0, max: 100.0, lowerValue: 10.0, upperValue: 100.0),
+      RangeSliderData(
+          min: 0.0,
+          max: 100.0,
+          lowerValue: 25.0,
+          upperValue: 75.0,
+          divisions: 20,
+          overlayColor: Colors.red[100]),
+      RangeSliderData(
+          min: 0.0,
+          max: 100.0,
+          lowerValue: 10.0,
+          upperValue: 30.0,
+          showValueIndicator: false,
+          valueIndicatorMaxDecimals: 0),
+      RangeSliderData(
+          min: 0.0,
+          max: 100.0,
+          lowerValue: 10.0,
+          upperValue: 30.0,
+          showValueIndicator: true,
+          valueIndicatorMaxDecimals: 0,
+          activeTrackColor: Colors.red,
+          inactiveTrackColor: Colors.red[50],
+          valueIndicatorColor: Colors.green),
+      RangeSliderData(
+          min: 0.0,
+          max: 100.0,
+          lowerValue: 25.0,
+          upperValue: 75.0,
+          divisions: 20,
+          thumbColor: Colors.grey,
+          valueIndicatorColor: Colors.grey),
+    ];
+  }
+}
 
-                bottom:  PreferredSize(
-                  preferredSize: Size.fromHeight(50.0),
-                  child: Column(
-                    children: <Widget>[
-                      new Container(
-                          height: 60.0,
-                          color: Colors.white,
-                          child: Column(
-                            // mainAxisAlignment: MainAxisAlignment.end,
-                              children: <Widget>[
-                                Row(
-                                  children: <Widget>[
-                                    SizedBox(height: 10,),
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(20,9,0,0),
-                                      child: Text(
-                                        'gDocNo',
-                                        style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold,fontSize: 14),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(30,9,0,0),
-                                      child: Text(
-                                        'gDocType',
-                                        style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold,fontSize: 14),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 2,
-                                ),
-                                Row(
-                                  children: <Widget>[
-                                    SizedBox(height: 10,),
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(20,5,0,0),
-                                      child: Text(
-                                        'gStoreCode',
-                                        style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold,fontSize: 14),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(30,5,0,0),
-                                      child: Text(
-                                        'gVipName',
-                                        style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold,fontSize: 14),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ]
-                          )
-                      ),
-                    ],
-                  ),
-                ),
-                actions: <Widget>[
-//                IconButton(
-//                  icon: Icon(Icons.clear),
-//                  onPressed: () => _paths.clear(),
-//                  color: Colors.white,
-//                ),
-                ],
-              )
+
+// ---------------------------------------------------
+// Helper class aimed at simplifying the way to
+// automate the creation of a series of RangeSliders,
+// based on various parameters
+//
+// This class is to be used to demonstrate the appearance
+// customization of the RangeSliders
+// ---------------------------------------------------
+class RangeSliderData {
+  double min;
+  double max;
+  double lowerValue;
+  double upperValue;
+  int divisions;
+  bool showValueIndicator;
+  int valueIndicatorMaxDecimals;
+  bool forceValueIndicator;
+  Color overlayColor;
+  Color activeTrackColor;
+  Color inactiveTrackColor;
+  Color thumbColor;
+  Color valueIndicatorColor;
+  Color activeTickMarkColor;
+
+  static const Color defaultActiveTrackColor = const Color(0xFF0175c2);
+  static const Color defaultInactiveTrackColor = const Color(0x3d0175c2);
+  static const Color defaultActiveTickMarkColor = const Color(0x8a0175c2);
+  static const Color defaultThumbColor = const Color(0xFF0175c2);
+  static const Color defaultValueIndicatorColor = const Color(0xFF0175c2);
+  static const Color defaultOverlayColor = const Color(0x290175c2);
+
+  RangeSliderData({
+    this.min,
+    this.max,
+    this.lowerValue,
+    this.upperValue,
+    this.divisions,
+    this.showValueIndicator: true,
+    this.valueIndicatorMaxDecimals: 1,
+    this.forceValueIndicator: false,
+    this.overlayColor: defaultOverlayColor,
+    this.activeTrackColor: defaultActiveTrackColor,
+    this.inactiveTrackColor: defaultInactiveTrackColor,
+    this.thumbColor: defaultThumbColor,
+    this.valueIndicatorColor: defaultValueIndicatorColor,
+    this.activeTickMarkColor: defaultActiveTickMarkColor,
+  });
+
+  // Returns the values in text format, with the number
+  // of decimals, limited to the valueIndicatedMaxDecimals
+  //
+  String get lowerValueText =>
+      lowerValue.toStringAsFixed(valueIndicatorMaxDecimals);
+  String get upperValueText =>
+      upperValue.toStringAsFixed(valueIndicatorMaxDecimals);
+
+  // Builds a RangeSlider and customizes the theme
+  // based on parameters
+  //
+  Widget build(BuildContext context, frs.RangeSliderCallback callback) {
+    return Container(
+      width: double.infinity,
+      child: Row(
+        children: <Widget>[
+          Container(
+            constraints: BoxConstraints(
+              minWidth: 40.0,
+              maxWidth: 40.0,
+            ),
+            child: Text(lowerValueText),
           ),
-
-          body: TabBarView(
-            children: [
-              for(var i in mnuList)
-                i.url,
-            ],
+          Expanded(
+            child: SliderTheme(
+              // Customization of the SliderTheme
+              // based on individual definitions
+              // (see rangeSliders in _RangeSliderSampleState)
+              data: SliderTheme.of(context).copyWith(
+                overlayColor: overlayColor,
+                activeTickMarkColor: activeTickMarkColor,
+                activeTrackColor: activeTrackColor,
+                inactiveTrackColor: inactiveTrackColor,
+                trackHeight: 10,
+                //trackHeight: 8.0,
+                thumbColor: thumbColor,
+                valueIndicatorColor: valueIndicatorColor,
+                showValueIndicator: showValueIndicator
+                    ? ShowValueIndicator.always
+                    : ShowValueIndicator.onlyForDiscrete,
+              ),
+              child: frs.RangeSlider(
+                min: min,
+                max: max,
+                lowerValue: lowerValue,
+                upperValue: upperValue,
+                divisions: divisions,
+                showValueIndicator: showValueIndicator,
+                valueIndicatorMaxDecimals: valueIndicatorMaxDecimals,
+                onChanged: (double lower, double upper) {
+                  // call
+                  callback(lower, upper);
+                },
+              ),
+            ),
           ),
-        ),
+          Container(
+            constraints: BoxConstraints(
+              minWidth: 40.0,
+              maxWidth: 40.0,
+            ),
+            child: Text(upperValueText),
+          ),
+        ],
       ),
     );
   }

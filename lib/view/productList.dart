@@ -1,22 +1,22 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jemisyseshop/data/dataService.dart';
-import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
-import 'package:jemisyseshop/model/menu.dart';
 import 'package:jemisyseshop/style.dart';
-import 'package:jemisyseshop/widget/offerTagPainter.dart';
+import 'package:jemisyseshop/view/filter.dart';
 import 'package:jemisyseshop/widget/productGridWidget.dart';
 import 'package:jemisyseshop/widget/titleBar.dart';
 
 class ProductListPage extends StatefulWidget{
   final List<Product> productdt;
-  ProductListPage({this.productdt});
+  final String title;
+  ProductListPage({this.productdt, this.title});
   @override
   _productListPage createState() => _productListPage();
 }
@@ -26,21 +26,12 @@ class _productListPage extends State<ProductListPage> {
   GlobalKey _keyGoldRate = GlobalKey();
   String designCode = "Design";
   List<Product> productdt = new List<Product>();
+  List<Product> fproductdt = new List<Product>();
   ScrollController _scrollController = new ScrollController();
-
-  Future<List<Product>> getProductDetail() async {
-//    ProductParam param = new ProductParam();
-//    param.designCode = productdt.designCode;
-//    param.version = widget.version;
-//    param.where = _where;
-//    var dt = await dataService.GetProductDetails(param);
-    designCode = widget.productdt[0].designCode;
-    productdt = widget.productdt;
-    setState(() {
-
-    });
-    return productdt;
-  }
+  RangeValues values = RangeValues(1,100);
+  String filterSelect ="Metal Type";
+  int totItem = 0;
+  bool totisVisable = true;
 
   double GridItemHeight(double screenHeight, double screenWidth) {
     double itemHeight = 0.55;
@@ -67,7 +58,6 @@ class _productListPage extends State<ProductListPage> {
     }
     return itemHeight;
   }
-
   int GridItemCount(double screenwidth) {
     int itemCount = 0;
     if (!kIsWeb) {
@@ -93,7 +83,28 @@ class _productListPage extends State<ProductListPage> {
 
     return itemCount;
   }
+  void Filter_Click() async {
 
+    List<Product> gFilter = await Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (c, a1, a2) => FilterPage(productdt: productdt,),
+        transitionsBuilder: (c, anim, a2, child) =>
+            FadeTransition(opacity: anim, child: child),
+        transitionDuration: Duration(milliseconds: 300),
+      ),
+    );
+
+    if (gFilter != null) {
+      fproductdt = gFilter;
+      totItem = fproductdt.length;
+      totisVisable = true;
+      _hideNotification();
+      setState(() {
+
+      });
+    }
+  }
   Widget homeWidget(double screenHeight, double screenWidth) {
     double itemHeight = GridItemHeight(screenHeight, screenWidth);
     int itemCount = GridItemCount(screenWidth);
@@ -103,62 +114,7 @@ class _productListPage extends State<ProductListPage> {
             child: CustomScrollView(
                 controller: _scrollController,
                 slivers: <Widget>[
-                  SliverToBoxAdapter(
-                    child: Container(
-                      height: 40,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Flexible(
-                            flex: 1,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(
-                                  color: listbgColor,
-                                  width: 1,
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                children: <Widget>[
-                                  Spacer(),
-                                  Transform.rotate(
-                                      angle: 90 * pi / 180,
-                                      child: Icon(Icons.swap_horiz)),Text('SORT'),
-                                  Spacer(),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Flexible(
-                            flex: 1,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(
-                                  color: listbgColor,
-                                  width: 1,
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                children: <Widget>[
-                                  Spacer(),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left:8.0, right:6.0),
-                                    child: Image(image: AssetImage("assets/filter_icon2.png"),width: 16, height: 16,),
-                                  ),
-                                  Text('FILTER'),
-                                  Spacer(),
-                                ],
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
+
                   SliverGrid(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: itemCount,
@@ -166,7 +122,7 @@ class _productListPage extends State<ProductListPage> {
                     ),
                     delegate: SliverChildListDelegate(
                       [
-                        for(var i in productdt)
+                        for(var i in fproductdt)
                           ProductGridWidget(item: i,),
                       ],
                     ),
@@ -181,11 +137,46 @@ class _productListPage extends State<ProductListPage> {
         )
     );
   }
+  _scrollListener() {
+    if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
+        !_scrollController.position.outOfRange) {
+      setState(() {
+        totisVisable = true;
+        _hideNotification();
+      });
+    }
+    if (_scrollController.offset <= _scrollController.position.minScrollExtent &&
+        !_scrollController.position.outOfRange) {
+      setState(() {
+        totisVisable = true;
+        _hideNotification();
+      });
+    }
+  }
+  _hideNotification() {
+    Timer(Duration(seconds: 2), () {
+      setState(() {
+        totisVisable = false;
+      });
+    });
+  }
 
   @override
   void initState() {
+    productdt = widget.productdt;
+    fproductdt = widget.productdt;
+    //getProductDetail();
+
+
+    designCode = widget.productdt[0].designCode;
+    totItem = widget.productdt.length;
+    _scrollController = ScrollController();
+    _scrollController.addListener(_scrollListener);
+    _hideNotification();
+    setState(() {
+
+    });
     super.initState();
-    getProductDetail();
   }
 
   @override
@@ -206,16 +197,108 @@ class _productListPage extends State<ProductListPage> {
       home: Scaffold(
         key: scaffoldKey,
 //      appBar: pageAppBar(),
-        drawer: MenuItemWedget(scaffoldKey: scaffoldKey, isLogin: isLogin),
+//        drawer: filterWidget(),
+//        drawer: filterWidget2(1,100),
         body: SafeArea(
             child: Container(
                 color: Colors.white,
-                child: Column(
-                    children: [
-                      Customtitle(context, designCode),
+                child: Stack(
+                  children: [
+                    Column(
+                        children: [
+                          Customtitle(context, widget.title),
+                          Container(
+                            height: 40,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Flexible(
+                                  flex: 1,
+                                  child: InkWell(
+                                    onTap: () {
+                                      Filter_Click();
+                                      //scaffoldKey.currentState.openDrawer();
+                                    },
+                                    child: Container(
+//                              color: listLabelbgColor,
+                                      decoration: BoxDecoration(
+                                        color: listLabelbgColor,
+                                        border: Border.all(
+                                          color: Colors.grey,
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.max,
+                                        children: <Widget>[
+                                          Spacer(),
+                                          Padding(
+                                            padding: const EdgeInsets.only(left:8.0, right:6.0),
+                                            child: Image(image: AssetImage("assets/filter_icon.png"),width: 16, height: 16,),
+                                          ),
+                                          Text('FILTER', style: TextStyle(color: Colors.white),),
+                                          Spacer(),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Flexible(
+                                  flex: 1,
+                                  child: InkWell(
+                                    onTap: () {},
+                                    child: Container(
+//                              color: listLabelbgColor,
+                                      decoration: BoxDecoration(
+                                        color: listLabelbgColor,
+                                        border: Border.all(
+                                          color: Colors.grey,
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.max,
+                                        children: <Widget>[
+                                          Spacer(),
+                                          Transform.rotate(
+                                              angle: 90 * pi / 180,
+                                              child: Icon(Icons.swap_horiz, color: Colors.white,)),Text('SORT', style: TextStyle(color: Colors.white),),
+                                          Spacer(),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          homeWidget(screenSize.height, screenSize.width),
 
-                      homeWidget(screenSize.height, screenSize.width),
-                    ]
+                        ]
+                    ),
+                    Align(
+                      alignment: Alignment.topCenter,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top:50.0),
+                        child: Visibility(
+                            visible: totisVisable,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Color(0xFF64645A),
+//                                border: Border.all(
+//                                    width: 0.0
+//                                ),
+                                borderRadius: BorderRadius.all(
+                                    Radius.circular(15.0) //         <--- border radius here
+                                ),
+                              ),
+//                            color: Colors.grey,
+                              height: 40,
+                                width: 110,
+                                child: Center(child: Text("${totItem} items",style: TextStyle(color: Colors.white),)))),
+                      ),
+                    ),
+                  ]
                 )
             )
         ),
@@ -239,4 +322,10 @@ class _productListPage extends State<ProductListPage> {
       ),
     );
   }
+}
+
+class Entry {
+  const Entry(this.title, [this.children = const <Entry>[]]);
+  final String title;
+  final List<Entry> children;
 }

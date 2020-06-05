@@ -1,9 +1,8 @@
 import 'dart:async';
 
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:jemisyseshop/model/common.dart';
-import 'package:jemisyseshop/style.dart';
-import 'package:jemisyseshop/test.dart';
 import 'package:jemisyseshop/view/home.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
 
@@ -158,10 +157,10 @@ class _splashScreen extends State<SplashScreen>{
     if(dt.length>0){
       appTitle = dt[0].appName;
       currencysymbol = dt[0].currCode;
+      titMessage = dt[0].message;
     }
 
     setState(() {
-
     });
     return dt;
   }
@@ -170,7 +169,7 @@ class _splashScreen extends State<SplashScreen>{
   void initState() {
     super.initState();
     Timer(
-      Duration(seconds: 5),route,
+      Duration(seconds: 2),route,
     );
     //Future.delayed(Duration.zero, () => Dialogs.showLoadingOnlyDialog(context, _keyLoader));
 
@@ -179,6 +178,9 @@ class _splashScreen extends State<SplashScreen>{
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
     return Scaffold(
       body: Builder(
         builder: (context)
@@ -190,11 +192,11 @@ class _splashScreen extends State<SplashScreen>{
       return Stack(
         fit: StackFit.expand,
         children: <Widget>[
-          sDT.length > 0 ? Container(
+          sDT.length > 0 && sDT[0].startupImageName != "" ? Container(
             decoration: BoxDecoration(
               // Box decoration takes a gradient
               image: DecorationImage(
-                image: NetworkImage(sDT[0].loadingImageName),
+                image: NetworkImage(sDT[0].startupImageName),
                 fit: BoxFit.fill,
               ),
             ),
@@ -214,8 +216,9 @@ class _splashScreen extends State<SplashScreen>{
 //                ],
 //              ),
 //            ),
-          color: Colors.white,
+//          color: Colors.white,
           ),
+          /*
           Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
@@ -234,12 +237,6 @@ class _splashScreen extends State<SplashScreen>{
                       Padding(
                         padding: EdgeInsets.only(top: 10.0),
                       ),
-                      Text(
-                        "Shopping Store",
-                        style: TextStyle(color: Colors.white,
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.bold),
-                      )
                     ],
                   ),
                 ),
@@ -256,18 +253,12 @@ class _splashScreen extends State<SplashScreen>{
                     Padding(
                       padding: EdgeInsets.only(top: 20),
                     ),
-                    Text(
-                      "POS for retail store \n V1.0.0.0",
-                      style: TextStyle(color: Colors.white,
-                          fontSize: 14.0,
-                          fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    )
                   ],
                 ),
               )
             ],
           ),
+          */
         ],
       );
     }

@@ -1,15 +1,20 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/common.dart';
+import 'package:jemisyseshop/model/dataObject.dart';
 
 class GoldRateWedgit{
-  Future<void> showGoldRate(BuildContext context, bool hideTitleMessage, GlobalKey _keyGoldRate) {
+
+  Future<void> showGoldRate(BuildContext context, bool hideTitleMessage, GlobalKey _keyGoldRate) async {
+    DataService obj = new DataService();
+    List<GoldRate> _goldrate = List<GoldRate>();
+    double p = 100.0;
     hideGoldRate =true;
     bool _fromTop = true;
-    double p = 100.0;
-//    double topp=positionRed.dx;
-//    double rightp=positionRed.dy;
+    _goldrate = await obj.GetGoldSellingRate();
+
     if (kIsWeb && hideTitleMessage)
       p = 45.0;
     else if (kIsWeb && !hideTitleMessage)
@@ -38,37 +43,52 @@ class GoldRateWedgit{
                   child: new Stack(
                       children: <Widget>[
                         Container(
-                          height: 100,
                           child: SizedBox(width: 200,
                             child: Padding(
                               padding: const EdgeInsets.only(
                                   left: 30.0, top: 10.0),
                               child: Column(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text('Gold Rate', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
                                   SizedBox(height: 10,),
-                                  Row(
+                                  for(var irow in _goldrate)
+                    Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
                                     children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            right: 15.0),
-                                        child: Text('916 :'),
+                                      Flexible(
+                                        flex: 1,
+                                        child: Align(
+                                          alignment: Alignment.centerRight,
+                                            child: Text('${irow.goldType}: ')),
                                       ),
-                                      Text('\$55.50'),
+                                      Flexible(
+                                        flex: 2,
+                                        child: Text('$currencysymbol${formatter2dec.format(irow.sellRate)}'),
+                                      ),
+//                                      Padding(
+//                                        padding: const EdgeInsets.only(
+//                                            right: 15.0),
+//                                        child: Text('${irow.goldType} :'),
+//                                      ),
+//                                      Text('$currencysymbol${irow.sellRate}'),
                                     ],
                                   ),
                                   SizedBox(height: 10,),
-                                  Row(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            right: 15.0),
-                                        child: Text('999 :'),
-                                      ),
-                                      Text('\$65.50'),
-                                    ],
-                                  ),
-
+                                  ]),
+//                                  Row(
+//                                    children: [
+//                                      Padding(
+//                                        padding: const EdgeInsets.only(
+//                                            right: 15.0),
+//                                        child: Text('999 :'),
+//                                      ),
+//                                      Text('\$65.50'),
+//                                    ],
+//                                  ),
+//                                  SizedBox(height: 10,),
                                 ],
                               ),
                             ),
@@ -77,10 +97,10 @@ class GoldRateWedgit{
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.only(
-                              topLeft: const Radius.circular(1000.0),
-                              topRight: const Radius.circular(300.0),
+                              topLeft: const Radius.circular(400.0),
+                              topRight: const Radius.circular(100.0),
                               bottomLeft: const Radius.circular(150.0),
-                              bottomRight: const Radius.circular(1000.0),
+                              bottomRight: const Radius.circular(400.0),
                             ),
                           ),
                         ),

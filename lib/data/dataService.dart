@@ -7,7 +7,6 @@ import 'package:jemisyseshop/style.dart';
 class DataService {
   //SharedPreferences prefs;
 
-
   final Map<String, String> userheaders = {
     "Content-type": "application/json",
     "APIKey": "SkVNaVN5czo1MzU2NDNBVDk4NjU0MzU2"
@@ -49,11 +48,12 @@ class DataService {
       return result;
     }
   }
-  Future<List<DefaultData>> GetDefaultData() async {
+  Future<List<DefaultData>> GetDefaultData(DefaultDataParam param) async {
     List<DefaultData> result = [];
-    http.Response response = await http.get(
+    http.Response response = await http.post(
       apiurl + "Setting/GetDefaultData",
       headers: userheaders,
+        body: json.encode(param.toParam())
     );
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
