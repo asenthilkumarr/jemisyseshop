@@ -11,11 +11,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
+import 'package:jemisyseshop/model/dialogs.dart';
 import 'package:jemisyseshop/model/menu.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:jemisyseshop/view/contactUs.dart';
 import 'package:jemisyseshop/view/productDetails.dart';
 import 'package:jemisyseshop/view/productList.dart';
+import 'package:jemisyseshop/view/registration.dart';
 import 'package:jemisyseshop/widget/goldRate.dart';
 import 'package:jemisyseshop/widget/productGridWidget.dart';
 import 'package:jemisyseshop/widget/scrollingText.dart';
@@ -34,7 +36,14 @@ class MasterScreen extends StatelessWidget {
       title: 'Home',
       theme: ThemeData(
         textTheme: GoogleFonts.latoTextTheme(
-          Theme.of(context).textTheme,
+          Theme
+              .of(context)
+              .textTheme,
+        ),
+        primaryTextTheme:GoogleFonts.latoTextTheme(
+          Theme
+              .of(context)
+              .textTheme,
         ),
       ),
       home: MasterPage(currentIndex: currentIndex,key: null,),
@@ -53,6 +62,7 @@ class MasterPage extends StatefulWidget{
 
 class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   DataService dataService = DataService();
+  final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   List<Group> groupdt = List<Group>();
   List<Product> productdt = List<Product>();
   List<Product> selProductlist = new List<Product>();
@@ -85,10 +95,12 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     var sitem = country.firstWhere((d) => d.shortCode == _selCountry);
     sCountry = sitem;
 
+//    Dialogs.showLoadingDialog(context, _keyLoader);//invoking go
     await getDefaultData();
     await getGroup();
     await getProduct();
     await getMostPopular();
+//    Navigator.of(_keyLoader.currentContext,rootNavigator: true).pop();//close the dialoge
 
     if(titMessage == "") hideTitleMessage = true;
 
@@ -99,7 +111,6 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     }
     setState(() {
     });
-
   }
   Future<List<DefaultData>> getDefaultData() async {
     DefaultDataParam param = new DefaultDataParam();
@@ -182,7 +193,9 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     );
   }
   Future<void> _group_onTap(String productType, BuildContext context) async {
+    Dialogs.showLoadingDialog(context, _keyLoader);//invoking go
     var productdetail = await getProductDetail(productType, "", 1);
+    Navigator.of(_keyLoader.currentContext,rootNavigator: true).pop();//close the dialoge
     if (productdetail.length > 1) {
       Navigator.push(
           context,
@@ -608,8 +621,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     }
   }
   Widget CategoryListView(List<Group> data) {
-    return
-      new ScrollablePositionedList.builder(
+    return new ScrollablePositionedList.builder(
         itemScrollController: _scrollControllerlist,
         scrollDirection: Axis.horizontal,
         itemCount: data.length,
@@ -1376,7 +1388,8 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                     ),
                   ],
                 ),
-                onPressed: () async {
+                onPressed: () {
+                  _group_onTap("Home Try-On", context);
                 },
               ),
             ),
@@ -1410,7 +1423,11 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                     ),
                   ],
                 ),
-                onPressed: () async {
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                      builder: (context) => Registration()),);
                 },
               ),
             ),

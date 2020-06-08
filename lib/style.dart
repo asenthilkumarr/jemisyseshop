@@ -14,6 +14,7 @@ const Color title1Color = Color(0xFFFFFFFF);//FB4309
 const Color listbgColor = Color(0xFFD6DFE4);
 const Color listLabelbgColor = Color(0xFF88A9BB);
 const Color tagpricebgColor = Color(0xFFF3F3F3);
+const Color buttonShadowColor = Color(0xFFA57D42);//FB4309
 
 const double textborderRadius = 15.0;
 

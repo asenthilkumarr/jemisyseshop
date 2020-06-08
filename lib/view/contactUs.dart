@@ -15,14 +15,19 @@ class _contactUsPage extends State<ContactUsPage> {
         .size;
 
     return MaterialApp(
-      title: 'Product Details', theme:
-    ThemeData(
-      textTheme: GoogleFonts.latoTextTheme(
-        Theme
-            .of(context)
-            .textTheme,
+      title: 'Product Details',
+      theme: ThemeData(
+        textTheme: GoogleFonts.latoTextTheme(
+          Theme
+              .of(context)
+              .textTheme,
+        ),
+        primaryTextTheme:GoogleFonts.latoTextTheme(
+          Theme
+              .of(context)
+              .textTheme,
+        ),
       ),
-    ),
       home: Scaffold(
         body: SafeArea(
           child: Container(

@@ -9,7 +9,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
+import 'package:jemisyseshop/model/dialogs.dart';
 import 'package:jemisyseshop/model/menu.dart';
+import 'package:jemisyseshop/view/cart.dart';
 import 'package:jemisyseshop/widget/imageSlide.dart';
 import 'package:jemisyseshop/widget/offerTagPainter.dart';
 import 'package:jemisyseshop/widget/titleBar.dart';
@@ -26,6 +28,7 @@ class ProductDetailPage extends StatefulWidget{
 }
 class _productDetailPage extends State<ProductDetailPage> {
   DataService dataService = DataService();
+  final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   var scaffoldKey = GlobalKey<ScaffoldState>();
   final txtQtyController = TextEditingController();
   bool favorite = false;
@@ -484,7 +487,7 @@ class _productDetailPage extends State<ProductDetailPage> {
                                           item.metalType != "" ? Row(
                                             children: [
                                               SizedBox(
-                                                width: 100,
+                                                width: 120,
                                                 child: Align(
                                                     alignment: Alignment.centerRight,
                                                     child: Text("Metal Type : ")
@@ -517,10 +520,10 @@ class _productDetailPage extends State<ProductDetailPage> {
                                           item.designName != "" ? Row(
                                             children: [
                                               SizedBox(
-                                                  width: 100,
+                                                  width: 120,
                                                   child: Align(
                                                     alignment: Alignment.centerRight,
-                                                    child: Text("Design : ", ),
+                                                    child: Text("Design Name : ", ),
                                                   )
                                               ),
                                               Flexible(
@@ -532,7 +535,7 @@ class _productDetailPage extends State<ProductDetailPage> {
                                           item.brand != "" ? Row(
                                             children: [
                                               SizedBox(
-                                                  width: 100,
+                                                  width: 120,
                                                   child: Align(
                                                     alignment: Alignment.centerRight,
                                                     child: Text("Brand : "),
@@ -1272,11 +1275,40 @@ class _productDetailPage extends State<ProductDetailPage> {
         )
     );
   }
+  void AddtoCart(Product sItem, String oType) async{
+    List<Cart> lparam = [];
+    Cart param = new Cart();
+    param.eMail = "senthil@jemisys.com";
+    param.recordNo = 0;
+    param.designCode = sItem.designCode;
+    param.itemCode = sItem.itemCode;
+    param.onlineName = sItem.onlineName;
+    param.description = sItem.description;
+    param.qty = 1;
+//    param.jewelSize = "";
+    param.unitPrice = sItem.onlinePrice;
+    param.totalPrice = sItem.onlinePrice;
+    param.orderType = oType;
+    lparam.add(param);
+    Dialogs.showLoadingDialog(context, _keyLoader);//invoking go
+    var dt = await dataService.UpdateCart(lparam);
+    Navigator.of(_keyLoader.currentContext,rootNavigator: true).pop();//close the dialoge
+
+    Navigator.push(
+        context,
+        PageRouteBuilder(
+          pageBuilder: (c, a1, a2) => CartPage(),
+          transitionsBuilder: (c, anim, a2, child) =>
+              FadeTransition(opacity: anim, child: child),
+          transitionDuration: Duration(milliseconds: 300),
+        )
+    );
+  }
+
   @override
   void initState() {
     super.initState();
     txtQtyController.text = "1";
-    print(widget.product.toJson());
   }
   @override
   Widget build(BuildContext context) {
@@ -1284,17 +1316,41 @@ class _productDetailPage extends State<ProductDetailPage> {
         .of(context)
         .size;
     return MaterialApp(
-        title: 'Product Details', theme:
-    ThemeData(
-      textTheme: GoogleFonts.latoTextTheme(
-        Theme
-            .of(context)
-            .textTheme,
-      ),
-    ),
+        title: 'Product Details',
+        theme: ThemeData(
+          textTheme: GoogleFonts.latoTextTheme(
+            Theme
+                .of(context)
+                .textTheme,
+          ),
+          primaryTextTheme:GoogleFonts.latoTextTheme(
+            Theme
+                .of(context)
+                .textTheme,
+          ),
+        ),
         home: Scaffold(
             key: scaffoldKey,
-//      appBar: pageAppBar(),
+          appBar: AppBar(
+            title: Row(
+              children: [
+                Text(widget.title, style: TextStyle(color: Colors.white),),
+              ],
+            ),
+            leading: IconButton(icon:Icon(Icons.arrow_back,color: Colors.white,),
+              onPressed:() => Navigator.pop(context, false),
+            ),
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(Icons.home,color: Colors.white,),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+            backgroundColor: Color(0xFFFF8752),
+            centerTitle: true,
+          ),
             drawer: MenuItemWedget(scaffoldKey: scaffoldKey, isLogin: isLogin),
             body: SafeArea(
               child: SingleChildScrollView(
@@ -1308,7 +1364,7 @@ class _productDetailPage extends State<ProductDetailPage> {
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
-                      Customtitle(context, widget.title),
+                      //Customtitle(context, widget.title),
                       productDetailWidget(widget.product),
                       SizedBox(height: 3,)
                     ],
@@ -1322,7 +1378,7 @@ class _productDetailPage extends State<ProductDetailPage> {
               child: Container(
                 height: 50,
                 child: Padding(
-                  padding: const EdgeInsets.only(left:8.0, right: 8.0),
+                  padding: const EdgeInsets.only(left:1.0, right: 1.0),
                   child: new Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -1368,7 +1424,7 @@ class _productDetailPage extends State<ProductDetailPage> {
                                 ),
                               ),
                               onPressed: () async {
-
+                                AddtoCart(widget.product, "Y");
                               },
                             ),
                           ),

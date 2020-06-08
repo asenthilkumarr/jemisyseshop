@@ -1,6 +1,70 @@
-import 'dart:convert';
-
 import 'package:jemisyseshop/model/common.dart';
+
+class ReturnResponse{
+  String returnStatus;
+  String errorMessage;
+  int status;
+  String value;
+  ReturnResponse({this.status, this.returnStatus, this.errorMessage, this.value});
+  factory ReturnResponse.fromData(Map<String, dynamic> json){
+    return ReturnResponse(
+      returnStatus: json['returnStatus'],
+      errorMessage: json['errorMessage'],
+      status: json['status'],
+      value: json['value']
+    );
+  }
+}
+class Cart{
+  String eMail;
+  int recordNo;
+  String macID;
+  String designCode;
+  String itemCode;
+  String onlineName;
+  String description;
+  int qty;
+  String jewelSize;
+  double unitPrice;
+  double totalPrice;
+  String orderType;
+  DateTime createdDate;
+
+  Cart({this.eMail, this.recordNo, this.macID, this.designCode, this.itemCode, this.onlineName,
+  this.description, this.qty, this.jewelSize, this.unitPrice, this.totalPrice, this.orderType, this.createdDate});
+
+  factory Cart.fromData(Map<String, dynamic> json){
+    return Cart(
+      eMail: json['eMail'],
+      recordNo: json['recordNo'],
+      macID: json['macID'],
+      designCode: json['designCode'],
+        itemCode: json['inventoryCode'],
+      onlineName: json['onlineName'],
+      description: json['description'],
+      qty: json['qty'],
+      jewelSize: json['jewelSize'],
+      unitPrice: json['unitPrice'],
+      totalPrice: json['totalPrice'],
+      orderType: json['orderType'],
+      createdDate: json['createdDate']
+    );
+  }
+
+  Map<String, dynamic> toParam() =>{
+    'eMail':eMail,
+    'recordNo': recordNo,
+    'macID': macID,
+    'designCode':designCode,
+    'inventoryCode':itemCode != ""? itemCode : null,
+    'description':description,
+    'qty':qty,
+    'jewelSize':jewelSize,
+    'unitPrice':unitPrice,
+    'totalPrice':totalPrice,
+    'orderType':orderType,
+  };
+}
 class GoldRate {
   String goldType;
   double buyRate;

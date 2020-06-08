@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jemisyseshop/model/common.dart';
+import 'package:jemisyseshop/view/cart.dart';
 
 import '../style.dart';
 import 'goldRate.dart';
@@ -62,7 +63,17 @@ Widget titleBar(BuildContext context, GlobalKey<ScaffoldState> scaffoldKey, Glob
                                         height: 25,),
 //                                     icon: Icon(Icons.cur, color: Colors.white,),
                                       iconSize: 25,
-                                      onPressed: () {},),
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          PageRouteBuilder(
+                                            pageBuilder: (c, a1, a2) => CartPage(),
+                                            transitionsBuilder: (c, anim, a2, child) =>
+                                                FadeTransition(opacity: anim, child: child),
+                                            transitionDuration: Duration(milliseconds: 300),
+                                          ),
+                                        );
+                                      },),
                                     new Positioned( // draw a red marble
                                       top: 5.0,
                                       right: 10.0,
@@ -234,6 +245,41 @@ Widget Customtitle(BuildContext context, String title) {
       ),
 
     );
+}
+Widget Customtitle2(BuildContext context, String title, GlobalKey stickyKey) {
+  return Container(
+    key: stickyKey,
+    color: primary1Color,
+    child: Column(
+      children: [
+        Row(
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: IconButton(
+                icon: Icon(Icons.arrow_back, color: Colors.white,),
+                iconSize: 25,
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            Spacer(),
+            Align(
+              alignment: Alignment.center,
+              child: Padding(
+                padding: const EdgeInsets.only(right:30.0),
+                child: Text(title, style: titleTextStyle,),
+              ),
+            ),
+            Spacer()
+          ],
+        ),
+
+      ],
+    ),
+
+  );
 }
 
 Widget CompanyLogo() {

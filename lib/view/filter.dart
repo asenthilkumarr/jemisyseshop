@@ -72,7 +72,7 @@ class _filterPage extends State<FilterPage> {
   TextEditingController txtmaxpricecontroller = new TextEditingController();
   TextEditingController txtminwtcontroller = new TextEditingController();
   TextEditingController txtmaxwtcontroller = new TextEditingController();
-  var isExpanded = true;
+  var isExpanded = false;
 
   List<String> _group;
   List<String> _metal;
@@ -82,6 +82,8 @@ class _filterPage extends State<FilterPage> {
 
   RangeValues values = RangeValues(0, 100);
   RangeLabels labels = RangeLabels("0", "100");
+  GlobalKey stickyKey = GlobalKey();
+  String source="groupName";
 
   List<FilterSelValue> getGroup() {
     List<FilterSelValue> dList = new List<FilterSelValue>();
@@ -304,7 +306,124 @@ class _filterPage extends State<FilterPage> {
     Navigator.pop(context, fproductdt);
     return fproductdt;
   }
-  Widget filterWidget() {
+  Widget filterWidget(){
+    final screenSize = MediaQuery
+        .of(context)
+        .size;
+    return Padding(
+      padding: const EdgeInsets.only(left:8.0),
+      child: Row(
+        children: [
+          Container(
+              width: 115,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(
+                  color: Color(0xFFe2e8ec),
+                  width: 1,
+                ),
+                //borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  fValue.group.length > 0 ? RawMaterialButton(
+                    onPressed: () {},
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left:5.0),
+                        child: Text(
+                          'Product Type', softWrap: true,
+                        ),
+                      ),
+                    ),
+                  )
+                  : Container(),
+                  RawMaterialButton(
+                    onPressed: () {},
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left:5.0),
+                        child: Text(
+                          'Metal Type', softWrap: true,
+                        ),
+                      ),
+                    ),
+                  ),
+                  RawMaterialButton(
+                    onPressed: () {},
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left:5.0),
+                        child: Text(
+                          'Brand', softWrap: true,
+                        ),
+                      ),
+                    ),
+                  ),
+                  fValue.discount.length > 0 ? RawMaterialButton(
+                    onPressed: () {},
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left:5.0),
+                        child: Text(
+                          'Discount', softWrap: true,
+                        ),
+                      ),
+                    ),
+                  )
+                      : Container(),
+                  RawMaterialButton(
+                    onPressed: () {},
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left:5.0),
+                        child: Text(
+                          'Price Range', softWrap: true,
+                        ),
+                      ),
+                    ),
+                  ),
+                  fValue.maxweight > 0 ? RawMaterialButton(
+                    onPressed: () {},
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left:5.0),
+                        child: Text(
+                          'Weight Range', softWrap: true,
+                        ),
+                      ),
+                    ),
+                  )
+                      : Container(),
+                ],
+              ),
+            ),
+
+      Container(
+        width: screenSize.width-130,
+        height: screenSize.height,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(
+            color: Color(0xFFe2e8ec),
+            width: 1,
+          ),
+          //borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+        ],
+      ),
+    );
+  }
+  Widget filterWidget2() {
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.only(left:8.0, right:8.0),
@@ -319,7 +438,9 @@ class _filterPage extends State<FilterPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              fValue.group.length > 0 ? ExpansionTile(
+              fValue.group.length > 0 ? CustomExpansionTile(
+                headerBackgroundColor: listbgColor,
+                iconColor: Colors.black,
                 initiallyExpanded: false,
                 title: Container(
                   child: Text("Product Type")),
@@ -363,8 +484,8 @@ class _filterPage extends State<FilterPage> {
               )
               : Container(),
               CustomExpansionTile(
-                  headerBackgroundColor: Colors.black,
-                  iconColor: Colors.white,
+                  headerBackgroundColor: listbgColor,
+                  iconColor: Colors.black,
                   title:Text("Metal Type"),
                 children: [
                   for(int i = 0; i < fValue.metal.length; i++)
@@ -404,48 +525,9 @@ class _filterPage extends State<FilterPage> {
                         )),
                 ],
               ),
-              ExpansionTile(
-                initiallyExpanded: isExpanded,
-                title: Text("Metal Type"),
-                children: [
-                  for(int i = 0; i < fValue.metal.length; i++)
-                    Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 0.0),
-                          child: SizedBox(
-                            height: 30,
-                            child: Row(
-                              children: [
-                                Checkbox(
-                                  value: fValue.metal[i].isChecked,
-                                  onChanged: (bool value) {
-                                    fValue.metal[i].isChecked = value;
-                                    setState(() {});
-                                  },
-                                ),
-                                Text(fValue.metal[i].value,),
-                              ],
-                            ),
-                          ),
-/*
-                          child: CheckboxListTile(
-                            value: gValue.metal[i].isChecked,
-                            title: Text(gValue.metal[i].value, style: TextStyle(fontSize: 13),),
-                            controlAffinity: ListTileControlAffinity.leading,
-                            onChanged: (bool value) {
-                              gValue.metal[i].isChecked=value;
-                              setState((
-                                  ) {
-                              });
-                              print(gValue.metal[i].isChecked);
-                            },
-                          ),
-                          */
-                        )),
-                ],
-              ),
-              ExpansionTile(
+              CustomExpansionTile(
+                headerBackgroundColor: listbgColor,
+                iconColor: Colors.black,
                 initiallyExpanded: isExpanded,
                 title: Text("Brand"),
                 children: [
@@ -473,7 +555,9 @@ class _filterPage extends State<FilterPage> {
                         )),
                 ],
               ),
-              fValue.discount.length > 0 ? ExpansionTile(
+              fValue.discount.length > 0 ? CustomExpansionTile(
+                headerBackgroundColor: listbgColor,
+                iconColor: Colors.black,
                 initiallyExpanded: false,
                 title: Text("Discount"),
                 children: [
@@ -502,7 +586,9 @@ class _filterPage extends State<FilterPage> {
               )
                   : Container(),
 
-              ExpansionTile(
+              CustomExpansionTile(
+                headerBackgroundColor: listbgColor,
+                iconColor: Colors.black,
                 initiallyExpanded: isExpanded,
                 title: Text("Price Range"),
                 children: [
@@ -510,7 +596,7 @@ class _filterPage extends State<FilterPage> {
                     height: 50,
                     child: Padding(
                       padding: const EdgeInsets.only(
-                          left: 20.0, right: 20.0, bottom: 20),
+                          left: 20.0, right: 20.0, top:15, bottom: 15),
                       child: Row(
                         children: [
                           Text(formatterint.format(lowerprice)),
@@ -647,7 +733,9 @@ class _filterPage extends State<FilterPage> {
                   )
                 ],
               ),
-              fValue.maxweight > 0 ? ExpansionTile(
+              fValue.maxweight > 0 ? CustomExpansionTile(
+                headerBackgroundColor: listbgColor,
+                iconColor: Colors.black,
                 initiallyExpanded: isExpanded,
                 title: Text("Weight Range"),
                 children: [
@@ -655,7 +743,7 @@ class _filterPage extends State<FilterPage> {
                     height: 50,
                     child: Padding(
                       padding: const EdgeInsets.only(
-                          left: 20.0, right: 20.0, bottom: 20),
+                          left: 20.0, right: 20.0, top:15, bottom: 15),
                       child: Row(
                         children: [
                           Text(formatterint.format(lowerweight)),
@@ -783,11 +871,17 @@ class _filterPage extends State<FilterPage> {
   void reset_Click(){
     fValue = new FilterValue();
     fValue = mValue;
+    for(int i=0;i<fValue.group.length;i++){
+      fValue.group[i].isChecked=false;
+    }
     for(int i=0;i<fValue.metal.length;i++){
       fValue.metal[i].isChecked=false;
     }
     for(int i=0;i<fValue.brand.length;i++){
       fValue.brand[i].isChecked=false;
+    }
+    for(int i=0;i<fValue.discount.length;i++){
+      fValue.discount[i].isChecked=false;
     }
     minprice = fValue.minprice;
     maxprice = fValue.maxprice;
@@ -844,26 +938,897 @@ class _filterPage extends State<FilterPage> {
     getFilterProductData(temp);
     //Navigator.pop(context, temp);
   }
+  void showFilter(String _source) {
+    source = _source;
+    setState(() {
+
+    });
+  }
+
+  Widget FilterWidgetValue(){
+    final screenSize = MediaQuery
+        .of(context)
+        .size;
+    if(source == "groupName") {
+      return Container(
+          width: screenSize.width - 143,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+              color: Color(0xFFe2e8ec),
+              width: 1,
+            ),
+            //borderRadius: BorderRadius.circular(12),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 15.0),
+            child: new ListView.builder(
+                scrollDirection: Axis.vertical,
+                itemCount: fValue.group.length,
+                itemBuilder: (BuildContext context, int index) =>
+                    Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 0.0),
+                          child: SizedBox(
+                            height: 30,
+                            child: Row(
+                              children: [
+                                Theme(
+                                  data: Theme.of(context).copyWith(
+                                    unselectedWidgetColor: buttonShadowColor,
+                                  ),
+                                  child: Checkbox(
+                                    checkColor: Colors.white,
+                                    activeColor: buttonShadowColor,
+                                    value: fValue.group[index].isChecked,
+                                    onChanged: (bool value) {
+                                      setState(() {
+                                        fValue.group[index].isChecked = value;
+                                        setState(() {});
+                                      });
+                                    },
+                                  ),
+                                ),
+                                Text(toBeginningOfSentenceCase(fValue
+                                    .group[index].value.toLowerCase()),),
+                              ],
+                            ),
+                          ),
+
+                        ))),
+          ));
+    }
+    else if(source == "metalType"){
+      return  Container(
+          width: screenSize.width-143,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+              color: Color(0xFFe2e8ec),
+              width: 1,
+            ),
+            //borderRadius: BorderRadius.circular(12),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 15.0),
+            child: new ListView.builder(
+                scrollDirection: Axis.vertical,
+                itemCount: fValue.metal.length,
+                itemBuilder: (BuildContext context, int index) =>
+                    Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 0.0),
+                          child: SizedBox(
+                            height: 30,
+                            child: Row(
+                              children: [
+                                Theme(
+                                  data: Theme.of(context).copyWith(
+                                    unselectedWidgetColor: buttonShadowColor,
+                                  ),
+                                  child: Checkbox(
+                                    checkColor: Colors.white,
+                                    activeColor: buttonShadowColor,
+                                    value: fValue.metal[index].isChecked,
+                                    onChanged: (bool value) {
+                                      setState(() {
+                                        fValue.metal[index].isChecked = value;
+                                        setState(() {});
+                                      });
+                                    },
+                                  ),
+                                ),
+
+                                Text(fValue.metal[index].value,),
+                              ],
+                            ),
+                          ),
+
+                        ))),
+          ));
+    }
+    else if(source == "brand"){
+      return  Container(
+          width: screenSize.width-143,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+              color: Color(0xFFe2e8ec),
+              width: 1,
+            ),
+            //borderRadius: BorderRadius.circular(12),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 15.0),
+            child: new ListView.builder(
+                scrollDirection: Axis.vertical,
+                itemCount: fValue.brand.length,
+                itemBuilder: (BuildContext context, int index) =>
+                    Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 0.0),
+                          child: SizedBox(
+                            height: 30,
+                            child: Row(
+                              children: [
+                                Theme(
+                                  data: Theme.of(context).copyWith(
+                                    unselectedWidgetColor: buttonShadowColor,
+                                  ),
+                                  child: Checkbox(
+                                    checkColor: Colors.white,
+                                    activeColor: buttonShadowColor,
+                                    value: fValue.brand[index].isChecked,
+                                    onChanged: (bool value) {
+                                      setState(() {
+                                        fValue.brand[index].isChecked = value;
+                                        setState(() {});
+                                      });
+                                    },
+                                  ),
+                                ),
+
+                                Text(fValue.brand[index].value,),
+                              ],
+                            ),
+                          ),
+
+                        ))),
+          ));
+    }
+    else if(source == "discount"){
+      return  Container(
+          width: screenSize.width-143,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+              color: Color(0xFFe2e8ec),
+              width: 1,
+            ),
+            //borderRadius: BorderRadius.circular(12),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 15.0),
+            child: new ListView.builder(
+                scrollDirection: Axis.vertical,
+                itemCount: fValue.discount.length,
+                itemBuilder: (BuildContext context, int index) =>
+                    Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 0.0),
+                          child: SizedBox(
+                            height: 30,
+                            child: Row(
+                              children: [
+                                Theme(
+                                  data: Theme.of(context).copyWith(
+                                    unselectedWidgetColor: buttonShadowColor,
+                                  ),
+                                  child: Checkbox(
+                                    checkColor: Colors.white,
+                                    activeColor: buttonShadowColor,
+                                    value: fValue.discount[index].isChecked,
+                                    onChanged: (bool value) {
+                                      setState(() {
+                                        fValue.discount[index].isChecked = value;
+                                        setState(() {});
+                                      });
+                                    },
+                                  ),
+                                ),
+
+                                Text(fValue.discount[index].value,),
+                              ],
+                            ),
+                          ),
+
+                        ))),
+          ));
+    }
+    else if(source == "price") {
+      return Container(
+          width: screenSize.width-143,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+              color: Color(0xFFe2e8ec),
+              width: 1,
+            ),
+            //borderRadius: BorderRadius.circular(12),
+          ),
+          child: Padding(
+              padding: const EdgeInsets.only(top: 15.0),
+              child: new ListView(
+                children: [
+                  Container(
+                    width: screenSize.width-143,
+                    height: 120,
+                    color: Colors.white,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10.0, top: 20.0, right: 10.0),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(formatterint.format(lowerprice)),
+                              Text(formatterint.format(upperprice)),
+                            ],
+                          ),
+                        ),
+
+                        SliderTheme(
+                          // Customization of the SliderTheme
+                          // based on individual definitions
+                          // (see rangeSliders in _RangeSliderSampleState)
+                          data: SliderTheme.of(context).copyWith(
+                            overlayColor: overlayColor,
+                            activeTickMarkColor: activeTickMarkColor,
+                            activeTrackColor: activeTrackColor,
+                            inactiveTrackColor: inactiveTrackColor,
+                            trackHeight: rangebarWidth,
+                            //trackHeight: 8.0,
+                            thumbColor: thumbColor,
+                            valueIndicatorColor: valueIndicatorColor,
+                            showValueIndicator: true
+                                ? ShowValueIndicator.always
+                                : ShowValueIndicator.onlyForDiscrete,
+                          ),
+                          child: Expanded(
+                            child: SliderTheme(
+                              // Customization of the SliderTheme
+                              // based on individual definitions
+                              // (see rangeSliders in _RangeSliderSampleState)
+                              data: SliderTheme.of(context).copyWith(
+                                overlayColor: overlayColor,
+                                activeTickMarkColor: activeTickMarkColor,
+                                activeTrackColor: activeTrackColor,
+                                inactiveTrackColor: inactiveTrackColor,
+                                trackHeight: rangebarWidth,
+                                //trackHeight: 8.0,
+                                thumbColor: thumbColor,
+                                valueIndicatorColor: valueIndicatorColor,
+                                showValueIndicator: showValueIndicator
+                                    ? ShowValueIndicator.always
+                                    : ShowValueIndicator.onlyForDiscrete,
+                              ),
+                              child: frs.RangeSlider(
+                                min: minprice,
+                                max: maxprice,
+                                lowerValue: lowerprice,
+                                upperValue: upperprice,
+//                                divisions: divisions,
+                                showValueIndicator: showValueIndicator,
+                                valueIndicatorMaxDecimals: valueIndicatorMaxDecimals,
+                                onChanged: (double lower, double upper) {
+                                  lowerprice = lower;
+                                  upperprice = upper;
+                                  txtminpricecontroller.text =
+                                      formatterint.format(lower);
+                                  txtmaxpricecontroller.text =
+                                      formatterint.format(upper);
+                                  setState(() {
+
+                                  });
+                                  // call
+                                  //callback(lower, upper);
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+
+                      ],
+                    ),
+                  ),
+                ],
+              )
+          )
+          );
+    }
+    else if(source == "weight"){
+      return Container(
+          width: screenSize.width-143,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+              color: Color(0xFFe2e8ec),
+              width: 1,
+            ),
+            //borderRadius: BorderRadius.circular(12),
+          ),
+          child: Padding(
+              padding: const EdgeInsets.only(top: 15.0),
+              child: new ListView(
+                  children: [
+                    Container(
+                      width: screenSize.width-143,
+                      height: 120,
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10.0, top: 20.0, right: 10.0),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(formatterint.format(lowerweight)),
+                                Text(formatterint.format(upperweight)),
+                              ],
+                            ),
+                          ),
+
+                          SliderTheme(
+                            // Customization of the SliderTheme
+                            // based on individual definitions
+                            // (see rangeSliders in _RangeSliderSampleState)
+                            data: SliderTheme.of(context).copyWith(
+                              overlayColor: overlayColor,
+                              activeTickMarkColor: activeTickMarkColor,
+                              activeTrackColor: activeTrackColor,
+                              inactiveTrackColor: inactiveTrackColor,
+                              trackHeight: rangebarWidth,
+                              //trackHeight: 8.0,
+                              thumbColor: thumbColor,
+                              valueIndicatorColor: valueIndicatorColor,
+                              showValueIndicator: true
+                                  ? ShowValueIndicator.always
+                                  : ShowValueIndicator.onlyForDiscrete,
+                            ),
+                            child: Expanded(
+                              child: SliderTheme(
+                                // Customization of the SliderTheme
+                                // based on individual definitions
+                                // (see rangeSliders in _RangeSliderSampleState)
+                                data: SliderTheme.of(context).copyWith(
+                                  overlayColor: overlayColor,
+                                  activeTickMarkColor: activeTickMarkColor,
+                                  activeTrackColor: activeTrackColor,
+                                  inactiveTrackColor: inactiveTrackColor,
+                                  trackHeight: rangebarWidth,
+                                  //trackHeight: 8.0,
+                                  thumbColor: thumbColor,
+                                  valueIndicatorColor: valueIndicatorColor,
+                                  showValueIndicator: showValueIndicator
+                                      ? ShowValueIndicator.always
+                                      : ShowValueIndicator.onlyForDiscrete,
+                                ),
+                                child: frs.RangeSlider(
+                                  min: minwt,
+                                  max: maxwt,
+                                  lowerValue: lowerweight,
+                                  upperValue: upperweight,
+//                                divisions: divisions,
+                                  showValueIndicator: showValueIndicator,
+                                  valueIndicatorMaxDecimals: valueIndicatorMaxDecimals,
+                                  onChanged: (double lower, double upper) {
+                                    lowerweight = lower;
+                                    upperweight = upper;
+                                    txtminwtcontroller.text =
+                                        formatterint.format(lower);
+                                    txtmaxwtcontroller.text =
+                                        formatterint.format(upper);
+                                    setState(() {
+
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+
+                        ],
+                      ),
+                    ),
+                  ],
+              )
+          )
+      );
+    }
+    else if(source == "price2"){
+      return Align(
+        alignment: Alignment.topCenter,
+        child: Column(
+          children: [
+          Container(
+            width: screenSize.width-143,
+            height: 120,
+            color: Colors.white,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 10.0, top: 20.0, right: 10.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(formatterint.format(lowerprice)),
+                      Text(formatterint.format(upperprice)),
+                    ],
+                  ),
+                ),
+
+                SliderTheme(
+                  // Customization of the SliderTheme
+                  // based on individual definitions
+                  // (see rangeSliders in _RangeSliderSampleState)
+                  data: SliderTheme.of(context).copyWith(
+                    overlayColor: overlayColor,
+                    activeTickMarkColor: activeTickMarkColor,
+                    activeTrackColor: activeTrackColor,
+                    inactiveTrackColor: inactiveTrackColor,
+                    trackHeight: rangebarWidth,
+                    //trackHeight: 8.0,
+                    thumbColor: thumbColor,
+                    valueIndicatorColor: valueIndicatorColor,
+                    showValueIndicator: true
+                        ? ShowValueIndicator.always
+                        : ShowValueIndicator.onlyForDiscrete,
+                  ),
+                  child: Expanded(
+                    child: SliderTheme(
+                      // Customization of the SliderTheme
+                      // based on individual definitions
+                      // (see rangeSliders in _RangeSliderSampleState)
+                      data: SliderTheme.of(context).copyWith(
+                        overlayColor: overlayColor,
+                        activeTickMarkColor: activeTickMarkColor,
+                        activeTrackColor: activeTrackColor,
+                        inactiveTrackColor: inactiveTrackColor,
+                        trackHeight: rangebarWidth,
+                        //trackHeight: 8.0,
+                        thumbColor: thumbColor,
+                        valueIndicatorColor: valueIndicatorColor,
+                        showValueIndicator: showValueIndicator
+                            ? ShowValueIndicator.always
+                            : ShowValueIndicator.onlyForDiscrete,
+                      ),
+                      child: frs.RangeSlider(
+                        min: minprice,
+                        max: maxprice,
+                        lowerValue: lowerprice,
+                        upperValue: upperprice,
+//                                divisions: divisions,
+                        showValueIndicator: showValueIndicator,
+                        valueIndicatorMaxDecimals: valueIndicatorMaxDecimals,
+                        onChanged: (double lower, double upper) {
+                          lowerprice = lower;
+                          upperprice = upper;
+                          txtminpricecontroller.text =
+                              formatterint.format(lower);
+                          txtmaxpricecontroller.text =
+                              formatterint.format(upper);
+                          setState(() {
+
+                          });
+                          // call
+                          //callback(lower, upper);
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+
+              ],
+            ),
+          ),
+        Padding(
+            padding: const EdgeInsets.only(top: 15.0),
+            child: Container(color: Colors.white,)
+        ),
+          ]
+        ),
+      );
+    }
+    else if(source == "weight2"){
+      return Align(
+        alignment: Alignment.topCenter,
+        child: Container(
+          width: screenSize.width-143,
+          height: 120,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 10.0, top: 20.0, right: 10.0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(formatterint.format(lowerweight)),
+                    Text(formatterint.format(upperweight)),
+                  ],
+                ),
+              ),
+
+              SliderTheme(
+                // Customization of the SliderTheme
+                // based on individual definitions
+                // (see rangeSliders in _RangeSliderSampleState)
+                data: SliderTheme.of(context).copyWith(
+                  overlayColor: overlayColor,
+                  activeTickMarkColor: activeTickMarkColor,
+                  activeTrackColor: activeTrackColor,
+                  inactiveTrackColor: inactiveTrackColor,
+                  trackHeight: rangebarWidth,
+                  //trackHeight: 8.0,
+                  thumbColor: thumbColor,
+                  valueIndicatorColor: valueIndicatorColor,
+                  showValueIndicator: true
+                      ? ShowValueIndicator.always
+                      : ShowValueIndicator.onlyForDiscrete,
+                ),
+                child: Expanded(
+                  child: SliderTheme(
+                    // Customization of the SliderTheme
+                    // based on individual definitions
+                    // (see rangeSliders in _RangeSliderSampleState)
+                    data: SliderTheme.of(context).copyWith(
+                      overlayColor: overlayColor,
+                      activeTickMarkColor: activeTickMarkColor,
+                      activeTrackColor: activeTrackColor,
+                      inactiveTrackColor: inactiveTrackColor,
+                      trackHeight: rangebarWidth,
+                      //trackHeight: 8.0,
+                      thumbColor: thumbColor,
+                      valueIndicatorColor: valueIndicatorColor,
+                      showValueIndicator: showValueIndicator
+                          ? ShowValueIndicator.always
+                          : ShowValueIndicator.onlyForDiscrete,
+                    ),
+                    child: frs.RangeSlider(
+                      min: minwt,
+                      max: maxwt,
+                      lowerValue: lowerweight,
+                      upperValue: upperweight,
+//                                divisions: divisions,
+                      showValueIndicator: showValueIndicator,
+                      valueIndicatorMaxDecimals: valueIndicatorMaxDecimals,
+                      onChanged: (double lower, double upper) {
+                        lowerweight = lower;
+                        upperweight = upper;
+                        txtminwtcontroller.text =
+                            formatterint.format(lower);
+                        txtmaxwtcontroller.text =
+                            formatterint.format(upper);
+                        setState(() {
+
+                        });
+                      },
+                    ),
+                  ),
+                ),
+              ),
+
+            ],
+          ),
+        ),
+      );
+    }
+
+    else
+      Container(
+          width: screenSize.width-133,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+              color: Color(0xFFe2e8ec),
+              width: 1,
+            ),
+            //borderRadius: BorderRadius.circular(12),
+          ),
+          child: new ListView.builder(
+              scrollDirection: Axis.vertical,
+              itemCount: fValue.group.length,
+              itemBuilder: (BuildContext context, int index) =>
+                  Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 0.0),
+                        child: SizedBox(
+                          height: 30,
+                          child: Row(
+                            children: [
+                              Checkbox(
+                                value: fValue.group[index].isChecked,
+                                onChanged: (bool value) {
+                                  fValue.group[index].isChecked = value;
+                                  setState(() {});
+                                },
+                              ),
+                              Text(fValue.group[index].value,),
+                            ],
+                          ),
+                        ),
+
+                      ))));
+  }
+
+  Widget FilterWidget(){
+    final screenSize = MediaQuery
+        .of(context)
+        .size;
+
+    return  Flexible(
+      child: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              // Box decoration takes a gradient
+              gradient: LinearGradient(
+                // Where the linear gradient begins and ends
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                // Add one stop for each color. Stops should increase from 0 to 1
+                stops: [0, 1],
+                colors: [
+                  // Colors are easy thanks to Flutter's Colors class.
+                  primary1Color,
+                  Colors.white
+                ],
+              ),
+            ),
+          ),
+        Container(
+          child: Padding(
+            padding: const EdgeInsets.only(
+                left: 7.0, right: 5.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Container(
+                  height: screenSize.height-110,
+                  width: 130,
+                  decoration: BoxDecoration(
+                    color: Color(0xFFE6E6E6),
+                    border: Border.all(
+                      color: Color(0xFFe2e8ec),
+                      width: 1,
+                    ),
+                    //borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 0.0, top: 0),
+                    child: Column(
+                      children: [
+                        SizedBox(height: 5,),
+                        Material(
+                          color: source == "groupName" ? buttonShadowColor : Colors.white,
+                          child: InkWell(
+                            onTap: (){
+                              showFilter("groupName");
+                            },
+                            child: Container(
+                              child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 8.0, top: 12.0, bottom: 12.0),
+                                    child: Text("Product Type",
+                                      style: TextStyle(color: source == "groupName" ? Colors.white : Colors.black),),
+                                  )),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 5,),
+                        Material(
+                          color: source == "metalType" ? buttonShadowColor : Colors.white,
+                          child: InkWell(
+                            onTap: (){
+                              showFilter("metalType");
+                            },
+                            child: Container(
+                              child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 8.0, top: 12.0, bottom: 12.0),
+                                    child: Text("Metal Type",
+                                      style: TextStyle(color: source == "metalType" ? Colors.white : Colors.black),),
+                                  )),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 5,),
+                        Material(
+                          color: source == "brand" ? buttonShadowColor : Colors.white,
+                          child: InkWell(
+                            onTap: (){
+                              showFilter("brand");
+                            },
+                            child: Container(
+                              child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 8.0, top: 12.0, bottom: 12.0),
+                                    child: Text("Brand",
+                                      style: TextStyle(color: source == "brand" ? Colors.white : Colors.black),),
+                                  )),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 5,),
+                        fValue.discount.length > 0 ?  Material(
+                          color: source == "discount" ? buttonShadowColor : Colors.white,
+                          child: InkWell(
+                            onTap: (){
+                              showFilter("discount");
+                            },
+                            child: Container(
+                              child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 8.0, top: 12.0, bottom: 12.0),
+                                    child: Text("Discount",
+                                      style: TextStyle(color: source == "discount" ? Colors.white : Colors.black),),
+                                  )),
+                            ),
+                          ),
+                        )
+                          : Container(),
+                        fValue.discount.length > 0 ?  SizedBox(height: 5,)
+                            : Container(),
+                        Material(
+                          color: source == "price" ? buttonShadowColor : Colors.white,
+                          child: InkWell(
+                            onTap: (){
+                              showFilter("price");
+                            },
+                            child: Container(
+                              child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 8.0, top: 12.0, bottom: 12.0),
+                                    child: Text("Price Range",
+                                      style: TextStyle(color: source == "price" ? Colors.white : Colors.black),),
+                                  )),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 5,),
+                        fValue.maxweight > 0 ? Material(
+                          color: source == "weight" ? buttonShadowColor : Colors.white,
+                          child: InkWell(
+                            onTap: (){
+                              showFilter("weight");
+                            },
+                            child: Container(
+                              child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 8.0, top: 12.0, bottom: 12.0),
+                                    child: Text("Weight Range",
+                                    style: TextStyle(color: source == "weight" ? Colors.white : Colors.black),),
+                                  )),
+                            ),
+                          ),
+                        )
+                        : Container(),
+                        /*
+                        RawMaterialButton(
+                          fillColor: source == "groupName" ? buttonShadowColor : Colors.white,
+                          onPressed:(){
+                            showFilter("groupName");
+                          },
+                          child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: Text("Product Type"),
+                              )),
+                        ),
+                        RawMaterialButton(
+                          fillColor: source == "metalType" ? buttonShadowColor : Colors.white,
+                          onPressed:(){
+                            showFilter("metalType");
+                          },
+                          child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8.0, bottom: 5),
+                                child: Text("Metal Type"),
+                              )),
+                        ),
+                        RawMaterialButton(
+                          fillColor: source == "brand" ? buttonShadowColor : Colors.white,
+                          onPressed:(){
+                            showFilter("brand");
+                          },
+                          child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: Text("Brand"),
+                              )),
+                        ),
+                        RawMaterialButton(
+                          fillColor: source == "discount" ? buttonShadowColor : Colors.white,
+                          onPressed:(){
+                            showFilter("discount");
+                          },
+                          child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: Text("Discount"),
+                              )),
+                        ),
+                        RawMaterialButton(
+                          fillColor: source == "price" ? buttonShadowColor : Colors.white,
+                          onPressed:(){
+                            showFilter("price");
+                          },
+                          child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: Text("Price Range"),
+                              )),
+                        ),
+                        RawMaterialButton(
+                          fillColor: source == "weight" ? buttonShadowColor : Colors.white,
+                          onPressed:(){
+                            showFilter("weight");
+                          },
+                          child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: Text("Weight Range"),
+                              )),
+                        ),
+*/
+                      ],
+                    ),
+                  ),
+                ),
+                FilterWidgetValue(),
+              ],
+
+            ),
+          ),
+        ),
+        ]
+      ),
+    );
+  }
 
   @override
   void initState() {
     super.initState();
     productdt = widget.productdt;
     getFilter();
-//    mValue = widget.fValue;
-//    fValue = widget.fValue;
-//    minprice = fValue.minprice;
-//    maxprice = fValue.maxprice;
-//    minwt = fValue.minweight;
-//    maxwt = fValue.maxweight;
-//    lowerprice = fValue.minprice;
-//    upperprice = fValue.maxprice;
-//    lowerweight = fValue.minweight;
-//    upperweight = fValue.maxweight;
-//    txtminpricecontroller.text = formatterint.format(lowerprice);
-//    txtmaxpricecontroller.text = formatterint.format(upperprice);
-//    txtminwtcontroller.text = formatterint.format(lowerweight);
-//    txtmaxwtcontroller.text = formatterint.format(upperweight);
     setState(() {
 
     });
@@ -884,30 +1849,56 @@ class _filterPage extends State<FilterPage> {
               .of(context)
               .textTheme,
         ),
+        primaryTextTheme:GoogleFonts.latoTextTheme(
+          Theme
+              .of(context)
+              .textTheme,
+        ),
       ),
       home: Scaffold(
-        body: SafeArea(
-          child: SingleChildScrollView(
-            child: Container(
-//              decoration: BoxDecoration(
-//                  color: Colors.white,
-//                  border: Border.all(color: listbgColor,
-//                    width: 2
-//                  )
-//              ),
-              child: Column(
-                  children: [
-                    Customtitle(context, "Filter"),
-                    filterWidget(),
-                  ]
-              ),
-            ),
+        appBar: AppBar(
+          title: Text('Filter', style: TextStyle(color: Colors.white),),
+          leading: IconButton(icon:Icon(Icons.arrow_back,color: Colors.white,),
+            onPressed:() => Navigator.pop(context, null),
           ),
+//          actions: <Widget>[
+//            IconButton(
+//              icon: Icon(Icons.home,color: Colors.white,),
+//              onPressed: () {
+//                Navigator.pop(context);
+//              },
+//            ),
+//          ],
+          backgroundColor: Color(0xFFFF8752),
+          centerTitle: true,
+        ),
+        body: SafeArea(
+          child: Column(
+            children: [
+              //Customtitle2(context, "Filter", stickyKey),
+              FilterWidget(),
+          ]
+        ),
         ),
         bottomNavigationBar: BottomAppBar(
 
             child: Container(
               height: 50,
+              decoration: BoxDecoration(
+                // Box decoration takes a gradient
+                gradient: LinearGradient(
+                  // Where the linear gradient begins and ends
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  // Add one stop for each color. Stops should increase from 0 to 1
+                  stops: [0, 1],
+                  colors: [
+                    // Colors are easy thanks to Flutter's Colors class.
+                    Colors.white,
+                    Colors.white
+                  ],
+                ),
+              ),
               child: Padding(
                 padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                 child: new Row(
@@ -918,8 +1909,7 @@ class _filterPage extends State<FilterPage> {
                         child: SizedBox(
                           height: 50,
                           child: RaisedButton(
-
-                            color: Color(0xFF517295),
+                            color: Color(0xFF509583),
                             padding: const EdgeInsets.fromLTRB(
                                 0.0, 0.0, 0.0, 0.0),
                             child: Text(

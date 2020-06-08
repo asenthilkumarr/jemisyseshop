@@ -11,7 +11,29 @@ class DataService {
     "Content-type": "application/json",
     "APIKey": "SkVNaVN5czo1MzU2NDNBVDk4NjU0MzU2"
   };
+  List encondeToJson(List<Cart> list) {
+    List jsonList = List();
+    list.map((item) => jsonList.add(item.toParam())).toList();
+    return jsonList;
+  }
 
+  Future<ReturnResponse> UpdateCart(List<Cart> param) async {
+    ReturnResponse result = new ReturnResponse();
+    http.Response response = await http.post(
+        apiurl + "Cart/UpdateCart?mode=I",
+        headers: userheaders,
+        body: json.encode(param.map((e) => e.toParam()).toList())
+    );
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      result = ReturnResponse.fromData(data);
+      return result;
+    }
+    else {
+      return result;
+    }
+  }
   Future<List<GoldRate>> GetGoldSellingRate() async {
     List<GoldRate> result = [];
     http.Response response = await http.get(
