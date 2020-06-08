@@ -11,11 +11,6 @@ class DataService {
     "Content-type": "application/json",
     "APIKey": "SkVNaVN5czo1MzU2NDNBVDk4NjU0MzU2"
   };
-  List encondeToJson(List<Cart> list) {
-    List jsonList = List();
-    list.map((item) => jsonList.add(item.toParam())).toList();
-    return jsonList;
-  }
 
   Future<ReturnResponse> UpdateCart(List<Cart> param) async {
     ReturnResponse result = new ReturnResponse();
