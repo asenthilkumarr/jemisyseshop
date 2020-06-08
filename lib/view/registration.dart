@@ -1,8 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:jemisyseshop/data/dataService.dart';
+import 'package:jemisyseshop/model/dataObject.dart';
+import 'package:jemisyseshop/model/dialogs.dart';
 import '../style.dart';
 import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
+
+import 'login.dart';
+
 class Registration extends StatefulWidget{
   @override
   _Registration createState() => _Registration();
@@ -11,7 +17,52 @@ class _Registration extends State<Registration>{
   String _picked = "Two";
   bool _isRow = true;
   String PasswordEnter = "N";
-  String txtPassword = "";
+  String strPassword = "";
+  DataService dataService = DataService();
+
+
+  TextEditingController txtEmail = TextEditingController();
+  TextEditingController txtPassword = TextEditingController();
+  TextEditingController txtFirstName = TextEditingController();
+  TextEditingController txtLastName = TextEditingController();
+  TextEditingController txtMobileNumber = TextEditingController();
+  TextEditingController txtGender = TextEditingController();
+  TextEditingController txtRefferdEmail = TextEditingController();
+
+  Future<String> _UpdateCustomer() async {
+    String res = "Faild";
+
+    if (txtEmail.text != null && txtEmail.text != '' &&
+        txtPassword.text != null && txtPassword.text != '') {
+      {
+        Customer param = Customer();
+        param.eMail = txtEmail.text.trim();
+        param.referralEmail = txtRefferdEmail.text.trim();
+        param.password=txtPassword.text.trim();
+        param.firstName=txtFirstName.text.trim();
+        param.lastName=txtLastName.text.trim();
+        param.gender= _isRow==true?"M":"F";
+        param.dOB= "";
+        param.mobileNumber=txtGender.text.trim();
+        param.mode= "I";
+        var dt = await dataService.UpdateCustomer(param);
+        if (dt.returnStatus != null && dt.returnStatus == 'OK') {
+
+          res = 'OK';
+//          Dialogs.AlertMessage(context,
+//           dt.returnStatus);
+        }
+        else {
+          //close the dialoge
+          Dialogs.AlertMessage(context,
+              dt.returnStatus);
+        }
+      }
+    }
+    //SharedPreferences prefs =  await SharedPreferences.getInstance();
+
+    return res;
+  }
 
 
   String ShowRetypePassword() {
@@ -60,12 +111,7 @@ class _Registration extends State<Registration>{
               onPressed:() => Navigator.pop(context, false),
             ),
             actions: <Widget>[
-              IconButton(
-                icon: Icon(Icons.home,color: Colors.white,),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
+
             ],
             backgroundColor: Color(0xFFFF8752),
             centerTitle: true,
@@ -85,6 +131,7 @@ class _Registration extends State<Registration>{
                         children: <Widget>[
                           Expanded(
                               child: TextField(
+                                controller: txtFirstName,
                                 autocorrect: true,
                                 decoration: InputDecoration(
                                   isDense: true,
@@ -112,6 +159,7 @@ class _Registration extends State<Registration>{
                         children: <Widget>[
                           Expanded(
                               child: TextField(
+                                controller: txtLastName,
                                 autocorrect: true,
                                 decoration: InputDecoration(
                                   isDense: true,
@@ -139,7 +187,7 @@ class _Registration extends State<Registration>{
                         children: <Widget>[
                           Expanded(
                               child: TextField(
-                                // controller: inputtextFielduserID,
+                                controller: txtEmail,
                                 autocorrect: true,
                                 decoration: InputDecoration(
                                   isDense: true,
@@ -167,7 +215,7 @@ class _Registration extends State<Registration>{
                         children: <Widget>[
                           Expanded(
                               child: TextField(
-                                // controller: inputtextFielduserID,
+                                controller: txtPassword,
                                 autocorrect: true,
                                 decoration: InputDecoration(
                                   isDense: true,
@@ -187,11 +235,11 @@ class _Registration extends State<Registration>{
                                   ),
                                 ),  obscureText: true,
                                 onChanged: (text) {
-                                  txtPassword="";
+                                  strPassword="";
                                   if (text.length>0)
                                   {
                                     PasswordEnter="Y";
-                                    txtPassword=text.trim();
+                                    strPassword=text.trim();
                                   }
                                   else
                                     PasswordEnter="N";
@@ -212,7 +260,7 @@ class _Registration extends State<Registration>{
                             children: <Widget>[
                               Expanded(
                                   child: TextField(
-                                    // controller: inputtextFielduserID,
+
                                     autocorrect: true,
                                     decoration: InputDecoration(
                                       isDense: true,
@@ -234,7 +282,7 @@ class _Registration extends State<Registration>{
                                     onChanged: (text) {
                                       setState(() {
                                       });
-                                      if (text==txtPassword)
+                                      if (text==strPassword)
                                       {
                                         PasswordEnter="N";
                                       }
@@ -252,7 +300,7 @@ class _Registration extends State<Registration>{
                         children: <Widget>[
                           Expanded(
                               child: TextField(
-                                // controller: inputtextFielduserID,
+                                controller: txtMobileNumber,
                                 keyboardType: TextInputType.phone,
                                 //maxLength: 15,
                                 autocorrect: true,
@@ -296,7 +344,8 @@ class _Registration extends State<Registration>{
                                             value: true,
                                             groupValue: this._isRow,
                                             onChanged: (bool value) {
-                                              setState(() => this._isRow = value);
+
+                                              setState(() {this._isRow = value;} );
                                             }),
                                         Text('Male',style: GoogleFonts.lato(color: Colors.black, fontSize: 15)),
                                       ],
@@ -307,7 +356,8 @@ class _Registration extends State<Registration>{
                                             value: false,
                                             groupValue: this._isRow,
                                             onChanged: (bool value) {
-                                              setState(() => this._isRow = value);
+
+                                              setState((){this._isRow = value ;} );
                                             }),
                                         Text('Female',style: GoogleFonts.lato(color: Colors.black, fontSize: 15)),
                                       ],
@@ -328,7 +378,7 @@ class _Registration extends State<Registration>{
                         children: <Widget>[
                           Expanded(
                               child: TextField(
-                                // controller: inputtextFielduserID,
+                                controller: txtRefferdEmail,
                                 autocorrect: true,
                                 decoration: InputDecoration(
                                   isDense: true,
@@ -370,6 +420,7 @@ class _Registration extends State<Registration>{
                                 ],
                               ),
                               onPressed: () {
+                                _UpdateCustomer();
                               },
                             ),
                           ),
@@ -443,6 +494,11 @@ class _Registration extends State<Registration>{
                                         child: Text("  Login",
                                           style: GoogleFonts.lato(fontSize: 15,color: Colors.green,fontWeight:FontWeight.bold,),),
                                         onTap: () {
+                                          Navigator.pop(context);
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => LoginPage()),);
                                           // do what you need to do when "Click here" gets clicked
                                         }
                                     ),

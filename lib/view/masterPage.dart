@@ -15,6 +15,7 @@ import 'package:jemisyseshop/model/dialogs.dart';
 import 'package:jemisyseshop/model/menu.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:jemisyseshop/view/contactUs.dart';
+import 'package:jemisyseshop/view/login.dart';
 import 'package:jemisyseshop/view/productDetails.dart';
 import 'package:jemisyseshop/view/productList.dart';
 import 'package:jemisyseshop/view/registration.dart';
@@ -1424,10 +1425,11 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                   ],
                 ),
                 onPressed: () {
+                  //if(isLogin)
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                      builder: (context) => Registration()),);
+                      builder: (context) => LoginPage()),);
                 },
               ),
             ),

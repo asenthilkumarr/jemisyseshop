@@ -1278,7 +1278,7 @@ class _productDetailPage extends State<ProductDetailPage> {
   void AddtoCart(Product sItem, String oType) async{
     List<Cart> lparam = [];
     Cart param = new Cart();
-    param.eMail = "senthil@jemisys.com";
+    param.eMail = 'senthil@jemisys.com';
     param.recordNo = 0;
     param.designCode = sItem.designCode;
     param.itemCode = sItem.itemCode;
@@ -1288,10 +1288,12 @@ class _productDetailPage extends State<ProductDetailPage> {
 //    param.jewelSize = "";
     param.unitPrice = sItem.onlinePrice;
     param.totalPrice = sItem.onlinePrice;
+    param.shippingDays = 7;
+    param.isSizeCanChange = true;
     param.orderType = oType;
     lparam.add(param);
     Dialogs.showLoadingDialog(context, _keyLoader);//invoking go
-    var dt = await dataService.UpdateCart(lparam);
+    var dt = await dataService.UpdateCart("I", lparam);
     Navigator.of(_keyLoader.currentContext,rootNavigator: true).pop();//close the dialoge
 
     Navigator.push(
@@ -1340,14 +1342,14 @@ class _productDetailPage extends State<ProductDetailPage> {
             leading: IconButton(icon:Icon(Icons.arrow_back,color: Colors.white,),
               onPressed:() => Navigator.pop(context, false),
             ),
-            actions: <Widget>[
-              IconButton(
-                icon: Icon(Icons.home,color: Colors.white,),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
+//            actions: <Widget>[
+//              IconButton(
+//                icon: Icon(Icons.home,color: Colors.white,),
+//                onPressed: () {
+//                  Navigator.pop(context);
+//                },
+//              ),
+//            ],
             backgroundColor: Color(0xFFFF8752),
             centerTitle: true,
           ),

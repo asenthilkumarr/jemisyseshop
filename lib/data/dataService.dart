@@ -12,10 +12,10 @@ class DataService {
     "APIKey": "SkVNaVN5czo1MzU2NDNBVDk4NjU0MzU2"
   };
 
-  Future<ReturnResponse> UpdateCart(List<Cart> param) async {
+  Future<ReturnResponse> UpdateCart(String mode, List<Cart> param) async {
     ReturnResponse result = new ReturnResponse();
     http.Response response = await http.post(
-        apiurl + "Cart/UpdateCart?mode=I",
+        apiurl + "Cart/UpdateCart?mode="+mode,
         headers: userheaders,
         body: json.encode(param.map((e) => e.toParam()).toList())
     );
@@ -29,11 +29,30 @@ class DataService {
       return result;
     }
   }
+  Future<List<Cart>> GetCart(String eMail) async {
+    List<Cart> result = [];
+    print(eMail);
+    http.Response response = await http.get(
+      apiurl + "Cart/GetCart?eMail="+eMail,
+        headers: userheaders,
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      for (Map i in data) {
+        var iRow = Cart.fromData(i);
+        result.add(iRow);
+      }
+      return result;
+    }
+    else {
+      return result;
+    }
+  }
   Future<List<GoldRate>> GetGoldSellingRate() async {
     List<GoldRate> result = [];
     http.Response response = await http.get(
-        apiurl + "GoldRate/GetGoldSellingRate",
-        headers: userheaders,
+      apiurl + "GoldRate/GetGoldSellingRate",
+      headers: userheaders,
     );
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
@@ -143,4 +162,45 @@ class DataService {
       return result;
     }
   }
+  Future<Customer> UpdateCustomer(Customer param) async {
+    Customer result;
+    http.Response response = await http.post(
+        apiurl + "Customer/UpdateCustomer",
+        headers: userheaders,
+        body: json.encode(param.toParam())
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      result = data;
+      return result;
+    }
+    else {
+      return result;
+    }
+  }
+  Future<Customer> GetCustomer(Customer param) async {
+    Customer result;
+    // print("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
+    // print(param.toParam());
+    http.Response response = await http.post(
+        apiurl + "Customer/GetCustomer",
+        headers: userheaders,
+        body: json.encode(param.toParam())
+    );
+    print(response.statusCode.toString()+"== "+response.body.toString());
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      for (Map i in data) {
+        var iRow = Customer.fromJson(i);
+        result=iRow;
+      }
+      return result;
+
+    }
+    else {
+      return result;
+      //throw Exception('Failed to load album');
+    }
+  }
+
 }

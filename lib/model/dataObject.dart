@@ -27,11 +27,15 @@ class Cart{
   String jewelSize;
   double unitPrice;
   double totalPrice;
+  int shippingDays;
+  bool isSizeCanChange;
   String orderType;
+  String imageFileName;
   DateTime createdDate;
 
   Cart({this.eMail, this.recordNo, this.macID, this.designCode, this.itemCode, this.onlineName,
-  this.description, this.qty, this.jewelSize, this.unitPrice, this.totalPrice, this.orderType, this.createdDate});
+  this.description, this.qty, this.jewelSize, this.unitPrice, this.totalPrice, this.shippingDays, this.isSizeCanChange, this.orderType,
+    this.imageFileName, this.createdDate});
 
   factory Cart.fromData(Map<String, dynamic> json){
     return Cart(
@@ -43,11 +47,14 @@ class Cart{
       onlineName: json['onlineName'],
       description: json['description'],
       qty: json['qty'],
-      jewelSize: json['jewelSize'],
+      jewelSize: json['jewelSize'].toString() == "" ? "15" : json['jewelSize'],
       unitPrice: json['unitPrice'],
       totalPrice: json['totalPrice'],
       orderType: json['orderType'],
-      createdDate: json['createdDate']
+        imageFileName: json['imageFileName'] != "" ? imageUrl + json['imageFileName'] : json['imageFileName'],
+        isSizeCanChange: json['isSizeCanChange'] == 0 ? false : true,
+      shippingDays: json['shippingDays'],
+      createdDate: DateTime.parse(json['createdDate'])
     );
   }
 
@@ -62,6 +69,8 @@ class Cart{
     'jewelSize':jewelSize,
     'unitPrice':unitPrice,
     'totalPrice':totalPrice,
+    'shippingDays':shippingDays,
+    'isSizeCanChange': isSizeCanChange == true ? 1 : 0,
     'orderType':orderType,
   };
 }
@@ -312,6 +321,48 @@ class DesignCode{
   String imageUrl;
   DesignCode(this.designCode, this.categoryCode, this.designName, this.classCode,
       this.tagPrice, this.grossWeight, this.goldWeight, this.goldWeight2, this.discountCode, this.promotionPrice, this.promotion, this.imageUrl);
+}
+class Customer{
+  String eMail;
+  String referralEmail;
+  String password;
+  String firstName;
+  String lastName;
+  String gender;
+  String dOB;
+  String mobileNumber;
+  String mode;
+//  DateTime createdDate;
+  String returnStatus;
+
+  Customer({this.eMail, this.referralEmail, this.password, this.firstName, this.lastName, this.gender,
+    this.dOB, this.mobileNumber, this.mode,  this.returnStatus});
+
+  factory Customer.fromJson(Map<String, dynamic> json){
+    return Customer(
+        eMail: json['eMail'],
+        referralEmail: json['referralEmail'],
+        password: json['password'],
+        firstName: json['firstName'],
+        lastName: json['lastName'],
+        gender: json['gender'],
+        dOB: json['dOB'],
+        mobileNumber: json['mobileNumber'],
+        returnStatus:json['returnStatus']
+    );
+  }
+
+  Map<String, dynamic> toParam() =>{
+    'eMail':eMail,
+    'referralEmail': referralEmail,
+    'password': password,
+    'firstName':firstName,
+    'lastName':lastName,
+    'gender':gender,
+    'dOB':dOB,
+    'mobileNumber':mobileNumber,
+    'mode':mode,
+  };
 }
 class ItemMasterList{
   String inventoryCode;

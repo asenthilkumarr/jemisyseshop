@@ -388,14 +388,14 @@ class _productListPage extends State<ProductListPage> {
           leading: IconButton(icon:Icon(Icons.arrow_back,color: Colors.white,),
             onPressed:() => Navigator.pop(context, false),
           ),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.home,color: Colors.white,),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          ],
+//          actions: <Widget>[
+//            IconButton(
+//              icon: Icon(Icons.home,color: Colors.white,),
+//              onPressed: () {
+//                Navigator.pop(context);
+//              },
+//            ),
+//          ],
           backgroundColor: Color(0xFFFF8752),
           centerTitle: true,
         ),
