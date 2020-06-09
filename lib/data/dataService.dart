@@ -29,11 +29,11 @@ class DataService {
       return result;
     }
   }
-  Future<List<Cart>> GetCart(String eMail) async {
+  Future<List<Cart>> GetCart(String eMail, String orderType) async {
     List<Cart> result = [];
     print(eMail);
     http.Response response = await http.get(
-      apiurl + "Cart/GetCart?eMail="+eMail,
+      apiurl + "Cart/GetCart?eMail="+eMail+"&orderType="+orderType,
         headers: userheaders,
     );
     if (response.statusCode == 200) {
@@ -42,6 +42,7 @@ class DataService {
         var iRow = Cart.fromData(i);
         result.add(iRow);
       }
+      print(result.length);
       return result;
     }
     else {
@@ -169,13 +170,19 @@ class DataService {
         headers: userheaders,
         body: json.encode(param.toParam())
     );
+
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
-      result = data;
+      for (Map i in data) {
+        var iRow = Customer.fromJson(i);
+        result=iRow;
+      }
       return result;
+
     }
     else {
       return result;
+      //throw Exception('Failed to load album');
     }
   }
   Future<Customer> GetCustomer(Customer param) async {

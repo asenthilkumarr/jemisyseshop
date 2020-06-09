@@ -1,3 +1,4 @@
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -49,12 +50,15 @@ class _LoginPage extends State<LoginPage>{
           .pop(); //close the dialoge
       if (dt.returnStatus != null && dt.returnStatus == 'OK') {
         userID = dt.eMail.toString();
+        userName = dt.firstName.toString().toUpperCase();
+        isLogin=true ;
         Navigator.pop(context, dt.eMail);
         res = 'OK';
       }
       else {
-        Dialogs.AlertMessage(context,
-            dt.returnStatus);
+//        Dialogs.AlertMessage(context,
+//            dt.returnStatus);
+        showInfoFlushbar(context,dt.returnStatus);
 
       }
     }
@@ -156,7 +160,7 @@ class _LoginPage extends State<LoginPage>{
                                             padding: const EdgeInsets.fromLTRB(0.0,0.0,3.0,0.0),
                                             child: Icon(
                                               Icons.supervised_user_circle,
-                                              color:Color(0xFF88A9BB),
+                                              color:buttonColor,
                                               size: 70.0,
                                             ),
                                           ),
@@ -181,11 +185,11 @@ class _LoginPage extends State<LoginPage>{
                                                   fillColor:  Colors.white70,
                                                   enabledBorder: OutlineInputBorder(
                                                     borderRadius: BorderRadius.all(Radius.circular(2.0)),
-                                                    borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                                    borderSide: BorderSide(color: listLabelbgColor, width: 1),
                                                   ),
                                                   focusedBorder: OutlineInputBorder(
                                                     borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                                    borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                                    borderSide: BorderSide(color:  listLabelbgColor, width: 1),
                                                   ),
                                                 ),)
                                           ),
@@ -209,11 +213,11 @@ class _LoginPage extends State<LoginPage>{
                                                   fillColor:  Colors.white70,
                                                   enabledBorder: OutlineInputBorder(
                                                     borderRadius: BorderRadius.all(Radius.circular(2.0)),
-                                                    borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                                    borderSide: BorderSide(color:  listLabelbgColor, width: 1),
                                                   ),
                                                   focusedBorder: OutlineInputBorder(
                                                     borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                                    borderSide: BorderSide(color:Color(0xFF88A9BB), width: 1),
+                                                    borderSide: BorderSide(color: listLabelbgColor, width: 1),
                                                   ),
                                                 ),  obscureText: true,
                                                 onChanged: (text) {
@@ -242,7 +246,7 @@ class _LoginPage extends State<LoginPage>{
                                                 borderRadius: new BorderRadius.circular(30.0),
                                                 side: BorderSide(color:Color(0xFF88A9BB)),
                                               ),
-                                              color: Color(0xFF88A9BB),
+                                              color: buttonColor,
                                               textColor: Colors.white,
                                               padding: EdgeInsets.all(13.0),
                                               child: Row(
@@ -295,14 +299,14 @@ class _LoginPage extends State<LoginPage>{
                                         children: <Widget>[
                                           Expanded(
                                             child: FacebookSignInButton(onPressed: () {},
-                                              textStyle: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, fontFamily: "Roboto",color: Colors.white),
+                                              textStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, fontFamily: "Roboto",color: Colors.white),
                                               text: 'Facebook',
                                             ),
                                           ),
-                                          SizedBox(width: 5,),
+                                          SizedBox(width: 3,),
                                           Expanded(
                                             child: GoogleSignInButton(onPressed: () {}, darkMode: true,
-                                              textStyle: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, fontFamily: "Roboto",color: Colors.white),
+                                              textStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, fontFamily: "Roboto",color: Colors.white),
                                               text: 'Google',
                                             ),
                                           ),
@@ -386,5 +390,18 @@ class _LoginPage extends State<LoginPage>{
             ),
           ),
         ));
+  }
+  void showInfoFlushbar(BuildContext context, String msg) {
+    Flushbar(
+      title: 'Failed to login',
+      message: '$msg',
+      icon: Icon(
+        Icons.info_outline,
+        size: 28,
+        color: Colors.blue.shade300,
+      ),
+      leftBarIndicatorColor: Colors.blue.shade300,
+      duration: Duration(seconds: 3),
+    )..show(context);
   }
 }

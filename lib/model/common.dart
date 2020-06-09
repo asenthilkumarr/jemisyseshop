@@ -9,6 +9,7 @@ String bannerimageUrl = '';
 String startupimageUrl = "";
 
 String userID = "";
+String userName = "";
 bool isLogin = false;
 
 String titMessage = "";

@@ -483,7 +483,7 @@ class _productListPage extends State<ProductListPage> {
                     Align(
                       alignment: Alignment.topCenter,
                       child: Padding(
-                        padding: const EdgeInsets.only(top:50.0),
+                        padding: const EdgeInsets.only(top:5.0),
                         child: Visibility(
                             visible: totisVisable,
                             child: Container(

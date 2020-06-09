@@ -18,6 +18,7 @@ import 'package:jemisyseshop/view/contactUs.dart';
 import 'package:jemisyseshop/view/login.dart';
 import 'package:jemisyseshop/view/productDetails.dart';
 import 'package:jemisyseshop/view/productList.dart';
+import 'package:jemisyseshop/view/profile.dart';
 import 'package:jemisyseshop/view/registration.dart';
 import 'package:jemisyseshop/widget/goldRate.dart';
 import 'package:jemisyseshop/widget/productGridWidget.dart';
@@ -1413,8 +1414,8 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                     SizedBox(height: 0,),
                     Padding(
                       padding: const EdgeInsets.all(0.0),
-                      child: Text(
-                        "Login",
+                      child: Text(userID==""?
+                        "Login":"Account",
                         style: TextStyle(
                             color: Color(0xFF656665),
                             fontSize: 9
@@ -1425,11 +1426,18 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                   ],
                 ),
                 onPressed: () {
-                  //if(isLogin)
+                  if(userID=="")
+                    {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                        builder: (context) => LoginPage()),);
+                    }
+                   else
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                      builder: (context) => LoginPage()),);
+                      builder: (context) => ProfilePage()),);
                 },
               ),
             ),

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jemisyseshop/data/dataService.dart';
+import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/model/dialogs.dart';
 import '../style.dart';
@@ -45,17 +46,22 @@ class _Registration extends State<Registration>{
         param.dOB= "";
         param.mobileNumber=txtGender.text.trim();
         param.mode= "I";
-        var dt = await dataService.UpdateCustomer(param);
-        if (dt.returnStatus != null && dt.returnStatus == 'OK') {
 
+        var dt = await dataService.UpdateCustomer(param);
+
+        if (dt.returnStatus != null && dt.returnStatus == 'OK') {
+          userID = dt.eMail.toString();
+          userName = dt.firstName.toString().toUpperCase();
+          isLogin=true ;
+          Navigator.pop(context,false);
           res = 'OK';
-//          Dialogs.AlertMessage(context,
-//           dt.returnStatus);
         }
         else {
           //close the dialoge
           Dialogs.AlertMessage(context,
               dt.returnStatus);
+          userID="";
+          isLogin=false;
         }
       }
     }
@@ -108,7 +114,9 @@ class _Registration extends State<Registration>{
           appBar: AppBar(
             title: Text('Register',style: GoogleFonts.lato(color: Colors.white,fontWeight:FontWeight.bold )),
             leading: IconButton(icon:Icon(Icons.arrow_back,color: Colors.white,),
-              onPressed:() => Navigator.pop(context, false),
+              onPressed:() {
+                Navigator.pop(context, false);
+              }
             ),
             actions: <Widget>[
 
@@ -143,11 +151,11 @@ class _Registration extends State<Registration>{
                                   fillColor:  Colors.white70,
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.all(Radius.circular(2.0)),
-                                    borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                    borderSide: BorderSide(color: listLabelbgColor, width: 1),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                    borderSide: BorderSide(color:  listLabelbgColor, width: 1),
                                   ),
                                 ),)
                           ),
@@ -171,11 +179,11 @@ class _Registration extends State<Registration>{
                                   fillColor:Colors.white70,
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.all(Radius.circular(2.0)),
-                                    borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                    borderSide: BorderSide(color:  listLabelbgColor, width: 1),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                    borderSide: BorderSide(color:  listLabelbgColor, width: 1),
                                   ),
                                 ),)
                           ),
@@ -199,11 +207,11 @@ class _Registration extends State<Registration>{
                                   fillColor:  Colors.white70,
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.all(Radius.circular(2.0)),
-                                    borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                    borderSide: BorderSide(color: listLabelbgColor, width: 1),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                    borderSide: BorderSide(color:  listLabelbgColor, width: 1),
                                   ),
                                 ),)
                           ),
@@ -227,11 +235,11 @@ class _Registration extends State<Registration>{
                                   fillColor:  Colors.white70,
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.all(Radius.circular(2.0)),
-                                    borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                    borderSide: BorderSide(color: listLabelbgColor, width: 1),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color:Color(0xFF88A9BB), width: 1),
+                                    borderSide: BorderSide(color: listLabelbgColor, width: 1),
                                   ),
                                 ),  obscureText: true,
                                 onChanged: (text) {
@@ -272,11 +280,11 @@ class _Registration extends State<Registration>{
                                       fillColor:  Colors.white70,
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.all(Radius.circular(2.0)),
-                                        borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                        borderSide: BorderSide(color:  listLabelbgColor, width: 1),
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                        borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                        borderSide: BorderSide(color:  listLabelbgColor, width: 1),
                                       ),
                                     ),  obscureText: true,
                                     onChanged: (text) {
@@ -314,11 +322,11 @@ class _Registration extends State<Registration>{
                                   fillColor:  Colors.white70,
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.all(Radius.circular(2.0)),
-                                    borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                    borderSide: BorderSide(color:  listLabelbgColor, width: 1),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                    borderSide: BorderSide(color:  listLabelbgColor, width: 1),
                                   ),
                                 ),)
                           ),
@@ -390,11 +398,11 @@ class _Registration extends State<Registration>{
                                   fillColor:  Colors.white70,
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.all(Radius.circular(2.0)),
-                                    borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                    borderSide: BorderSide(color:  listLabelbgColor, width: 1),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                    borderSide: BorderSide(color: listLabelbgColor, width: 1),
                                   ),
                                 ),)
                           ),
@@ -410,7 +418,7 @@ class _Registration extends State<Registration>{
                                 borderRadius: new BorderRadius.circular(4.0),
                                 side: BorderSide(color:Color(0xFF88A9BB)),
                               ),
-                              color: Color(0xFF88A9BB),
+                              color: buttonColor,
                               textColor: Colors.white,
                               padding: EdgeInsets.all(10.0),
                               child: Row(

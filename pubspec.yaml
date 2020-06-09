@@ -38,6 +38,7 @@ dependencies:
   share: ^0.6.4+3
   flutter_range_slider: ^1.4.0
   flutter_auth_buttons: ^0.8.0
+  flushbar: ^1.5.0
 
 dev_dependencies:
   flutter_test:

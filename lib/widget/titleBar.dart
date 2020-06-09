@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/view/cart.dart';
+import 'package:jemisyseshop/view/login.dart';
 
 import '../style.dart';
 import 'goldRate.dart';
@@ -64,15 +65,27 @@ Widget titleBar(BuildContext context, GlobalKey<ScaffoldState> scaffoldKey, Glob
 //                                     icon: Icon(Icons.cur, color: Colors.white,),
                                       iconSize: 25,
                                       onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          PageRouteBuilder(
-                                            pageBuilder: (c, a1, a2) => CartPage(),
-                                            transitionsBuilder: (c, anim, a2, child) =>
-                                                FadeTransition(opacity: anim, child: child),
-                                            transitionDuration: Duration(milliseconds: 300),
-                                          ),
-                                        );
+                                        if(isLogin == true) {
+                                          Navigator.push(
+                                            context,
+                                            PageRouteBuilder(
+                                              pageBuilder: (c, a1, a2) =>
+                                                  CartPage(),
+                                              transitionsBuilder: (c, anim, a2,
+                                                  child) =>
+                                                  FadeTransition(opacity: anim,
+                                                      child: child),
+                                              transitionDuration: Duration(
+                                                  milliseconds: 300),
+                                            ),
+                                          );
+                                        }
+                                        else{
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => LoginPage()),);
+                                        }
                                       },),
                                     new Positioned( // draw a red marble
                                       top: 5.0,
