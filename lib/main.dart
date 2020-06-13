@@ -158,6 +158,7 @@ class _splashScreen extends State<SplashScreen>{
       appTitle = dt[0].appName;
       currencysymbol = dt[0].currCode;
       titMessage = dt[0].message;
+      fontName = dt[0].fontName;
     }
 
     setState(() {

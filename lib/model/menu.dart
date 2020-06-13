@@ -14,8 +14,6 @@ class menuList{
 }
 final List<String> menuitem = [
   'Home',
-  'Home 2',
-//  'Home 3',
   'Diamond',
   'Engagement',
   'Wedding',

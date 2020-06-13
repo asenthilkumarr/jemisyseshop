@@ -37,6 +37,9 @@ dependencies:
   photo_view: ^0.9.2
   share: ^0.6.4+3
   flutter_range_slider: ^1.4.0
+  flutter_auth_buttons: ^0.8.0
+  flushbar: ^1.10.4
+  rflutter_alert: ^1.0.3
 
 dev_dependencies:
   flutter_test:

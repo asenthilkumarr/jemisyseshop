@@ -7,6 +7,11 @@ String imgFolderName = "";
 String imageUrl = "";
 String bannerimageUrl = '';
 String startupimageUrl = "";
+String fontName = "Loto";
+
+String userID = "";
+String userName = "";
+bool isLogin = false;
 
 String titMessage = "";
 
@@ -15,7 +20,6 @@ final List<Country> country = [
 ];
 String currencysymbol = "\$";
 String appTitle = "JEMiSys eShop";
-bool isLogin = false;
 bool hideGoldRate = false;
 bool hideTitleMessage = false;
 int hMenuCount = 3;

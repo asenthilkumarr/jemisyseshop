@@ -7,9 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jemisyseshop/data/dataService.dart';
+import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/style.dart';
 import 'package:jemisyseshop/view/filter.dart';
+import 'package:jemisyseshop/view/masterPage.dart';
 import 'package:jemisyseshop/widget/productGridWidget.dart';
 import 'package:jemisyseshop/widget/titleBar.dart';
 
@@ -23,6 +25,8 @@ class ProductListPage extends StatefulWidget{
 class _productListPage extends State<ProductListPage> {
   DataService dataService = DataService();
   var scaffoldKey = GlobalKey<ScaffoldState>();
+  final _formKey = GlobalKey<FormState>();
+
   GlobalKey _keyGoldRate = GlobalKey();
   String designCode = "Design";
   List<Product> productdt = new List<Product>();
@@ -83,6 +87,25 @@ class _productListPage extends State<ProductListPage> {
 
     return itemCount;
   }
+  void sortData(String field) {
+    if (field == "listingPriceLH")
+      fproductdt.sort((a, b) => a.onlinePrice.compareTo(b.onlinePrice));
+    if (field == "listingPriceHL"){
+      fproductdt.sort((a, b) => b.onlinePrice.compareTo(a.onlinePrice));
+    }
+
+    if (field == "goldWeightLH")
+      fproductdt.sort((a, b) => a.goldWeight.compareTo(b.goldWeight));
+    if (field == "goldWeightHL"){
+      fproductdt.sort((a, b) => b.goldWeight.compareTo(a.goldWeight));
+    }
+
+    setState(() {
+
+    });
+    Navigator.of(_formKey.currentContext, rootNavigator: true)
+        .pop(); //close the dialoge
+  }
   void Filter_Click() async {
 
     List<Product> gFilter = await Navigator.push(
@@ -104,6 +127,167 @@ class _productListPage extends State<ProductListPage> {
 
       });
     }
+  }
+  void sort_Click(){
+    showDialog(
+        context: context,
+        builder: (BuildContext context)
+    {
+      return AlertDialog(
+          content: Stack(
+            overflow: Overflow.visible,
+            children: <Widget>[
+              Positioned(
+                right: -40.0,
+                top: -40.0,
+                child: InkResponse(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: CircleAvatar(
+                    child: Icon(Icons.close, color: Colors.white,),
+                    backgroundColor: primary1Color,
+                  ),
+                ),
+              ),
+              Form(
+                  key: _formKey,
+                  child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Align(
+                          alignment: Alignment.center,
+                          child:Text("SORT BY"),
+                        ),
+                        Divider(height: 5,
+                        color: listLabelbgColor,),
+                        Material(
+//                          color: source == "groupName" ? buttonShadowColor : Colors.white,
+                          child: InkWell(
+                            onTap: (){
+                              sortData("listingPriceLH");
+                            },
+                            child: Container(
+                              child: Align(
+                                  alignment: Alignment.center,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 8.0, top: 12.0, bottom: 12.0),
+                                    child: Text("Price - Low to High",),
+                                  )),
+                            ),
+                          ),
+                        ),
+//                        Divider(),
+                        Material(
+//                          color: source == "groupName" ? buttonShadowColor : Colors.white,
+                          child: InkWell(
+                            onTap: (){
+                              sortData("listingPriceHL");
+                            },
+                            child: Container(
+                              child: Align(
+                                  alignment: Alignment.center,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 8.0, top: 12.0, bottom: 12.0),
+                                    child: Text("Price - High to Low",),
+                                  )),
+                            ),
+                          ),
+                        ),
+                        Material(
+//                          color: source == "groupName" ? buttonShadowColor : Colors.white,
+                          child: InkWell(
+                            onTap: (){
+                              sortData("goldWeightLH");
+                            },
+                            child: Container(
+                              child: Align(
+                                  alignment: Alignment.center,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 8.0, top: 12.0, bottom: 12.0),
+                                    child: Text("Weight - Low to High",),
+                                  )),
+                            ),
+                          ),
+                        ),
+                        Material(
+//                          color: source == "groupName" ? buttonShadowColor : Colors.white,
+                          child: InkWell(
+                            onTap: (){
+                              sortData("goldWeightHL");
+                            },
+                            child: Container(
+                              child: Align(
+                                  alignment: Alignment.center,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 8.0, top: 12.0, bottom: 12.0),
+                                    child: Text("Weight - High to Low",),
+                                  )),
+                            ),
+                          ),
+                        ),
+                        /*
+                        Align(
+                          alignment: Alignment.center,
+                          child: RawMaterialButton(
+//                          fillColor: listLabelbgColor,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left:20.0, right: 20.0),
+                              child: Text("Price Low to High"),
+                            ),
+                            onPressed: (){
+                              sortData("listingPriceLH");
+                            },
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.center,
+                          child: RawMaterialButton(
+//                          fillColor: listLabelbgColor,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left:20.0, right: 20.0),
+                              child: Text("Price High to Low"),
+                            ),
+                            onPressed: (){
+                              sortData("listingPriceHL");
+                            },
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: RawMaterialButton(
+//                          fillColor: listLabelbgColor,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left:20.0, right: 20.0),
+                              child: Text("Weight High to Low"),
+                            ),
+                            onPressed: (){
+                              sortData("goldWeightHL");
+                            },
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: RawMaterialButton(
+//                          fillColor: listLabelbgColor,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left:20.0, right: 20.0),
+                              child: Text("Weight Low to High"),
+                            ),
+                            onPressed: (){
+                              sortData("goldWeightLH");
+                            },
+                          ),
+                        ),
+*/
+                      ]
+                  )
+              ),
+            ],
+          )
+      );
+    }
+    );
   }
   Widget homeWidget(double screenHeight, double screenWidth) {
     double itemHeight = GridItemHeight(screenHeight, screenWidth);
@@ -186,17 +370,26 @@ class _productListPage extends State<ProductListPage> {
         .size;
 
     return MaterialApp(
-      title: 'Product Details', theme:
-    ThemeData(
-      textTheme: GoogleFonts.latoTextTheme(
-        Theme
-            .of(context)
-            .textTheme,
-      ),
-    ),
+      title: 'Product List',
+      theme: MasterScreen.themeData(context),
       home: Scaffold(
         key: scaffoldKey,
-//      appBar: pageAppBar(),
+        appBar: AppBar(
+          title: Text(widget.title, style: TextStyle(color: Colors.white),),
+          leading: IconButton(icon:Icon(Icons.arrow_back,color: Colors.white,),
+            onPressed:() => Navigator.pop(context, false),
+          ),
+//          actions: <Widget>[
+//            IconButton(
+//              icon: Icon(Icons.home,color: Colors.white,),
+//              onPressed: () {
+//                Navigator.pop(context);
+//              },
+//            ),
+//          ],
+          backgroundColor: Color(0xFFFF8752),
+          centerTitle: true,
+        ),
 //        drawer: filterWidget(),
 //        drawer: filterWidget2(1,100),
         body: SafeArea(
@@ -206,7 +399,7 @@ class _productListPage extends State<ProductListPage> {
                   children: [
                     Column(
                         children: [
-                          Customtitle(context, widget.title),
+                          //Customtitle(context, widget.title),
                           Container(
                             height: 40,
                             child: Row(
@@ -246,7 +439,9 @@ class _productListPage extends State<ProductListPage> {
                                 Flexible(
                                   flex: 1,
                                   child: InkWell(
-                                    onTap: () {},
+                                    onTap: () {
+                                      sort_Click();
+                                    },
                                     child: Container(
 //                              color: listLabelbgColor,
                                       decoration: BoxDecoration(
@@ -279,7 +474,7 @@ class _productListPage extends State<ProductListPage> {
                     Align(
                       alignment: Alignment.topCenter,
                       child: Padding(
-                        padding: const EdgeInsets.only(top:50.0),
+                        padding: const EdgeInsets.only(top:5.0),
                         child: Visibility(
                             visible: totisVisable,
                             child: Container(

@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:jemisyseshop/view/masterPage.dart';
 import 'package:jemisyseshop/widget/titleBar.dart';
 
 class ContactUsPage extends StatefulWidget{
@@ -15,14 +15,8 @@ class _contactUsPage extends State<ContactUsPage> {
         .size;
 
     return MaterialApp(
-      title: 'Product Details', theme:
-    ThemeData(
-      textTheme: GoogleFonts.latoTextTheme(
-        Theme
-            .of(context)
-            .textTheme,
-      ),
-    ),
+      title: 'Contact Us',
+      theme: MasterScreen.themeData(context),
       home: Scaffold(
         body: SafeArea(
           child: Container(

@@ -1,6 +1,79 @@
-import 'dart:convert';
-
 import 'package:jemisyseshop/model/common.dart';
+
+class ReturnResponse{
+  String returnStatus;
+  String errorMessage;
+  int status;
+  String value;
+  ReturnResponse({this.status, this.returnStatus, this.errorMessage, this.value});
+  factory ReturnResponse.fromData(Map<String, dynamic> json){
+    return ReturnResponse(
+      returnStatus: json['returnStatus'],
+      errorMessage: json['errorMessage'],
+      status: json['status'],
+      value: json['value']
+    );
+  }
+}
+class Cart{
+  String eMail;
+  int recordNo;
+  String macID;
+  String designCode;
+  String itemCode;
+  String onlineName;
+  String description;
+  int qty;
+  String jewelSize;
+  double unitPrice;
+  double totalPrice;
+  int shippingDays;
+  bool isSizeCanChange;
+  String orderType;
+  String imageFileName;
+  DateTime createdDate;
+
+  Cart({this.eMail, this.recordNo, this.macID, this.designCode, this.itemCode, this.onlineName,
+  this.description, this.qty, this.jewelSize, this.unitPrice, this.totalPrice, this.shippingDays, this.isSizeCanChange, this.orderType,
+    this.imageFileName, this.createdDate});
+
+  factory Cart.fromData(Map<String, dynamic> json){
+    return Cart(
+      eMail: json['eMail'],
+      recordNo: json['recordNo'],
+      macID: json['macID'],
+      designCode: json['designCode'],
+        itemCode: json['inventoryCode'],
+      onlineName: json['onlineName'],
+      description: json['description'],
+      qty: json['qty'],
+      jewelSize: json['jewelSize'].toString() == "" ? "15" : json['jewelSize'],
+      unitPrice: json['unitPrice'],
+      totalPrice: json['totalPrice'],
+      orderType: json['orderType'],
+        imageFileName: json['imageFileName'] != "" ? imageUrl + json['imageFileName'] : json['imageFileName'],
+        isSizeCanChange: json['isSizeCanChange'] == 0 ? false : true,
+      shippingDays: json['shippingDays'],
+      createdDate: DateTime.parse(json['createdDate'])
+    );
+  }
+
+  Map<String, dynamic> toParam() =>{
+    'eMail':eMail,
+    'recordNo': recordNo,
+    'macID': macID,
+    'designCode':designCode,
+    'inventoryCode':itemCode != ""? itemCode : null,
+    'description':description,
+    'qty':qty,
+    'jewelSize':jewelSize,
+    'unitPrice':unitPrice,
+    'totalPrice':totalPrice,
+    'shippingDays':shippingDays,
+    'isSizeCanChange': isSizeCanChange == true ? 1 : 0,
+    'orderType':orderType,
+  };
+}
 class GoldRate {
   String goldType;
   double buyRate;
@@ -248,6 +321,48 @@ class DesignCode{
   String imageUrl;
   DesignCode(this.designCode, this.categoryCode, this.designName, this.classCode,
       this.tagPrice, this.grossWeight, this.goldWeight, this.goldWeight2, this.discountCode, this.promotionPrice, this.promotion, this.imageUrl);
+}
+class Customer{
+  String eMail;
+  String referralEmail;
+  String password;
+  String firstName;
+  String lastName;
+  String gender;
+  String dOB;
+  String mobileNumber;
+  String mode;
+//  DateTime createdDate;
+  String returnStatus;
+
+  Customer({this.eMail, this.referralEmail, this.password, this.firstName, this.lastName, this.gender,
+    this.dOB, this.mobileNumber, this.mode,  this.returnStatus});
+
+  factory Customer.fromJson(Map<String, dynamic> json){
+    return Customer(
+        eMail: json['eMail'],
+        referralEmail: json['referralEmail'],
+        password: json['password'],
+        firstName: json['firstName'],
+        lastName: json['lastName'],
+        gender: json['gender'],
+        dOB: json['dOB'],
+        mobileNumber: json['mobileNumber'],
+        returnStatus:json['returnStatus']
+    );
+  }
+
+  Map<String, dynamic> toParam() =>{
+    'eMail':eMail,
+    'referralEmail': referralEmail,
+    'password': password,
+    'firstName':firstName,
+    'lastName':lastName,
+    'gender':gender,
+    'dOB':dOB,
+    'mobileNumber':mobileNumber,
+    'mode':mode,
+  };
 }
 class ItemMasterList{
   String inventoryCode;
