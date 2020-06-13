@@ -1,9 +1,12 @@
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jemisyseshop/data/dataService.dart';
+import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/model/dialogs.dart';
+import 'package:jemisyseshop/view/masterPage.dart';
 import '../style.dart';
 import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
 
@@ -28,39 +31,76 @@ class _Registration extends State<Registration>{
   TextEditingController txtMobileNumber = TextEditingController();
   TextEditingController txtGender = TextEditingController();
   TextEditingController txtRefferdEmail = TextEditingController();
+  TextEditingController txtReenterPassword = TextEditingController();
+
+  String Checknull() {
+    if(txtFirstName.text == null || txtFirstName.text == '')  {
+      return 'First Name cannot be blank. Please check.';
+    }
+    if  (txtEmail.text == null || txtEmail.text == '') {
+      return 'Email cannot be blank. Please check.';
+    }
+    if  (txtPassword.text == null || txtPassword.text == '') {
+      return 'Password cannot be blank. Please check.';
+    }
+
+    if(txtMobileNumber.text == null || txtMobileNumber.text == '')  {
+      return 'Mobile Number cannot be blank. Please check.';
+    }
+
+    if  (txtPassword.text != txtReenterPassword.text) {
+      return 'Retype password should be same as password. Please check.';
+    }
+    return '';
+  }
 
   Future<String> _UpdateCustomer() async {
     String res = "Faild";
 
-    if (txtEmail.text != null && txtEmail.text != '' &&
-        txtPassword.text != null && txtPassword.text != '') {
-      {
-        Customer param = Customer();
-        param.eMail = txtEmail.text.trim();
-        param.referralEmail = txtRefferdEmail.text.trim();
-        param.password=txtPassword.text.trim();
-        param.firstName=txtFirstName.text.trim();
-        param.lastName=txtLastName.text.trim();
-        param.gender= _isRow==true?"M":"F";
-        param.dOB= "";
-        param.mobileNumber=txtGender.text.trim();
-        param.mode= "I";
-        var dt = await dataService.UpdateCustomer(param);
-        if (dt.returnStatus != null && dt.returnStatus == 'OK') {
+     if(Checknull()!=null && Checknull()!="")
+    {
 
-          res = 'OK';
-//          Dialogs.AlertMessage(context,
-//           dt.returnStatus);
-        }
-        else {
-          //close the dialoge
-          Dialogs.AlertMessage(context,
-              dt.returnStatus);
-        }
-      }
+      showInfoFlushbar(context,Checknull());
+      userID="";
+      isLogin=false;
+
     }
-    //SharedPreferences prefs =  await SharedPreferences.getInstance();
+    else {
+       if (txtEmail.text != null && txtEmail.text != '' &&
+           txtPassword.text != null && txtPassword.text != '') {
+         {
+           Customer param = Customer();
+           param.eMail = txtEmail.text.trim();
+           param.referralEmail = txtRefferdEmail.text.trim();
+           param.password = txtPassword.text.trim();
+           param.firstName = txtFirstName.text.trim();
+           param.lastName = txtLastName.text.trim();
+           param.gender = _isRow == true ? "M" : "F";
+           param.dOB = "";
+           param.mobileNumber = txtMobileNumber.text.trim();
+           param.mode = "I";
 
+           var dt = await dataService.UpdateCustomer(param);
+
+           if (dt.returnStatus != null && dt.returnStatus == 'OK') {
+             userID = dt.eMail.toString();
+             userName = dt.firstName.toString().toUpperCase();
+             isLogin = true;
+             Navigator.pop(context, false);
+             res = 'OK';
+           }
+           else {
+             //close the dialoge
+//          Dialogs.AlertMessage(context,
+//              dt.returnStatus);
+             showInfoFlushbar(context, dt.returnStatus);
+             userID = "";
+             isLogin = false;
+           }
+         }
+       }
+       //SharedPreferences prefs =  await SharedPreferences.getInstance();
+     }
     return res;
   }
 
@@ -85,30 +125,16 @@ class _Registration extends State<Registration>{
   Widget build(BuildContext context) {
 
     return MaterialApp(
-        theme: ThemeData(
-          // Define the default brightness and colors.
-          brightness: brightness1,
-          primaryColor: Color(0xFFFF8752),
-          accentColor: accent1Color,
-          // Define the default TextTheme. Use this to specify the default
-          // text styling for headlines, titles, bodies of text, and more.
-          textTheme: GoogleFonts.latoTextTheme(
-            Theme
-                .of(context)
-                .textTheme,
-          ),
-          primaryTextTheme:GoogleFonts.latoTextTheme(
-            Theme
-                .of(context)
-                .textTheme,
-          ),
-        ),
+      title: "Register",
+        theme: MasterScreen.themeData(context),
 
         home: Scaffold(
           appBar: AppBar(
-            title: Text('Register',style: GoogleFonts.lato(color: Colors.white,fontWeight:FontWeight.bold )),
+            title: Text('Register',style: TextStyle(color: Colors.white,fontWeight:FontWeight.bold )),
             leading: IconButton(icon:Icon(Icons.arrow_back,color: Colors.white,),
-              onPressed:() => Navigator.pop(context, false),
+              onPressed:() {
+                Navigator.pop(context, false);
+              }
             ),
             actions: <Widget>[
 
@@ -143,11 +169,11 @@ class _Registration extends State<Registration>{
                                   fillColor:  Colors.white70,
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.all(Radius.circular(2.0)),
-                                    borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                    borderSide: BorderSide(color: listLabelbgColor, width: 1),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                    borderSide: BorderSide(color:  listLabelbgColor, width: 1),
                                   ),
                                 ),)
                           ),
@@ -171,11 +197,11 @@ class _Registration extends State<Registration>{
                                   fillColor:Colors.white70,
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.all(Radius.circular(2.0)),
-                                    borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                    borderSide: BorderSide(color:  listLabelbgColor, width: 1),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                    borderSide: BorderSide(color:  listLabelbgColor, width: 1),
                                   ),
                                 ),)
                           ),
@@ -199,11 +225,11 @@ class _Registration extends State<Registration>{
                                   fillColor:  Colors.white70,
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.all(Radius.circular(2.0)),
-                                    borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                    borderSide: BorderSide(color: listLabelbgColor, width: 1),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                    borderSide: BorderSide(color:  listLabelbgColor, width: 1),
                                   ),
                                 ),)
                           ),
@@ -227,11 +253,11 @@ class _Registration extends State<Registration>{
                                   fillColor:  Colors.white70,
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.all(Radius.circular(2.0)),
-                                    borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                    borderSide: BorderSide(color: listLabelbgColor, width: 1),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color:Color(0xFF88A9BB), width: 1),
+                                    borderSide: BorderSide(color: listLabelbgColor, width: 1),
                                   ),
                                 ),  obscureText: true,
                                 onChanged: (text) {
@@ -260,7 +286,7 @@ class _Registration extends State<Registration>{
                             children: <Widget>[
                               Expanded(
                                   child: TextField(
-
+                                    controller: txtReenterPassword,
                                     autocorrect: true,
                                     decoration: InputDecoration(
                                       isDense: true,
@@ -272,11 +298,11 @@ class _Registration extends State<Registration>{
                                       fillColor:  Colors.white70,
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.all(Radius.circular(2.0)),
-                                        borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                        borderSide: BorderSide(color:  listLabelbgColor, width: 1),
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                        borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                        borderSide: BorderSide(color:  listLabelbgColor, width: 1),
                                       ),
                                     ),  obscureText: true,
                                     onChanged: (text) {
@@ -314,11 +340,11 @@ class _Registration extends State<Registration>{
                                   fillColor:  Colors.white70,
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.all(Radius.circular(2.0)),
-                                    borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                    borderSide: BorderSide(color:  listLabelbgColor, width: 1),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                    borderSide: BorderSide(color:  listLabelbgColor, width: 1),
                                   ),
                                 ),)
                           ),
@@ -330,7 +356,7 @@ class _Registration extends State<Registration>{
                         children: <Widget>[
                           Padding(
                             padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                            child: Text('I\' am',style: GoogleFonts.lato(color: Colors.black, fontSize: 14)),
+                            child: Text('I\' am',style: TextStyle(color: Colors.black, fontSize: 14)),
                           ),
                           Expanded(
                             child:  Container(
@@ -347,7 +373,7 @@ class _Registration extends State<Registration>{
 
                                               setState(() {this._isRow = value;} );
                                             }),
-                                        Text('Male',style: GoogleFonts.lato(color: Colors.black, fontSize: 15)),
+                                        Text('Male',style: TextStyle(color: Colors.black, fontSize: 15)),
                                       ],
                                     ),
                                     Row(
@@ -359,7 +385,7 @@ class _Registration extends State<Registration>{
 
                                               setState((){this._isRow = value ;} );
                                             }),
-                                        Text('Female',style: GoogleFonts.lato(color: Colors.black, fontSize: 15)),
+                                        Text('Female',style: TextStyle(color: Colors.black, fontSize: 15)),
                                       ],
 
                                     ),
@@ -390,11 +416,11 @@ class _Registration extends State<Registration>{
                                   fillColor:  Colors.white70,
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.all(Radius.circular(2.0)),
-                                    borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                    borderSide: BorderSide(color:  listLabelbgColor, width: 1),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                    borderSide: BorderSide(color: listLabelbgColor, width: 1),
                                   ),
                                 ),)
                           ),
@@ -410,13 +436,13 @@ class _Registration extends State<Registration>{
                                 borderRadius: new BorderRadius.circular(4.0),
                                 side: BorderSide(color:Color(0xFF88A9BB)),
                               ),
-                              color: Color(0xFF88A9BB),
+                              color: buttonColor,
                               textColor: Colors.white,
                               padding: EdgeInsets.all(10.0),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
-                                  Text('Register',style: GoogleFonts.lato(color: Colors.white, fontSize: 18,fontWeight:FontWeight.bold )),
+                                  Text('Register',style: TextStyle(color: Colors.white, fontSize: 18,fontWeight:FontWeight.bold )),
                                 ],
                               ),
                               onPressed: () {
@@ -442,7 +468,7 @@ class _Registration extends State<Registration>{
                           Expanded(
                             child: Column(
                               children: <Widget>[
-                                Text('or Sign in with',style: GoogleFonts.lato(color: Colors.black, fontSize: 12 )),
+                                Text('or Sign in with',style: TextStyle(color: Colors.black, fontSize: 12 )),
                               ],
                             ),
                           ),
@@ -486,13 +512,13 @@ class _Registration extends State<Registration>{
                               mainAxisSize: MainAxisSize.max,
                               children: <Widget>[
                                 Text("Already have an account?",
-                                  style: GoogleFonts.lato(fontSize: 14,color: Colors.blueGrey,fontWeight:FontWeight.bold),
+                                  style: TextStyle(fontSize: 14,color: Colors.blueGrey,fontWeight:FontWeight.bold),
                                 ),
                                 Column(
                                   children: <Widget>[
                                     GestureDetector(
                                         child: Text("  Login",
-                                          style: GoogleFonts.lato(fontSize: 15,color: Colors.green,fontWeight:FontWeight.bold,),),
+                                          style: TextStyle(fontSize: 15,color: Colors.green,fontWeight:FontWeight.bold,),),
                                         onTap: () {
                                           Navigator.pop(context);
                                           Navigator.push(
@@ -517,7 +543,7 @@ class _Registration extends State<Registration>{
                             child: Column(
                               children: <Widget>[
                                 Text("Here\'s Why you should REGISTER NOW!",
-                                  style: GoogleFonts.lato(fontSize: 9),
+                                  style: TextStyle(fontSize: 9),
                                 ),
                               ],
                             ),
@@ -561,7 +587,7 @@ class _Registration extends State<Registration>{
                                 //height: 50.0,
                                 padding: const EdgeInsets.all(0.0),//I used some padding without fixed width and height
                                 child: new Text('Make a Wishlist',
-                                  style: GoogleFonts.lato(fontWeight: FontWeight.bold,fontSize: 9),),// You can add a Icon instead of text also, like below.
+                                  style: TextStyle(fontWeight: FontWeight.bold,fontSize: 9),),// You can add a Icon instead of text also, like below.
                               ),
                             ),//
                           ),
@@ -573,7 +599,7 @@ class _Registration extends State<Registration>{
                                 //height: 50.0,
                                 padding: const EdgeInsets.all(0.0),//I used some padding without fixed width and height
                                 child: new Text('Be an Insider',
-                                  style: GoogleFonts.lato(fontWeight: FontWeight.bold,fontSize: 9),),// You can add a Icon instead of text also, like below.
+                                  style: TextStyle(fontWeight: FontWeight.bold,fontSize: 9),),// You can add a Icon instead of text also, like below.
                               ),
                             ),////
                           ),
@@ -589,7 +615,7 @@ class _Registration extends State<Registration>{
                                 //height: 50.0,
                                 padding: const EdgeInsets.all(0.0),//I used some padding without fixed width and height
                                 child: new Text('Of the designs you love!',
-                                  style: GoogleFonts.lato(fontSize: 10),),// You can add a Icon instead of text also, like below.
+                                  style: TextStyle(fontSize: 10),),// You can add a Icon instead of text also, like below.
                               ),
                             ),//
                           ),
@@ -601,7 +627,7 @@ class _Registration extends State<Registration>{
                                 //height: 50.0,
                                 padding: const EdgeInsets.all(0.0),//I used some padding without fixed width and height
                                 child: new Text('Launches, offers and more!',
-                                  style: GoogleFonts.lato(fontSize: 10),),// You can add a Icon instead of text also, like below.
+                                  style: TextStyle(fontSize: 10),),// You can add a Icon instead of text also, like below.
                               ),
                             ),//
                           ),
@@ -613,5 +639,23 @@ class _Registration extends State<Registration>{
               )),
         )
     );
+  }
+  void showInfoFlushbar(BuildContext context, String msg) {
+    Flushbar(
+      margin: EdgeInsets.all(8),
+      backgroundGradient: LinearGradient(colors: [Colors.blue, Colors.teal]),
+      backgroundColor: Colors.red,
+      boxShadows: [BoxShadow(color: Colors.blue[800], offset: Offset(0.0, 2.0), blurRadius: 3.0,)],
+      borderRadius: 8,
+      title: 'Failed to Register!',
+      message: '$msg',
+      icon: Icon(
+        Icons.info_outline,
+        size: 28,
+        color: Colors.blue.shade300,
+      ),
+      // leftBarIndicatorColor: Colors.blue.shade300,
+      duration: Duration(seconds: 3),
+    )..show(context);
   }
 }

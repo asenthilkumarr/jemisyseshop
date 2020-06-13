@@ -7,8 +7,10 @@ String imgFolderName = "";
 String imageUrl = "";
 String bannerimageUrl = '';
 String startupimageUrl = "";
+String fontName = "Loto";
 
 String userID = "";
+String userName = "";
 bool isLogin = false;
 
 String titMessage = "";

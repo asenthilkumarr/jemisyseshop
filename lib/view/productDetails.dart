@@ -12,6 +12,8 @@ import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/model/dialogs.dart';
 import 'package:jemisyseshop/model/menu.dart';
 import 'package:jemisyseshop/view/cart.dart';
+import 'package:jemisyseshop/view/login.dart';
+import 'package:jemisyseshop/view/masterPage.dart';
 import 'package:jemisyseshop/widget/imageSlide.dart';
 import 'package:jemisyseshop/widget/offerTagPainter.dart';
 import 'package:jemisyseshop/widget/titleBar.dart';
@@ -197,8 +199,10 @@ class _productDetailPage extends State<ProductDetailPage> {
                                         onPressed: (){
                                           if(favorite)
                                             favorite = false;
-                                          else
+                                          else {
                                             favorite = true;
+                                           // AddWishList(widget.product, "W");
+                                          }
                                           print(favorite);
                                           setState(() {});
                                         },
@@ -1276,35 +1280,41 @@ class _productDetailPage extends State<ProductDetailPage> {
     );
   }
   void AddtoCart(Product sItem, String oType) async{
-    List<Cart> lparam = [];
-    Cart param = new Cart();
-    param.eMail = 'senthil@jemisys.com';
-    param.recordNo = 0;
-    param.designCode = sItem.designCode;
-    param.itemCode = sItem.itemCode;
-    param.onlineName = sItem.onlineName;
-    param.description = sItem.description;
-    param.qty = 1;
+    if(isLogin == true){
+      List<Cart> lparam = [];
+      Cart param = new Cart();
+      param.eMail = userID;
+      param.recordNo = 0;
+      param.designCode = sItem.designCode;
+      param.itemCode = sItem.itemCode;
+      param.onlineName = sItem.onlineName;
+      param.description = sItem.description;
+      param.qty = 1;
 //    param.jewelSize = "";
-    param.unitPrice = sItem.onlinePrice;
-    param.totalPrice = sItem.onlinePrice;
-    param.shippingDays = 7;
-    param.isSizeCanChange = true;
-    param.orderType = oType;
-    lparam.add(param);
-    Dialogs.showLoadingDialog(context, _keyLoader);//invoking go
-    var dt = await dataService.UpdateCart("I", lparam);
-    Navigator.of(_keyLoader.currentContext,rootNavigator: true).pop();//close the dialoge
+      param.unitPrice = sItem.onlinePrice;
+      param.totalPrice = sItem.onlinePrice;
+      param.shippingDays = 7;
+      param.isSizeCanChange = true;
+      param.orderType = oType;
+      lparam.add(param);
 
-    Navigator.push(
+      Dialogs.showLoadingDialog(context, _keyLoader);//invoking go
+      var dt = await dataService.UpdateCart("I", lparam);
+      Navigator.of(_keyLoader.currentContext,rootNavigator: true).pop();//close the dialoge
+
+      Navigator.pop(context);
+      Navigator.push(
         context,
-        PageRouteBuilder(
-          pageBuilder: (c, a1, a2) => CartPage(),
-          transitionsBuilder: (c, anim, a2, child) =>
-              FadeTransition(opacity: anim, child: child),
-          transitionDuration: Duration(milliseconds: 300),
-        )
-    );
+        MaterialPageRoute(
+            builder: (context) => CartPage(pSource: "S",)),);
+
+    }
+    else{
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => LoginPage()),);
+    }
   }
 
   @override
@@ -1319,18 +1329,7 @@ class _productDetailPage extends State<ProductDetailPage> {
         .size;
     return MaterialApp(
         title: 'Product Details',
-        theme: ThemeData(
-          textTheme: GoogleFonts.latoTextTheme(
-            Theme
-                .of(context)
-                .textTheme,
-          ),
-          primaryTextTheme:GoogleFonts.latoTextTheme(
-            Theme
-                .of(context)
-                .textTheme,
-          ),
-        ),
+        theme: MasterScreen.themeData(context),
         home: Scaffold(
             key: scaffoldKey,
           appBar: AppBar(
@@ -1426,7 +1425,7 @@ class _productDetailPage extends State<ProductDetailPage> {
                                 ),
                               ),
                               onPressed: () async {
-                                AddtoCart(widget.product, "Y");
+                                AddtoCart(widget.product, "S");
                               },
                             ),
                           ),

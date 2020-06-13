@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:jemisyseshop/style.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 class Dialogs {
   static Future<void> showLoadingDialog(
@@ -100,29 +102,277 @@ class Dialogs {
       },
     );
   }
+  static Future<String> ConfirmDialogWithCancel(BuildContext context,String msgTitle, String Msg, String btnCancel, String btnConfirm) async {
+    return showDialog<String>(
+      context: context,
+      barrierDismissible: false, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          elevation:0,
+          shape:
+          RoundedRectangleBorder(borderRadius: new BorderRadius.circular(15)),
+          title: Center(child: Text(msgTitle)),
+          contentPadding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children : <Widget>[
+              Expanded(
+                child: Text(
+                  Msg,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                  ),
+                ),
+              )
+            ],
+          ),
 
-  static Future<bool> asyncConfirmDialog(BuildContext context) async {
+          actions:
+          <Widget>[
+            Wrap(
+              children: [
+                SizedBox(width: 280,
+                  //flex: 2,
+                  child: FlatButton(
+                    shape: new RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(4.0),
+                      // side: BorderSide(color: Colors.red),
+                    ),
+                    color: Color(0xFF517295),
+                    textColor: Colors.white,
+                    padding: EdgeInsets.all(5.0),
+                    onPressed: () {
+                      Navigator.of(context).pop(btnConfirm);
+                    },
+                    child: Text(
+                      btnConfirm.toString(),
+                      style: TextStyle(
+                        fontSize: 13.0,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8,),
+                SizedBox(width: 280,
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: FlatButton(
+                          shape: new RoundedRectangleBorder(
+                            borderRadius: new BorderRadius.circular(4.0),
+                            // side: BorderSide(color: Colors.red),
+                          ),
+                          color: Color(0xFFFF8752),
+                          textColor: Colors.white,
+                          padding: EdgeInsets.all(5.0),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text( ' Cancel ',
+                            style: TextStyle(
+                              fontSize: 13.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 8,),
+                      Expanded(
+                        child: FlatButton(
+                          shape: new RoundedRectangleBorder(
+                            borderRadius: new BorderRadius.circular(4.0),
+                            // side: BorderSide(color: Colors.red),
+                          ),
+                          color:Color(0xFF00ACC1),
+                          textColor: Colors.white,
+                          padding: EdgeInsets.all(5.0),
+                          onPressed: () {
+                            Navigator.of(context).pop(btnCancel);
+                          },
+                          child: Text(btnCancel,
+                            style: TextStyle(
+                              fontSize: 13.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            )
+
+/*
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children : <Widget>[
+                Container(
+                  child: SizedBox(width: 280,
+                   child: FlatButton(
+                      shape: new RoundedRectangleBorder(
+                        borderRadius: new BorderRadius.circular(4.0),
+                        // side: BorderSide(color: Colors.red),
+                      ),
+                      color: Color(0xFF517295),
+                      textColor: Colors.white,
+                      padding: EdgeInsets.all(5.0),
+                      onPressed: () {
+                        Navigator.of(context).pop(btnConfirm);
+                      },
+                      child: Text(
+                        btnConfirm.toString(),
+                        style: TextStyle(
+                          fontSize: 13.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+             ],
+            ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children : <Widget>[
+                Center(
+                  child: SizedBox(width: 280,
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: FlatButton(
+                                 shape: new RoundedRectangleBorder(
+                                borderRadius: new BorderRadius.circular(4.0),
+                                // side: BorderSide(color: Colors.red),
+                              ),
+                              color: Color(0xFFFF8752),
+                              textColor: Colors.white,
+                              padding: EdgeInsets.all(5.0),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text( ' Cancel ',
+                                style: TextStyle(
+                                  fontSize: 13.0,
+                                ),
+                              ),
+                            ),
+                        ),
+                        SizedBox(width: 8,),
+                        Expanded(
+                          child: FlatButton(
+                              shape: new RoundedRectangleBorder(
+                                borderRadius: new BorderRadius.circular(4.0),
+                                // side: BorderSide(color: Colors.red),
+                              ),
+                              color:Color(0xFF00ACC1),
+                              textColor: Colors.white,
+                              padding: EdgeInsets.all(5.0),
+                              onPressed: () {
+                                Navigator.of(context).pop(btnCancel);
+                              },
+                              child: Text(btnCancel,
+                                style: TextStyle(
+                                  fontSize: 13.0,
+                                ),
+                              ),
+                            ),
+                        ),
+                      ],
+                    ),
+                    ),
+                ),
+              ],
+            ),
+*/
+          ],
+        );
+      },
+    );
+  }
+
+  static Future<bool> ConfirmDialog(BuildContext context,String msgTitle, String Msg, String btnCancel, String btnConfirm) async {
     return showDialog<bool>(
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Reset settings?'),
-          content: const Text(
-              'This will reset your device to its default factory settings.'),
-          actions: <Widget>[
-            FlatButton(
-              child: const Text('CANCEL'),
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
+          elevation:0,
+          shape:
+          RoundedRectangleBorder(borderRadius: new BorderRadius.circular(15)),
+          title: Center(child: Text(msgTitle)),
+          contentPadding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children : <Widget>[
+              Expanded(
+                child: Text(
+                  Msg,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                  ),
+                ),
+              )
+            ],
+          ),
+          actions:
+          <Widget>[
+           Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children : <Widget>[
+                Center(
+                  child: SizedBox(width: 280,
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: FlatButton(
+                            shape: new RoundedRectangleBorder(
+                              borderRadius: new BorderRadius.circular(4.0),
+                              // side: BorderSide(color: Colors.red),
+                            ),
+
+                            color: Color(0xFFFF8752),
+                            textColor: Colors.white,
+                            padding: EdgeInsets.all(5.0),
+                            onPressed: () {
+                              Navigator.of(context).pop(true);
+                            },
+                            child: Text(btnConfirm,
+                              style: TextStyle(
+                                fontSize: 13.0,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 8,),
+                        Expanded(
+                          child: FlatButton(
+                            shape: new RoundedRectangleBorder(
+                              borderRadius: new BorderRadius.circular(4.0),
+                              // side: BorderSide(color: Colors.red),
+                            ),
+                            color:Color(0xFF00ACC1),
+                            textColor: Colors.white,
+                            padding: EdgeInsets.all(5.0),
+                            onPressed: () {
+                              Navigator.of(context).pop(false);
+                            },
+                            child: Text(btnCancel,
+                              style: TextStyle(
+                                fontSize: 13.0,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-            FlatButton(
-              child: const Text('ACCEPT'),
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-            )
           ],
         );
       },

@@ -2,14 +2,18 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/model/dialogs.dart';
-import 'package:jemisyseshop/style.dart';
-import 'package:jemisyseshop/widget/titleBar.dart';
+import 'package:jemisyseshop/view/masterPage.dart';
+
+import 'login.dart';
 
 class CartPage extends StatefulWidget{
+  final String pSource;
+  CartPage({this.pSource});
   @override
   _cartPage createState() => _cartPage();
 }
@@ -18,19 +22,20 @@ class _cartPage extends State<CartPage> {
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   List<Cart> cartlist = new List<Cart>();
   String dropdownValue = '15';
+  String txtTitle="";
 
   Future<List<Cart>> getDefaultData() async {
-    var dt = await dataService.GetCart("senthil@jemisys.com");
+    var dt = await dataService.GetCart(userID, widget.pSource);
     cartlist = dt;
     setState(() {
 
     });
     return dt;
   }
-void DeleteCart(Cart dt2, int index) async {
+  void DeleteCart(Cart dt2, int index) async {
   List<Cart> lparam = [];
   Cart param = new Cart();
-  param.eMail = 'senthil@jemisys.com';
+  param.eMail = userID;
   param.recordNo = dt2.recordNo;
   param.designCode = dt2.designCode;
   param.itemCode = dt2.itemCode;
@@ -49,8 +54,50 @@ void DeleteCart(Cart dt2, int index) async {
   getDefaultData();
   Navigator.of(_keyLoader.currentContext,rootNavigator: true).pop();//close the dialoge
 }
-  Widget CartList(Cart dt, int index){
 
+  void AddtoWishlist(Cart sItem, String oType) async{
+    if(isLogin == true){
+      List<Cart> lparam = [];
+      Cart param = new Cart();
+      param.eMail = userID;
+      param.recordNo = 0;
+      param.designCode = sItem.designCode;
+      param.itemCode = sItem.itemCode;
+      param.onlineName = sItem.onlineName;
+      param.description = sItem.description;
+      param.qty = 1;
+//    param.jewelSize = "";
+      param.unitPrice = sItem.unitPrice;
+      param.totalPrice = sItem.totalPrice;
+      param.shippingDays = 7;
+      param.isSizeCanChange = true;
+      param.orderType = oType;
+      lparam.add(param);
+
+      Dialogs.showLoadingDialog(context, _keyLoader);//invoking go
+      var dt = await dataService.UpdateCart("I", lparam);
+      Navigator.of(_keyLoader.currentContext,rootNavigator: true).pop();//close the dialoge
+
+     Navigator.pop(context);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => CartPage()),);
+
+    }
+    else{
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => LoginPage()),);
+    }
+  }
+
+  Widget CartList(Cart dt, int index){
+    var now = new DateTime.now();
+    var formatter = new DateFormat('dd-MM-yyyy');
+    var shipday = new DateTime(now.year, now.month, now.day+dt.shippingDays);
+    String formattedDate = formatter.format(shipday);
     return Padding(
       padding: const EdgeInsets.fromLTRB(8.0, 3.0, 8.0, 3.0),
       child: Card(
@@ -79,12 +126,14 @@ void DeleteCart(Cart dt2, int index) async {
                       Text("$currencysymbol${formatterint.format(dt.totalPrice)}",
                           style: TextStyle(
                               fontWeight: FontWeight.bold)),
-                      SizedBox(height: 6,),
-                      Text(dt.description),
-                      SizedBox(height: 6,),
-                      dt.itemCode.toString() != "" ? Text("SKU : ${dt.designCode} - ${dt.itemCode.toString()}")
-                          : Text("SKU : ${dt.designCode}"),
-                      SizedBox(height: 6,),
+                      SizedBox(height: 10,),
+                      Text(dt.description, style: TextStyle(color: Color(0xFF7A7E7A)),),
+                      SizedBox(height: 10,),
+                      dt.itemCode.toString() != "" ? Text("SKU : ${dt.designCode} - ${dt.itemCode.toString()}",
+                      style: TextStyle(fontSize: 12, color: Color(0xFF979B97)),)
+                          : Text("SKU : ${dt.designCode}",
+                        style: TextStyle(fontSize: 12, color: Color(0xFF979B97)),),
+                      SizedBox(height: 10,),
                       Row(
                         children: [
                           Row(
@@ -122,8 +171,8 @@ void DeleteCart(Cart dt2, int index) async {
 
                             ],
                           ),
-                          SizedBox(width: 5,),
-                          Row(
+                          SizedBox(width: 20,),
+                          dt.isSizeCanChange == true ? Row(
                             children: [
                               Text("Size :"),
                               SizedBox(height: 20,
@@ -156,15 +205,16 @@ void DeleteCart(Cart dt2, int index) async {
                               ),
 
                             ],
-                          ),
+                          )
+                          : Container(),
 //                      DropdownButton(),
                         ],
                       ),
-                      SizedBox(height: 6,),
+                      SizedBox(height: 10,),
                       Row(
                         children: [
                           Text("Ships By:"),
-                          Text("Tommorrow", style: TextStyle(fontWeight: FontWeight.bold),)
+                          Text(formattedDate, style: TextStyle(fontWeight: FontWeight.normal),)
                         ],
                       )
                     ],
@@ -175,8 +225,31 @@ void DeleteCart(Cart dt2, int index) async {
             Positioned(
                 right: 0.0,
                 child: GestureDetector(
-                  onTap: () {
-                    DeleteCart(dt, index);
+                  onTap: () async {
+                    if (widget.pSource=="S"){
+                      var result = await Dialogs.ConfirmDialogWithCancel(context,"Confirm Remove","Are you sure you want to remove this jewellery?","Remove","Move to Wishlist");
+                      if (result== "Remove"){
+                        DeleteCart(dt, index);
+                      }
+                      if (result== "Move to Wishlist"){
+                        DeleteCart(dt, index);
+                        AddtoWishlist(dt,"W");
+                      }
+                      else
+                      {
+
+                      }
+                    }
+                    else
+                      {
+                        var result = await Dialogs.ConfirmDialog(context,"Confirm Remove","Are you sure you want to remove this jewellery?","Remove","Cancel");
+                        if (result== false){
+                          DeleteCart(dt, index);
+                        }
+
+                      }
+
+
                     //Navigator.of(context).pop();
                   },
                   child: Align(
@@ -201,6 +274,14 @@ void DeleteCart(Cart dt2, int index) async {
   void initState() {
     super.initState();
     getDefaultData();
+    if (widget.pSource=="S")
+      {
+        txtTitle ="Cart";
+      }
+    else
+    {
+      txtTitle ="Wish List";
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -209,28 +290,21 @@ void DeleteCart(Cart dt2, int index) async {
         .size;
 
     return MaterialApp(
-      title: 'Cart',
-      theme: ThemeData(
-        textTheme: GoogleFonts.latoTextTheme(
-          Theme
-              .of(context)
-              .textTheme,
-        ),
-        primaryTextTheme:GoogleFonts.latoTextTheme(
-          Theme
-              .of(context)
-              .textTheme,
-        ),
-      ),
+      title:  'Cart',
+      theme: MasterScreen.themeData(context),
       home: Scaffold(
           appBar: AppBar(
             title: Row(
               children: [
-                Text('Cart', style: TextStyle(color: Colors.white),),
+                Text(txtTitle, style: TextStyle(color: Colors.white),),
               ],
             ),
             leading: IconButton(icon:Icon(Icons.arrow_back,color: Colors.white,),
-              onPressed:() => Navigator.pop(context, false),
+              onPressed:() {
+//                Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+//                    MasterScreen()), (Route<dynamic> route) => false);
+                 Navigator.pop(context, false);
+              }
             ),
 //            actions: <Widget>[
 //              IconButton(

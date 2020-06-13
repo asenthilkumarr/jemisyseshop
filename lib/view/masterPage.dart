@@ -15,9 +15,11 @@ import 'package:jemisyseshop/model/dialogs.dart';
 import 'package:jemisyseshop/model/menu.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:jemisyseshop/view/contactUs.dart';
+import 'package:jemisyseshop/view/filter.dart';
 import 'package:jemisyseshop/view/login.dart';
 import 'package:jemisyseshop/view/productDetails.dart';
 import 'package:jemisyseshop/view/productList.dart';
+import 'package:jemisyseshop/view/profile.dart';
 import 'package:jemisyseshop/view/registration.dart';
 import 'package:jemisyseshop/widget/goldRate.dart';
 import 'package:jemisyseshop/widget/productGridWidget.dart';
@@ -30,23 +32,44 @@ class MasterScreen extends StatelessWidget {
   // This widget is the root of your application.
   final int currentIndex;
   MasterScreen({Key key, this.currentIndex}) : super(key: key);
-
+  static ThemeData themeData(BuildContext context){
+    return ThemeData(
+      brightness: brightness1,
+      primaryColor: Color(0xFFFF8752),
+      accentColor: accent1Color,
+      textTheme: fontName.toUpperCase() == "LATO" ? GoogleFonts.latoTextTheme(
+        Theme
+            .of(context)
+            .textTheme,
+      ) : fontName.toUpperCase() == "POPPINS" ? GoogleFonts.poppinsTextTheme(
+        Theme
+            .of(context)
+            .textTheme,
+      ) : fontName.toUpperCase() == "ROBOTO" ? GoogleFonts.robotoTextTheme(
+        Theme
+            .of(context)
+            .textTheme,
+      ) : TextTheme(),
+      primaryTextTheme:fontName.toUpperCase() == "LOTO" ? GoogleFonts.latoTextTheme(
+        Theme
+            .of(context)
+            .textTheme,
+      ) : fontName.toUpperCase() == "POPPINS" ?  GoogleFonts.poppinsTextTheme(
+        Theme
+            .of(context)
+            .textTheme,
+      ) : fontName.toUpperCase() == "ROBOTO" ?  GoogleFonts.robotoTextTheme(
+        Theme
+            .of(context)
+            .textTheme,
+      ) : TextTheme(),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Home',
-      theme: ThemeData(
-        textTheme: GoogleFonts.latoTextTheme(
-          Theme
-              .of(context)
-              .textTheme,
-        ),
-        primaryTextTheme:GoogleFonts.latoTextTheme(
-          Theme
-              .of(context)
-              .textTheme,
-        ),
-      ),
+      theme: themeData(context),
       home: MasterPage(currentIndex: currentIndex,key: null,),
       debugShowCheckedModeBanner: false,
     );
@@ -67,8 +90,9 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   List<Group> groupdt = List<Group>();
   List<Product> productdt = List<Product>();
   List<Product> selProductlist = new List<Product>();
-//  List<Product> productdetaildt = List<Product>();
-  List<Product> mostPopularProductlist = new List<Product>();
+  List<Product> fselProductlist = new List<Product>();
+  List<Product> topSellersProductlist = new List<Product>();
+  List<Product> ftopSellersProductlist = new List<Product>();
   Group selDt = new Group();
   List<DefaultData> dDt = new List<DefaultData>();
 
@@ -138,6 +162,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     var dt = await dataService.GetProduct(param);
     productdt = dt;
     selProductlist = dt;
+    fselProductlist = dt;
     return dt;
   }
   Future<List<Product>> getProductDetail(String productType, String designCode, int version) async {
@@ -160,14 +185,17 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     param.filter = "TOP SELLERS";
     param.where = "";
     var dt = await dataService.GetProduct(param);
-    mostPopularProductlist = dt;
+    topSellersProductlist = dt;
+    ftopSellersProductlist = dt;
     return dt;
   }
   void getSelProduct() {
     var sitem = productdt.where((d) => d.groupName == _selgroup)
         .toList();
     selProductlist = new List<Product>();
+    fselProductlist = new List<Product>();
     selProductlist = sitem;
+    fselProductlist = sitem;
   }
   void _showPopupMenu() async {
     double screenWidth = MediaQuery
@@ -220,6 +248,46 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
 //                title: item.designCode,),)
 //      );
 //    }
+  }
+  void Filter_Click(String source) async {
+    if(source == "HOME"){
+      List<Product> gFilter = await Navigator.push(
+        context,
+        PageRouteBuilder(
+          pageBuilder: (c, a1, a2) => FilterPage(productdt: selProductlist,),
+          transitionsBuilder: (c, anim, a2, child) =>
+              FadeTransition(opacity: anim, child: child),
+          transitionDuration: Duration(milliseconds: 300),
+        ),
+      );
+
+      if (gFilter != null) {
+        fselProductlist = new List<Product>();
+        fselProductlist = gFilter;
+        setState(() {
+
+        });
+      }
+    }
+    else{
+      List<Product> gFilter = await Navigator.push(
+        context,
+        PageRouteBuilder(
+          pageBuilder: (c, a1, a2) => FilterPage(productdt: topSellersProductlist,),
+          transitionsBuilder: (c, anim, a2, child) =>
+              FadeTransition(opacity: anim, child: child),
+          transitionDuration: Duration(milliseconds: 300),
+        ),
+      );
+
+      if (gFilter != null) {
+        ftopSellersProductlist = new List<Product>();
+        ftopSellersProductlist = gFilter;
+        setState(() {
+
+        });
+      }
+    }
   }
 
   Widget BannerImage(BuildContext context) {
@@ -780,7 +848,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     }
     else if(menuSelected == 2){
       return Flexible(
-        child: mostPopularWidget(itemCount, itemheight, screenwidth),
+        child: topSellersWidget(itemCount, itemheight, screenwidth),
       );
     }
   }
@@ -881,8 +949,8 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                         child: IconButton(
                             icon: new Image.asset(
                               'assets/filter_icon.png', height: 20,),
-//                                                iconSize: 20,
                             onPressed: () {
+                              Filter_Click("HOME");
                               print('filter');
                             }
                         ),
@@ -928,7 +996,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
             ),
             delegate: SliverChildListDelegate(
               [
-                for(var i in selProductlist)
+                for(var i in fselProductlist)
                   ProductGridWidgetHome(productType: "", item: i,),
               ],
             ),
@@ -1083,7 +1151,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
       ),
     );
   }
-  Widget mostPopularWidget(int itemCount, double itemheight, double screenwidth) {
+  Widget topSellersWidget(int itemCount, double itemheight, double screenwidth) {
     return Container(
       child: CustomScrollView(
         controller: _scrollController,
@@ -1158,6 +1226,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                               'assets/filter_icon.png', height: 20,),
 //                                                iconSize: 20,
                             onPressed: () {
+                              Filter_Click("TOPSELLERS");
                               print('filter');
                             }
                         ),
@@ -1182,7 +1251,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
             ),
             delegate: SliverChildListDelegate(
               [
-                for(var i in mostPopularProductlist)
+                for(var i in ftopSellersProductlist)
                   ProductGridWidgetHome(productType: "", item: i,),
               ],
             ),
@@ -1413,8 +1482,8 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                     SizedBox(height: 0,),
                     Padding(
                       padding: const EdgeInsets.all(0.0),
-                      child: Text(
-                        "Login",
+                      child: Text(userID==""?
+                        "Login":"Account",
                         style: TextStyle(
                             color: Color(0xFF656665),
                             fontSize: 9
@@ -1425,11 +1494,18 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                   ],
                 ),
                 onPressed: () {
-                  //if(isLogin)
+                  if(userID=="")
+                    {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                        builder: (context) => LoginPage()),);
+                    }
+                   else
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                      builder: (context) => LoginPage()),);
+                      builder: (context) => ProfilePage()),);
                 },
               ),
             ),
@@ -1489,8 +1565,8 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
             },
             label: Text('Top'),
           )),
-
     );
+
   }
 }
 

@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,27 +8,29 @@ import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/style.dart';
+import 'package:jemisyseshop/view/masterPage.dart';
 import 'package:jemisyseshop/widget/expansionTile.dart';
-import 'package:jemisyseshop/widget/titleBar.dart';
 import 'package:flutter_range_slider/flutter_range_slider.dart' as frs;
 
 class FilterValue{
   List<FilterSelValue> group=[];
   List<FilterSelValue> metal=[];
   List<FilterSelValue> brand=[];
+  List<FilterSelValue> design=[];
   List<FilterSelValue> discount=[];
 
   double minprice;
   double maxprice;
   double minweight;
   double maxweight;
-  FilterValue({this.group, this.metal, this.brand, this.minprice, this.maxweight, this.minweight, this.maxprice});
+  FilterValue({this.group, this.metal, this.brand, this.design, this.minprice, this.maxweight, this.minweight, this.maxprice});
 }
 class FilterSelValue{
   bool isChecked;
   String value;
+  String value3;
   double value2;
-  FilterSelValue({this.isChecked, this.value, this.value2});
+  FilterSelValue({this.isChecked, this.value, this.value2, this.value3});
 }
 class FilterPage extends StatefulWidget{
 //  final FilterValue fValue;
@@ -74,9 +77,6 @@ class _filterPage extends State<FilterPage> {
   TextEditingController txtmaxwtcontroller = new TextEditingController();
   var isExpanded = false;
 
-  List<String> _group;
-  List<String> _metal;
-  List<String> _brand;
   List<double> _price;
   List<double> _weight;
 
@@ -88,16 +88,40 @@ class _filterPage extends State<FilterPage> {
   List<FilterSelValue> getGroup() {
     List<FilterSelValue> dList = new List<FilterSelValue>();
     var col0 = widget.productdt.map<String>((row) => row.groupName).toList(growable: false);
-    var grouplist = col0.toSet().toList();
+    var grouplist = col0.toSet().where((e) => (e != null && e != "")).toList();
     for(var i in grouplist){
       dList.add(FilterSelValue(isChecked: false, value: i, value2: null));
     }
     return dList;
   }
-  List<String> getFilterBrands(){
+  List<FilterSelValue> getFilterBrands(){
+    List<FilterSelValue> dList = new List<FilterSelValue>();
     var col0 = widget.productdt.map<String>((row) => row.brand).toList(growable: false);
-    var brand = col0.toSet().toList();
-    return brand;
+    var brand = col0.toSet().where((e) => (e != null && e != "")).toList();
+    for(var i in brand){
+      dList.add(FilterSelValue(isChecked: false, value: i, value2: null));
+    }
+    return dList;
+  }
+  List<FilterSelValue> getFilterDesign(){
+    List<FilterSelValue> dList = new List<FilterSelValue>();
+    int index = 0;
+    var col0 = widget.productdt.map<String>((row) => row.designCode).toList(growable: false);
+    var design = col0.toSet().where((e) => (e != null && e != "")).toList();
+    for(var i in design){
+      dList.add(FilterSelValue(isChecked: false, value: i, value2: null));
+    }
+    for(var i in dList){
+      for(var a in widget.productdt){
+        if(dList[index].value == a.designCode) {
+          dList[index].value3 = a.imageFile1;
+          break;
+        }
+      }
+      index++;
+    }
+    return dList;
+
   }
   List<FilterSelValue> getFilterDiscount(){
     List<FilterSelValue> dList = new List<FilterSelValue>();
@@ -111,11 +135,16 @@ class _filterPage extends State<FilterPage> {
     }
     return dList;
   }
-  List<String> getFilterMetalType(){
+  List<FilterSelValue> getFilterMetalType(){
+    List<FilterSelValue> dList = new List<FilterSelValue>();
     var col0 = widget.productdt.map<String>((row) => row.metalType).toList(growable: false);
-    var metalType = col0.toSet().toList();
-    return metalType;
+    var metalType = col0.toSet().where((e) => (e != null && e != "")).toList();
+    for(var i in metalType){
+      dList.add(FilterSelValue(isChecked: false, value: i, value2: null));
+    }
+    return dList;
   }
+
   List<double> getFilterPricerange(){
     var col0 = widget.productdt.map<double>((row) => row.listingPrice).toList(growable: false);
     var listingprice = col0.toSet().toList();
@@ -138,10 +167,7 @@ class _filterPage extends State<FilterPage> {
   }
   void getFilter() async {
     FilterValue result = new FilterValue();
-    FilterSelValue item;
-    List<FilterSelValue> items = List<FilterSelValue>();
-    _metal = getFilterMetalType();
-    _brand = getFilterBrands();
+    fValue = new FilterValue();
     _price=  getFilterPricerange();
     _weight = getFilterWeightrange();
 
@@ -150,24 +176,11 @@ class _filterPage extends State<FilterPage> {
     result.minweight = _weight[0];
     result.maxweight = _weight[1];
 
-    for (var i in _metal) {
-      if (i != "") {
-        item = new FilterSelValue(isChecked: false, value: i);
-        items.add(item);
-      }
-    }
-    result.metal = items;
-
-    items = List<FilterSelValue>();
-    for (var i in _brand) {
-      if (i != "") {
-        item = new FilterSelValue(isChecked: false, value: i);
-        items.add(item);
-      }
-    }
-    result.brand = items;
-    result.discount = getFilterDiscount();
     result.group = getGroup();
+    result.metal = getFilterMetalType();
+    result.brand = getFilterBrands();
+    result.design = getFilterDesign();
+    result.discount = getFilterDiscount();
 
     mValue = result;
     fValue = result;
@@ -194,6 +207,7 @@ class _filterPage extends State<FilterPage> {
     if(fv.group.length>0) isfvalid=true;
     if(fv.metal.length>0) isfvalid=true;
     if(fv.brand.length>0) isfvalid=true;
+    if(fv.design.length>0) isfvalid=true;
     if(fv.discount.length>0) isfvalid=true;
     if(fv.minprice != null) isfvalid=true;
     if(fv.maxprice != null) isfvalid=true;
@@ -201,9 +215,6 @@ class _filterPage extends State<FilterPage> {
     if(fv.maxweight != null) isfvalid=true;
 
     List<Product> temp = new List<Product>();
-
-
-
     for(var m in fv.group){
       var temp2 = productdt.where((i) =>
       i.groupName.toUpperCase() == m.value.toUpperCase()
@@ -237,6 +248,21 @@ class _filterPage extends State<FilterPage> {
       else {
         for (var b in fv.brand) {
           temp.addAll(productdt.where((i) => i.brand == b.value).toList());
+        }
+      }
+    }
+    if(fv.design.length>0){
+      fproductdt = temp;
+      temp = new List<Product>();
+      if(fproductdt.length>0){
+        for (var b in fv.design) {
+          var temp2 = fproductdt.where((i) => i.designCode == b.value).toList();
+          temp.addAll(temp2);
+        }
+      }
+      else {
+        for (var b in fv.design) {
+          temp.addAll(productdt.where((i) => i.designCode == b.value).toList());
         }
       }
     }
@@ -341,7 +367,7 @@ class _filterPage extends State<FilterPage> {
                     ),
                   )
                   : Container(),
-                  RawMaterialButton(
+                  fValue.metal.length > 0 ? RawMaterialButton(
                     onPressed: () {},
                     child: Align(
                       alignment: Alignment.centerLeft,
@@ -352,8 +378,9 @@ class _filterPage extends State<FilterPage> {
                         ),
                       ),
                     ),
-                  ),
-                  RawMaterialButton(
+                  )
+                      : Container(),
+                  fValue.brand.length > 0 ? RawMaterialButton(
                     onPressed: () {},
                     child: Align(
                       alignment: Alignment.centerLeft,
@@ -364,7 +391,8 @@ class _filterPage extends State<FilterPage> {
                         ),
                       ),
                     ),
-                  ),
+                  )
+                      : Container(),
                   fValue.discount.length > 0 ? RawMaterialButton(
                     onPressed: () {},
                     child: Align(
@@ -880,6 +908,9 @@ class _filterPage extends State<FilterPage> {
     for(int i=0;i<fValue.brand.length;i++){
       fValue.brand[i].isChecked=false;
     }
+    for(int i=0;i<fValue.design.length;i++){
+      fValue.design[i].isChecked=false;
+    }
     for(int i=0;i<fValue.discount.length;i++){
       fValue.discount[i].isChecked=false;
     }
@@ -923,6 +954,16 @@ class _filterPage extends State<FilterPage> {
       }
     }
     temp.group = items;
+
+    temp.design = items;
+    items = new List<FilterSelValue>();
+    for (var i = 0; i<fValue.design.length; i++){
+      if(fValue.design[i].isChecked){
+        items.add(fValue.design[i]);
+      }
+    }
+    temp.design = items;
+
     items = new List<FilterSelValue>();
     for (var i = 0; i<fValue.discount.length; i++){
       if(fValue.discount[i].isChecked){
@@ -1062,7 +1103,7 @@ class _filterPage extends State<FilterPage> {
           ),
           child: Padding(
             padding: const EdgeInsets.only(top: 15.0),
-            child: new ListView.builder(
+            child: fValue.brand.length > 0 ? new ListView.builder(
                 scrollDirection: Axis.vertical,
                 itemCount: fValue.brand.length,
                 itemBuilder: (BuildContext context, int index) =>
@@ -1096,7 +1137,74 @@ class _filterPage extends State<FilterPage> {
                             ),
                           ),
 
-                        ))),
+                        )))
+                : Container(),
+          ));
+    }
+    else if(source == "design"){
+      return  Container(
+          width: screenSize.width-143,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+              color: Color(0xFFe2e8ec),
+              width: 1,
+            ),
+            //borderRadius: BorderRadius.circular(12),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 15.0),
+            child: fValue.design.length > 0 ? new ListView.builder(
+                scrollDirection: Axis.vertical,
+                itemCount: fValue.design.length,
+                itemBuilder: (BuildContext context, int index) =>
+                    Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 0.0),
+                          child: SizedBox(
+                            height: 80,
+                            child: Row(
+                              children: [
+                                Theme(
+                                  data: Theme.of(context).copyWith(
+                                    unselectedWidgetColor: buttonShadowColor,
+                                  ),
+                                  child: Checkbox(
+                                    checkColor: Colors.white,
+                                    activeColor: buttonShadowColor,
+                                    value: fValue.design[index].isChecked,
+                                    onChanged: (bool value) {
+                                      setState(() {
+                                        fValue.design[index].isChecked = value;
+                                        setState(() {});
+                                      });
+                                    },
+                                  ),
+                                ),
+                                GestureDetector(
+                                  child: Image(
+                                    image: CachedNetworkImageProvider(
+                                      fValue.design[index].value3,
+                                    ),
+                                    height: 75,
+                                    fit: BoxFit.fitHeight,
+                                  ),
+                                    onTap: (){
+                                      fValue.design[index].isChecked = fValue.design[index].isChecked == true ? false : true;
+                                      setState(() {});
+                                    }
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left:8.0),
+                                  child: Text(fValue.design[index].value,),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                        )))
+                : Container(),
           ));
     }
     else if(source == "discount"){
@@ -1625,7 +1733,7 @@ class _filterPage extends State<FilterPage> {
                     child: Column(
                       children: [
                         SizedBox(height: 5,),
-                        Material(
+                        fValue.group.length>0 ? Material(
                           color: source == "groupName" ? buttonShadowColor : Colors.white,
                           child: InkWell(
                             onTap: (){
@@ -1641,9 +1749,11 @@ class _filterPage extends State<FilterPage> {
                                   )),
                             ),
                           ),
-                        ),
-                        SizedBox(height: 5,),
-                        Material(
+                        )
+                            : Container(),
+                        fValue.group.length>0 ? SizedBox(height: 5,)
+                            : Container(),
+                        fValue.metal.length>0 ? Material(
                           color: source == "metalType" ? buttonShadowColor : Colors.white,
                           child: InkWell(
                             onTap: (){
@@ -1659,9 +1769,11 @@ class _filterPage extends State<FilterPage> {
                                   )),
                             ),
                           ),
-                        ),
-                        SizedBox(height: 5,),
-                        Material(
+                        )
+                            : Container(),
+                        fValue.metal.length>0 ? SizedBox(height: 5,)
+                            : Container(),
+                        fValue.brand.length>0 ? Material(
                           color: source == "brand" ? buttonShadowColor : Colors.white,
                           child: InkWell(
                             onTap: (){
@@ -1677,8 +1789,30 @@ class _filterPage extends State<FilterPage> {
                                   )),
                             ),
                           ),
-                        ),
-                        SizedBox(height: 5,),
+                        )
+                        : Container(),
+                        fValue.brand.length>0 ? SizedBox(height: 5,)
+                            : Container(),
+                        fValue.design.length>0 ? Material(
+                          color: source == "design" ? buttonShadowColor : Colors.white,
+                          child: InkWell(
+                            onTap: (){
+                              showFilter("design");
+                            },
+                            child: Container(
+                              child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 8.0, top: 12.0, bottom: 12.0),
+                                    child: Text("Design Code",
+                                      style: TextStyle(color: source == "design" ? Colors.white : Colors.black),),
+                                  )),
+                            ),
+                          ),
+                        )
+                            : Container(),
+                        fValue.design.length>0 ? SizedBox(height: 5,)
+                            : Container(),
                         fValue.discount.length > 0 ?  Material(
                           color: source == "discount" ? buttonShadowColor : Colors.white,
                           child: InkWell(
@@ -1843,18 +1977,7 @@ class _filterPage extends State<FilterPage> {
     return MaterialApp(
       title: 'Filter',
 
-      theme: ThemeData(
-        textTheme: GoogleFonts.latoTextTheme(
-          Theme
-              .of(context)
-              .textTheme,
-        ),
-        primaryTextTheme:GoogleFonts.latoTextTheme(
-          Theme
-              .of(context)
-              .textTheme,
-        ),
-      ),
+      theme: MasterScreen.themeData(context),
       home: Scaffold(
         appBar: AppBar(
           title: Text('Filter', style: TextStyle(color: Colors.white),),
@@ -1900,7 +2023,7 @@ class _filterPage extends State<FilterPage> {
                 ),
               ),
               child: Padding(
-                padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                padding: const EdgeInsets.only(left: 1.0, right: 1.0),
                 child: new Row(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.center,

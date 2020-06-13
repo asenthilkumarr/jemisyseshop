@@ -7,9 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jemisyseshop/data/dataService.dart';
+import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/style.dart';
 import 'package:jemisyseshop/view/filter.dart';
+import 'package:jemisyseshop/view/masterPage.dart';
 import 'package:jemisyseshop/widget/productGridWidget.dart';
 import 'package:jemisyseshop/widget/titleBar.dart';
 
@@ -368,19 +370,8 @@ class _productListPage extends State<ProductListPage> {
         .size;
 
     return MaterialApp(
-      title: 'Product Details',
-      theme: ThemeData(
-        textTheme: GoogleFonts.latoTextTheme(
-          Theme
-              .of(context)
-              .textTheme,
-        ),
-        primaryTextTheme:GoogleFonts.latoTextTheme(
-          Theme
-              .of(context)
-              .textTheme,
-        ),
-      ),
+      title: 'Product List',
+      theme: MasterScreen.themeData(context),
       home: Scaffold(
         key: scaffoldKey,
         appBar: AppBar(
@@ -483,7 +474,7 @@ class _productListPage extends State<ProductListPage> {
                     Align(
                       alignment: Alignment.topCenter,
                       child: Padding(
-                        padding: const EdgeInsets.only(top:50.0),
+                        padding: const EdgeInsets.only(top:5.0),
                         child: Visibility(
                             visible: totisVisable,
                             child: Container(

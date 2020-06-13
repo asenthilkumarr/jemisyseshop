@@ -1,3 +1,4 @@
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -5,6 +6,7 @@ import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/model/dialogs.dart';
+import 'package:jemisyseshop/view/masterPage.dart';
 import 'package:jemisyseshop/view/registration.dart';
 import '../style.dart';
 import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
@@ -31,11 +33,28 @@ class _LoginPage extends State<LoginPage>{
       return 'N';
   }
 
+  String Checknull() {
+
+    if  (txtuserid.text == null || txtuserid.text == '') {
+      return 'Please enter your Email.';
+    }
+    if  (txtpassword.text == null || txtpassword.text == '') {
+      return 'Please enter your password.';
+    }
+
+    return '';
+  }
 
   Future<String> checkLogin() async {
     String res = "Failed";
     //SharedPreferences prefs =  await SharedPreferences.getInstance();
-
+    if(Checknull()!="")
+    {
+      showInfoFlushbar(context, Checknull());
+      userID="";
+      isLogin=false;
+    }
+    else
     if (txtuserid.text != null && txtuserid.text != '' &&
         txtpassword.text != null && txtpassword.text != '') {
       Dialogs.showLoadingDialog(context, _keyLoaderLogin); //invoking go
@@ -49,16 +68,20 @@ class _LoginPage extends State<LoginPage>{
           .pop(); //close the dialoge
       if (dt.returnStatus != null && dt.returnStatus == 'OK') {
         userID = dt.eMail.toString();
+        userName = dt.firstName.toString().toUpperCase();
+        isLogin=true ;
         Navigator.pop(context, dt.eMail);
         res = 'OK';
       }
       else {
-        Dialogs.AlertMessage(context,
-            dt.returnStatus);
+//        Dialogs.AlertMessage(context,
+//            dt.returnStatus);
+        showInfoFlushbar(context,dt.returnStatus);
 
       }
     }
     return res;
+
   }
 
 
@@ -73,23 +96,12 @@ class _LoginPage extends State<LoginPage>{
   Widget build(BuildContext context) {
 
     return MaterialApp(
-        theme: ThemeData(
-          // Define the default brightness and colors.
-          brightness: brightness1,
-          primaryColor: Color(0xFFFF8752),
-          accentColor: accent1Color,
-          // Define the default TextTheme. Use this to specify the default
-          // text styling for headlines, titles, bodies of text, and more.
-          textTheme: TextTheme(
-            headline: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
-            title: TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic),
-            body1: Body1Style,
-          ),
-        ),
+      title: "Login",
+        theme: MasterScreen.themeData(context),
 
         home: Scaffold(
           appBar: AppBar(
-            title: Text('Login',style: GoogleFonts.lato(color: Colors.white,fontWeight:FontWeight.bold )),
+            title: Text('Login',style: TextStyle(color: Colors.white,fontWeight:FontWeight.bold )),
             leading: IconButton(icon:Icon(Icons.arrow_back,color: Colors.white,),
               onPressed:() => Navigator.pop(context, false),
             ),
@@ -156,7 +168,7 @@ class _LoginPage extends State<LoginPage>{
                                             padding: const EdgeInsets.fromLTRB(0.0,0.0,3.0,0.0),
                                             child: Icon(
                                               Icons.supervised_user_circle,
-                                              color:Color(0xFF88A9BB),
+                                              color:buttonColor,
                                               size: 70.0,
                                             ),
                                           ),
@@ -181,11 +193,11 @@ class _LoginPage extends State<LoginPage>{
                                                   fillColor:  Colors.white70,
                                                   enabledBorder: OutlineInputBorder(
                                                     borderRadius: BorderRadius.all(Radius.circular(2.0)),
-                                                    borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                                    borderSide: BorderSide(color: listLabelbgColor, width: 1),
                                                   ),
                                                   focusedBorder: OutlineInputBorder(
                                                     borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                                    borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                                    borderSide: BorderSide(color:  listLabelbgColor, width: 1),
                                                   ),
                                                 ),)
                                           ),
@@ -209,11 +221,11 @@ class _LoginPage extends State<LoginPage>{
                                                   fillColor:  Colors.white70,
                                                   enabledBorder: OutlineInputBorder(
                                                     borderRadius: BorderRadius.all(Radius.circular(2.0)),
-                                                    borderSide: BorderSide(color: Color(0xFF88A9BB), width: 1),
+                                                    borderSide: BorderSide(color:  listLabelbgColor, width: 1),
                                                   ),
                                                   focusedBorder: OutlineInputBorder(
                                                     borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                                    borderSide: BorderSide(color:Color(0xFF88A9BB), width: 1),
+                                                    borderSide: BorderSide(color: listLabelbgColor, width: 1),
                                                   ),
                                                 ),  obscureText: true,
                                                 onChanged: (text) {
@@ -242,13 +254,13 @@ class _LoginPage extends State<LoginPage>{
                                                 borderRadius: new BorderRadius.circular(30.0),
                                                 side: BorderSide(color:Color(0xFF88A9BB)),
                                               ),
-                                              color: Color(0xFF88A9BB),
+                                              color: buttonColor,
                                               textColor: Colors.white,
                                               padding: EdgeInsets.all(13.0),
                                               child: Row(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: <Widget>[
-                                                  Text('Log on',style: GoogleFonts.lato(color: Colors.white, fontSize: 18,fontWeight:FontWeight.bold )),
+                                                  Text('Log on',style: TextStyle(color: Colors.white, fontSize: 18,fontWeight:FontWeight.bold )),
                                                 ],
                                               ),
                                               onPressed: () {
@@ -274,7 +286,7 @@ class _LoginPage extends State<LoginPage>{
                                           Expanded(
                                             child: Column(
                                               children: <Widget>[
-                                                Text('or Sign in with',style: GoogleFonts.lato(color: Colors.black, fontSize: 12 )),
+                                                Text('or Sign in with',style: TextStyle(color: Colors.black, fontSize: 12 )),
                                               ],
                                             ),
                                           ),
@@ -295,14 +307,14 @@ class _LoginPage extends State<LoginPage>{
                                         children: <Widget>[
                                           Expanded(
                                             child: FacebookSignInButton(onPressed: () {},
-                                              textStyle: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, fontFamily: "Roboto",color: Colors.white),
+                                              textStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, fontFamily: "Roboto",color: Colors.white),
                                               text: 'Facebook',
                                             ),
                                           ),
-                                          SizedBox(width: 5,),
+                                          SizedBox(width: 3,),
                                           Expanded(
                                             child: GoogleSignInButton(onPressed: () {}, darkMode: true,
-                                              textStyle: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, fontFamily: "Roboto",color: Colors.white),
+                                              textStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, fontFamily: "Roboto",color: Colors.white),
                                               text: 'Google',
                                             ),
                                           ),
@@ -318,13 +330,13 @@ class _LoginPage extends State<LoginPage>{
                                               mainAxisSize: MainAxisSize.max,
                                               children: <Widget>[
                                                 Text("Don't have an account?",
-                                                  style: GoogleFonts.lato(fontSize: 14,color: Colors.blueGrey,fontWeight:FontWeight.bold),
+                                                  style: TextStyle(fontSize: 14,color: Colors.blueGrey,fontWeight:FontWeight.bold),
                                                 ),
                                                 Column(
                                                   children: <Widget>[
                                                     GestureDetector(
                                                         child: Text("  Register",
-                                                          style: GoogleFonts.lato(fontSize: 15,color: Colors.green,fontWeight:FontWeight.bold,),),
+                                                          style: TextStyle(fontSize: 15,color: Colors.green,fontWeight:FontWeight.bold,),),
                                                         onTap: () {
                                                           Navigator.pop(context);
                                                           Navigator.push(
@@ -355,7 +367,7 @@ class _LoginPage extends State<LoginPage>{
                                                   children: <Widget>[
                                                     GestureDetector(
                                                         child: Text("Forgot Password?",
-                                                          style: GoogleFonts.lato(fontSize: 14,color: Colors.blue,fontWeight:FontWeight.bold,),),
+                                                          style: TextStyle(fontSize: 14,color: Colors.blue,fontWeight:FontWeight.bold,),),
                                                         onTap: () {
 //                                                          Navigator.push(
 //                                                            context,
@@ -386,5 +398,23 @@ class _LoginPage extends State<LoginPage>{
             ),
           ),
         ));
+  }
+  void showInfoFlushbar(BuildContext context, String msg) {
+    Flushbar(
+      margin: EdgeInsets.all(8),
+      backgroundGradient: LinearGradient(colors: [Colors.blue, Colors.teal]),
+      backgroundColor: Colors.red,
+      boxShadows: [BoxShadow(color: Colors.blue[800], offset: Offset(0.0, 2.0), blurRadius: 3.0,)],
+      borderRadius: 8,
+      title: 'Failed to login!',
+      message: '$msg',
+      icon: Icon(
+        Icons.info_outline,
+        size: 28,
+        color: Colors.blue.shade300,
+      ),
+     // leftBarIndicatorColor: Colors.blue.shade300,
+      duration: Duration(seconds: 3),
+    )..show(context);
   }
 }
