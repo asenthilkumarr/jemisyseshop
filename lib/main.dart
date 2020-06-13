@@ -8,7 +8,6 @@ import 'package:jemisyseshop/view/masterPage.dart';
 
 import 'data/dataService.dart';
 import 'model/dataObject.dart';
-import 'model/dialogs.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -172,6 +171,7 @@ class _splashScreen extends State<SplashScreen>{
     Timer(
       Duration(seconds: 2),route,
     );
+
     //Future.delayed(Duration.zero, () => Dialogs.showLoadingOnlyDialog(context, _keyLoader));
 
 

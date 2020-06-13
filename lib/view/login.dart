@@ -1,7 +1,6 @@
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
@@ -13,6 +12,9 @@ import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
 import 'dart:core';
 
 class LoginPage extends StatefulWidget{
+  final GlobalKey<FormState> masterScreenFormKey;
+  LoginPage({this.masterScreenFormKey});
+
   @override
   _LoginPage createState() => _LoginPage();
 }
@@ -70,6 +72,10 @@ class _LoginPage extends State<LoginPage>{
         userID = dt.eMail.toString();
         userName = dt.firstName.toString().toUpperCase();
         isLogin=true ;
+        var cartdt = await dataService.GetCart(userID, "S");
+        cartCount = cartdt.length;
+        widget.masterScreenFormKey?.currentState?.reset();
+
         Navigator.pop(context, dt.eMail);
         res = 'OK';
       }

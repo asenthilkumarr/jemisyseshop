@@ -4,8 +4,11 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_udid/flutter_udid.dart';
 import 'package:flutter_widgets/flutter_widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jemisyseshop/data/dataService.dart';
@@ -87,6 +90,7 @@ class MasterPage extends StatefulWidget{
 class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   DataService dataService = DataService();
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
+  final _formKeyReset = GlobalKey<FormState>();
   List<Group> groupdt = List<Group>();
   List<Product> productdt = List<Product>();
   List<Product> selProductlist = new List<Product>();
@@ -116,10 +120,20 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
 
   CarouselController buttonCarouselController = CarouselController();
 
+  Future<void> initPlatformState() async {
+    String tudid="";
+    try {
+      tudid = await FlutterUdid.udid;
+      udid = tudid;
+    } on PlatformException {
+      tudid = 'Failed to get UDID.';
+    }
+  }
   Future<void> getDefault() async {
     var sitem = country.firstWhere((d) => d.shortCode == _selCountry);
     sCountry = sitem;
 
+    await initPlatformState();
 //    Dialogs.showLoadingDialog(context, _keyLoader);//invoking go
     await getDefaultData();
     await getGroup();
@@ -177,7 +191,6 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     });
     return dt;
   }
-
   Future<List<Product>> getMostPopular() async {
     ProductParam param = new ProductParam();
     param.productType = "ALL";
@@ -997,7 +1010,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
             delegate: SliverChildListDelegate(
               [
                 for(var i in fselProductlist)
-                  ProductGridWidgetHome(productType: "", item: i,),
+                  ProductGridWidgetHome(productType: "", item: i, masterScreenFormKey: _formKeyReset,),
               ],
             ),
           ),
@@ -1252,7 +1265,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
             delegate: SliverChildListDelegate(
               [
                 for(var i in ftopSellersProductlist)
-                  ProductGridWidgetHome(productType: "", item: i,),
+                  ProductGridWidgetHome(productType: "", item: i, masterScreenFormKey: _formKeyReset,),
               ],
             ),
           ),
@@ -1265,6 +1278,42 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   }
   void showGoldRate(){
     Future.delayed(Duration.zero, () => objGoldRate.showGoldRate(context, hideTitleMessage, _keyGoldRate));
+  }
+  static const snackBarDuration = Duration(seconds: 3);
+
+  DateTime backButtonPressTime;
+  void showInfoFlushbar(String msg) {
+    Flushbar(
+      margin: EdgeInsets.all(8),
+      backgroundGradient: LinearGradient(colors: [Color(0xFF757575), Color(0xFF757575)]),
+      backgroundColor: Colors.red,
+      boxShadows: [BoxShadow(color: listbgColor, offset: Offset(0.0, 2.0), blurRadius: 3.0,)],
+      borderRadius: 8,
+//      title: 'Failed to login!',
+      message: '$msg',
+      icon: Icon(
+        Icons.info_outline,
+        size: 28,
+        color: Colors.white,
+      ),
+      // leftBarIndicatorColor: Colors.blue.shade300,
+      duration: Duration(seconds: 1),
+    )..show(context);
+  }
+  Future<bool> onWillPop() async {
+    DateTime currentTime = DateTime.now();
+
+    bool backButtonHasNotBeenPressedOrSnackBarHasBeenClosed =
+        backButtonPressTime == null ||
+            currentTime.difference(backButtonPressTime) > snackBarDuration;
+
+    if (backButtonHasNotBeenPressedOrSnackBarHasBeenClosed) {
+      backButtonPressTime = currentTime;
+      showInfoFlushbar("Press back again to exit");
+      return false;
+    }
+
+    return true;
   }
 
   @override
@@ -1302,18 +1351,21 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
 //      appBar: pageAppBar(),
       drawer: MenuItemWedget(scaffoldKey: scaffoldKey, isLogin: isLogin),
       body: SafeArea(
-          child: Container(
-              color: Colors.white,
-                child: Column(
-                  children: [
-                    titMessage != "" ?  titleMessage() : Container(),
-                    titleBar(context, scaffoldKey, _keyGoldRate),
+        child: WillPopScope(
+            onWillPop: () => onWillPop(),
+            child: Container(
+                color: Colors.white,
+                  child: Column(
+                    children: [
+                      titMessage != "" ?  titleMessage() : Container(),
+                      titleBar(context, scaffoldKey, _keyGoldRate, _formKeyReset),
 
-                    mainContainer(itemCount, itemheight, screenSize.width),
-                  ],
-                )
+                      mainContainer(itemCount, itemheight, screenSize.width),
+                    ],
+                  )
 
-          )
+            )
+        ),
       ),
       bottomNavigationBar: BottomAppBar(
         child: new Row(
@@ -1499,7 +1551,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                        builder: (context) => LoginPage()),);
+                        builder: (context) => LoginPage(masterScreenFormKey: _formKeyReset,)),);
                     }
                    else
                   Navigator.push(

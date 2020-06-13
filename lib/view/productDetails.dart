@@ -24,7 +24,9 @@ import '../style.dart';
 class ProductDetailPage extends StatefulWidget{
   final Product product;
   final String title;
-  ProductDetailPage({this.product, this.title});
+  final GlobalKey<FormState> masterScreenFormKey;
+
+  ProductDetailPage({this.product, this.title, this.masterScreenFormKey});
   @override
   _productDetailPage createState() => _productDetailPage();
 }
@@ -99,13 +101,6 @@ class _productDetailPage extends State<ProductDetailPage> {
     if (item.imageFile5 != "")
       timgList.add(item.imageFile5);
 
-//    return Card(
-//        shape: RoundedRectangleBorder(
-//          side: BorderSide(
-//            color: listbgColor,
-//            width: 1.0,
-//          ),
-//        ),
     return Container(
         margin: const EdgeInsets.only(left:8.0, top:4.0, right:8.0, bottom:10.0),
         padding: const EdgeInsets.all(0.0),
@@ -1306,7 +1301,7 @@ class _productDetailPage extends State<ProductDetailPage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => CartPage(pSource: "S",)),);
+            builder: (context) => CartPage(pSource: "S", masterScreenFormKey: widget.masterScreenFormKey,)),);
 
     }
     else{

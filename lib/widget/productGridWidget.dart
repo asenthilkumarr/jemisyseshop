@@ -16,12 +16,14 @@ import 'offerTagPainter.dart';
 
 class ProductGridWidget extends StatelessWidget {
   final Product item;
-  ProductGridWidget({this.item});
+  final GlobalKey<FormState> masterScreenFormKey;
+
+  ProductGridWidget({this.item, this.masterScreenFormKey});
   Future<void> _product_onTap(Product selItem, BuildContext context) async {
     Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ProductDetailPage(product: item, title: item.itemCode,),)
+          builder: (context) => ProductDetailPage(product: item, title: item.itemCode, masterScreenFormKey: masterScreenFormKey,),)
     );
   }
   @override
@@ -161,7 +163,9 @@ class ProductGridWidget extends StatelessWidget {
 class ProductGridWidgetHome extends StatelessWidget {
   final Product item;
   final String productType;
-  ProductGridWidgetHome({this.item, this.productType});
+  final GlobalKey<FormState> masterScreenFormKey;
+
+  ProductGridWidgetHome({this.item, this.productType, this.masterScreenFormKey});
   String _where="ALL";
   DataService dataService = DataService();
 
@@ -171,7 +175,7 @@ class ProductGridWidgetHome extends StatelessWidget {
       Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ProductListPage(productdt: productdetail, title: selItem.designCode,),)
+            builder: (context) => ProductListPage(productdt: productdetail, title: selItem.designCode, masterScreenFormKey: masterScreenFormKey,),)
       );
     }
     else if (productdetail.length > 0) {
@@ -179,7 +183,7 @@ class ProductGridWidgetHome extends StatelessWidget {
           context,
           MaterialPageRoute(builder: (context) =>
               ProductDetailPage(product: productdetail[0],
-                title: productdetail[0].designCode,),)
+                title: productdetail[0].designCode, masterScreenFormKey: masterScreenFormKey,),)
       );
     }
 //    else {

@@ -13,7 +13,10 @@ import 'login.dart';
 
 class CartPage extends StatefulWidget{
   final String pSource;
-  CartPage({this.pSource});
+  final GlobalKey<FormState> masterScreenFormKey;
+
+  CartPage({this.pSource, this.masterScreenFormKey});
+
   @override
   _cartPage createState() => _cartPage();
 }
@@ -24,9 +27,17 @@ class _cartPage extends State<CartPage> {
   String dropdownValue = '15';
   String txtTitle="";
 
+  void getCartCount(){
+
+  }
   Future<List<Cart>> getDefaultData() async {
     var dt = await dataService.GetCart(userID, widget.pSource);
     cartlist = dt;
+    if(widget.pSource=="S"){
+      cartCount = dt.length;
+      widget.masterScreenFormKey?.currentState?.reset();
+    }
+
     setState(() {
 
     });

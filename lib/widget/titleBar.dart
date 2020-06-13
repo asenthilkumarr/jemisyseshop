@@ -8,7 +8,7 @@ import 'package:jemisyseshop/view/login.dart';
 import '../style.dart';
 import 'goldRate.dart';
 
-Widget titleBar(BuildContext context, GlobalKey<ScaffoldState> scaffoldKey, GlobalKey _keyGoldRate) {
+Widget titleBar(BuildContext context, GlobalKey<ScaffoldState> scaffoldKey, GlobalKey _keyGoldRate, GlobalKey<State> _formKeyReset) {
   GoldRateWedgit objGoldRate = new GoldRateWedgit();
   return Container(
     color: primary1Color,
@@ -70,7 +70,7 @@ Widget titleBar(BuildContext context, GlobalKey<ScaffoldState> scaffoldKey, Glob
                                             context,
                                             PageRouteBuilder(
                                               pageBuilder: (c, a1, a2) =>
-                                                  CartPage(pSource: "S",),
+                                                  CartPage(pSource: "S", masterScreenFormKey: _formKeyReset,),
                                               transitionsBuilder: (c, anim, a2,
                                                   child) =>
                                                   FadeTransition(opacity: anim,
@@ -84,7 +84,7 @@ Widget titleBar(BuildContext context, GlobalKey<ScaffoldState> scaffoldKey, Glob
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (context) => LoginPage()),);
+                                                builder: (context) => LoginPage(masterScreenFormKey: _formKeyReset,)),);
                                         }
                                       },),
                                     new Positioned( // draw a red marble
@@ -96,10 +96,11 @@ Widget titleBar(BuildContext context, GlobalKey<ScaffoldState> scaffoldKey, Glob
                                             color: Colors.white,
                                             shape: BoxShape.circle
                                         ),
+                                        key: _formKeyReset,
                                         child: Padding(
                                           padding: const EdgeInsets.all(3.0),
                                           child: new Text(
-                                            '5',
+                                            cartCount.toString(),
                                             style: new TextStyle(
                                               color: Colors.red,
                                               fontSize: 9,
