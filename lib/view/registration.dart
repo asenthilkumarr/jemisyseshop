@@ -86,6 +86,10 @@ class _Registration extends State<Registration>{
              userID = dt.eMail.toString();
              userName = dt.firstName.toString().toUpperCase();
              isLogin = true;
+             if(isBackendJEMiSys){
+               await dataService.UpdateMember("I", param);
+             }
+
              Navigator.pop(context, false);
              res = 'OK';
            }

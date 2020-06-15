@@ -22,49 +22,49 @@ class CartPage extends StatefulWidget{
 }
 class _cartPage extends State<CartPage> {
   DataService dataService = DataService();
-  final GlobalKey<State> _keyLoader = new GlobalKey<State>();
+  final _keyLoader = new GlobalKey<FormState>();
   List<Cart> cartlist = new List<Cart>();
   String dropdownValue = '15';
   String txtTitle="";
+  String source = "S";
+  List<String> qtylist = ["1", "2", "3"];
+  List<String> sizelist = ['15', '18', '20'];
 
-  void getCartCount(){
-
-  }
-  Future<List<Cart>> getDefaultData() async {
-    var dt = await dataService.GetCart(userID, widget.pSource);
+  Future<List<Cart>> getDefaultData(String _source) async {
+    cartlist = new List<Cart>();
+    var dt = await dataService.GetCart(userID, _source);
     cartlist = dt;
     if(widget.pSource=="S"){
       cartCount = dt.length;
       widget.masterScreenFormKey?.currentState?.reset();
     }
-
     setState(() {
 
     });
     return dt;
   }
+
   void DeleteCart(Cart dt2, int index) async {
-  List<Cart> lparam = [];
-  Cart param = new Cart();
-  param.eMail = userID;
-  param.recordNo = dt2.recordNo;
-  param.designCode = dt2.designCode;
-  param.itemCode = dt2.itemCode;
-  param.onlineName = dt2.onlineName;
-  param.description = dt2.description;
-  param.qty = 0;
+    List<Cart> lparam = [];
+    Cart param = new Cart();
+    param.eMail = userID;
+    param.recordNo = dt2.recordNo;
+    param.designCode = dt2.designCode;
+    param.itemCode = dt2.itemCode;
+    param.onlineName = dt2.onlineName;
+    param.description = dt2.description;
+    param.qty = 0;
 //    param.jewelSize = "";
-  param.unitPrice = dt2.unitPrice;
-  param.totalPrice = dt2.totalPrice;
-  param.shippingDays = 0;
-  param.isSizeCanChange = true;
-  param.orderType = dt2.orderType;
-  lparam.add(param);
-  Dialogs.showLoadingDialog(context, _keyLoader);//invoking go
-  var dt = await dataService.UpdateCart("U", lparam);
-  getDefaultData();
-  Navigator.of(_keyLoader.currentContext,rootNavigator: true).pop();//close the dialoge
-}
+    param.unitPrice = dt2.unitPrice;
+    param.totalPrice = dt2.totalPrice;
+    param.shippingDays = 0;
+    param.isSizeCanChange = true;
+    param.orderType = dt2.orderType;
+    lparam.add(param);
+    var dt = await dataService.UpdateCart("U", lparam);
+    await getDefaultData(source);
+
+  }
 
   void AddtoWishlist(Cart sItem, String oType) async{
     if(isLogin == true){
@@ -77,7 +77,7 @@ class _cartPage extends State<CartPage> {
       param.onlineName = sItem.onlineName;
       param.description = sItem.description;
       param.qty = 1;
-//    param.jewelSize = "";
+      param.jewelSize = sItem.jewelSize;
       param.unitPrice = sItem.unitPrice;
       param.totalPrice = sItem.totalPrice;
       param.shippingDays = 7;
@@ -85,15 +85,8 @@ class _cartPage extends State<CartPage> {
       param.orderType = oType;
       lparam.add(param);
 
-      Dialogs.showLoadingDialog(context, _keyLoader);//invoking go
       var dt = await dataService.UpdateCart("I", lparam);
-      Navigator.of(_keyLoader.currentContext,rootNavigator: true).pop();//close the dialoge
 
-     Navigator.pop(context);
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => CartPage()),);
 
     }
     else{
@@ -104,10 +97,19 @@ class _cartPage extends State<CartPage> {
     }
   }
 
-  Widget CartList(Cart dt, int index){
+  Widget CartList(Cart dt, int index) {
+    bool isSizevlid = false;
+    for(var a in sizelist){
+      if(dt.jewelSize != null && dt.jewelSize == a){
+        isSizevlid = true;
+        break;
+      }
+    }
+    if(isSizevlid == false)
+      sizelist.add(dt.jewelSize);
     var now = new DateTime.now();
     var formatter = new DateFormat('dd-MM-yyyy');
-    var shipday = new DateTime(now.year, now.month, now.day+dt.shippingDays);
+    var shipday = new DateTime(now.year, now.month, now.day + dt.shippingDays);
     String formattedDate = formatter.format(shipday);
     return Padding(
       padding: const EdgeInsets.fromLTRB(8.0, 3.0, 8.0, 3.0),
@@ -120,7 +122,7 @@ class _cartPage extends State<CartPage> {
               child: Row(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left:0.0, right: 10.0),
+                    padding: const EdgeInsets.only(left: 0.0, right: 10.0),
                     child: Image(
                       image: CachedNetworkImageProvider(
                         dt.imageFileName,
@@ -134,16 +136,21 @@ class _cartPage extends State<CartPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("$currencysymbol${formatterint.format(dt.totalPrice)}",
+                      Text("$currencysymbol${formatterint.format(
+                          dt.totalPrice)}",
                           style: TextStyle(
                               fontWeight: FontWeight.bold)),
                       SizedBox(height: 10,),
-                      Text(dt.description, style: TextStyle(color: Color(0xFF7A7E7A)),),
+                      Text(dt.description,
+                        style: TextStyle(color: Color(0xFF7A7E7A)),),
                       SizedBox(height: 10,),
-                      dt.itemCode.toString() != "" ? Text("SKU : ${dt.designCode} - ${dt.itemCode.toString()}",
-                      style: TextStyle(fontSize: 12, color: Color(0xFF979B97)),)
+                      dt.itemCode.toString() != "" ? Text(
+                        "SKU : ${dt.designCode} - ${dt.itemCode.toString()}",
+                        style: TextStyle(
+                            fontSize: 12, color: Color(0xFF979B97)),)
                           : Text("SKU : ${dt.designCode}",
-                        style: TextStyle(fontSize: 12, color: Color(0xFF979B97)),),
+                        style: TextStyle(
+                            fontSize: 12, color: Color(0xFF979B97)),),
                       SizedBox(height: 10,),
                       Row(
                         children: [
@@ -154,7 +161,8 @@ class _cartPage extends State<CartPage> {
                                 child: DropdownButton<String>(
                                   value: cartlist[index].qty.toString(),
                                   //icon: Icon(Icons.arrow_drop_down),
-                                  icon: ImageIcon(new AssetImage("assets/dropdownicon.png")),
+                                  icon: ImageIcon(new AssetImage(
+                                      "assets/dropdownicon.png")),
                                   iconSize: 12,
                                   //elevation: 16,
                                   //style: TextStyle(color: Colors.deepPurple),
@@ -164,15 +172,17 @@ class _cartPage extends State<CartPage> {
                                   ),
                                   onChanged: (String newValue) {
                                     setState(() {
-                                      cartlist[index].qty =int.parse(newValue);
+                                      cartlist[index].qty = int.parse(newValue);
                                     });
                                   },
-                                  items: <String>['1', '2', '3']
-                                      .map<DropdownMenuItem<String>>((String value) {
+                                  items: qtylist
+                                      .map<DropdownMenuItem<String>>((
+                                      String value) {
                                     return DropdownMenuItem<String>(
                                       value: value,
                                       child: Padding(
-                                        padding: const EdgeInsets.only(top:0.0, right: 8),
+                                        padding: const EdgeInsets.only(
+                                            top: 0.0, right: 8),
                                         child: Text(value),
                                       ),
                                     );
@@ -189,7 +199,8 @@ class _cartPage extends State<CartPage> {
                               SizedBox(height: 20,
                                 child: DropdownButton<String>(
                                   value: cartlist[index].jewelSize,
-                                  icon: ImageIcon(new AssetImage("assets/dropdownicon.png")),
+                                  icon: ImageIcon(new AssetImage(
+                                      "assets/dropdownicon.png")),
                                   iconSize: 12,
                                   elevation: 16,
                                   //style: TextStyle(color: Colors.deepPurple),
@@ -202,12 +213,14 @@ class _cartPage extends State<CartPage> {
                                       cartlist[index].jewelSize = newValue;
                                     });
                                   },
-                                  items: <String>['15', '18', '20']
-                                      .map<DropdownMenuItem<String>>((String value) {
+                                  items: sizelist
+                                      .map<DropdownMenuItem<String>>((
+                                      String value) {
                                     return DropdownMenuItem<String>(
                                       value: value,
                                       child: Padding(
-                                        padding: const EdgeInsets.only(top:0.0, right: 8.0),
+                                        padding: const EdgeInsets.only(
+                                            top: 0.0, right: 8.0),
                                         child: Text(value),
                                       ),
                                     );
@@ -217,7 +230,7 @@ class _cartPage extends State<CartPage> {
 
                             ],
                           )
-                          : Container(),
+                              : Container(),
 //                      DropdownButton(),
                         ],
                       ),
@@ -225,7 +238,8 @@ class _cartPage extends State<CartPage> {
                       Row(
                         children: [
                           Text("Ships By:"),
-                          Text(formattedDate, style: TextStyle(fontWeight: FontWeight.normal),)
+                          Text(formattedDate, style: TextStyle(
+                              fontWeight: FontWeight.normal),)
                         ],
                       )
                     ],
@@ -237,29 +251,55 @@ class _cartPage extends State<CartPage> {
                 right: 0.0,
                 child: GestureDetector(
                   onTap: () async {
-                    if (widget.pSource=="S"){
-                      var result = await Dialogs.ConfirmDialogWithCancel(context,"Confirm Remove","Are you sure you want to remove this jewellery?","Remove","Move to Wishlist");
-                      if (result== "Remove"){
-                        DeleteCart(dt, index);
+                    if (source == "S") {
+                      var result = await Dialogs.ConfirmDialogWithCancel(
+                          context, "Confirm Remove",
+                          "Are you sure you want to remove this jewellery?",
+                          "Remove", "Move to Wishlist");
+                      if (result == "Remove") {
+                        Dialogs.showLoadingDialog(
+                            context, _keyLoader); //invoking go
+                        await DeleteCart(dt, index);
+                        Navigator.of(
+                            _keyLoader.currentContext, rootNavigator: true)
+                            .pop(); //close the dialoge
                       }
-                      if (result== "Move to Wishlist"){
-                        DeleteCart(dt, index);
-                        AddtoWishlist(dt,"W");
+                      if (result == "Move to Wishlist") {
+                        Dialogs.showLoadingDialog(
+                            context, _keyLoader); //invoking go
+                        await DeleteCart(dt, index);
+                        await AddtoWishlist(dt, "W");
+                        Navigator.of(
+                            _keyLoader.currentContext, rootNavigator: true)
+                            .pop(); //close the dialoge
+
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  CartPage(pSource: "W",
+                                    masterScreenFormKey: widget
+                                        .masterScreenFormKey,)),);
                       }
-                      else
-                      {
+                      else {
 
                       }
                     }
-                    else
-                      {
-                        var result = await Dialogs.ConfirmDialog(context,"Confirm Remove","Are you sure you want to remove this jewellery?","Remove","Cancel");
-                        if (result== false){
-                          DeleteCart(dt, index);
-                        }
-
+                    else {
+                      var result = await Dialogs.ConfirmDialog(
+                          context, "Confirm Remove",
+                          "Are you sure you want to remove this jewellery?",
+                          "Remove", "Cancel");
+                      if (result == false) {
+                        Dialogs.showLoadingDialog(
+                            context, _keyLoader); //invoking go
+                        await DeleteCart(dt, index);
+                        Navigator.of(
+                            _keyLoader.currentContext, rootNavigator: true)
+                            .pop(); //close the dialoge
                       }
-
+                    }
 
                     //Navigator.of(context).pop();
                   },
@@ -270,7 +310,8 @@ class _cartPage extends State<CartPage> {
                       child: CircleAvatar(
                         radius: 12.0,
                         backgroundColor: Color(0xFF525A4D),
-                        child: Icon(Icons.close, color: Colors.white, size: 20,),
+                        child: Icon(
+                          Icons.close, color: Colors.white, size: 20,),
                       ),
                     ),
                   ),
@@ -284,16 +325,19 @@ class _cartPage extends State<CartPage> {
   @override
   void initState() {
     super.initState();
-    getDefaultData();
-    if (widget.pSource=="S")
-      {
-        txtTitle ="Cart";
-      }
-    else
-    {
-      txtTitle ="Wish List";
+    source = widget.pSource;
+    getDefaultData(source);
+    if (widget.pSource == "S") {
+      txtTitle = "Cart";
+    }
+    else if (widget.pSource == "W") {
+      txtTitle = "Wishlist";
+    }
+    else if (widget.pSource == "H") {
+      txtTitle = "Home Try-On";
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery

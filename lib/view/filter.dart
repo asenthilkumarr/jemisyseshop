@@ -18,6 +18,7 @@ class FilterValue{
   List<FilterSelValue> brand=[];
   List<FilterSelValue> design=[];
   List<FilterSelValue> discount=[];
+  List<FilterSelValue> jewelSize=[];
 
   double minprice;
   double maxprice;
@@ -144,6 +145,16 @@ class _filterPage extends State<FilterPage> {
     }
     return dList;
   }
+  List<FilterSelValue> getFilterJewelSize(){
+    List<FilterSelValue> dList = new List<FilterSelValue>();
+    var col0 = widget.productdt.map<String>((row) => row.jewelSize).toList(growable: false);
+    var jewelSize = col0.toSet().where((e) => (e != null && e != "")).toList();
+    for(var i in jewelSize){
+      dList.add(FilterSelValue(isChecked: false, value: i, value2: null));
+    }
+    dList.sort((a, b) => a.value.compareTo(b.value));
+    return dList;
+  }
 
   List<double> getFilterPricerange(){
     var col0 = widget.productdt.map<double>((row) => row.listingPrice).toList(growable: false);
@@ -181,6 +192,7 @@ class _filterPage extends State<FilterPage> {
     result.brand = getFilterBrands();
     result.design = getFilterDesign();
     result.discount = getFilterDiscount();
+    result.jewelSize = getFilterJewelSize();
 
     mValue = result;
     fValue = result;
@@ -208,6 +220,7 @@ class _filterPage extends State<FilterPage> {
     if(fv.metal.length>0) isfvalid=true;
     if(fv.brand.length>0) isfvalid=true;
     if(fv.design.length>0) isfvalid=true;
+    if(fv.jewelSize.length>0) isfvalid=true;
     if(fv.discount.length>0) isfvalid=true;
     if(fv.minprice != null) isfvalid=true;
     if(fv.maxprice != null) isfvalid=true;
@@ -278,6 +291,21 @@ class _filterPage extends State<FilterPage> {
       else {
         for (var b in fv.discount) {
           temp.addAll(productdt.where((i) => i.discountPercentage == b.value2).toList());
+        }
+      }
+    }
+    if(fv.jewelSize.length>0){
+      fproductdt = temp;
+      temp = new List<Product>();
+      if(fproductdt.length>0){
+        for (var b in fv.jewelSize) {
+          var temp2 = fproductdt.where((i) => i.jewelSize == b.value).toList();
+          temp.addAll(temp2);
+        }
+      }
+      else {
+        for (var b in fv.jewelSize) {
+          temp.addAll(productdt.where((i) => i.jewelSize == b.value).toList());
         }
       }
     }
@@ -964,6 +992,15 @@ class _filterPage extends State<FilterPage> {
     }
     temp.design = items;
 
+    temp.jewelSize = items;
+    items = new List<FilterSelValue>();
+    for (var i = 0; i<fValue.jewelSize.length; i++){
+      if(fValue.jewelSize[i].isChecked){
+        items.add(fValue.jewelSize[i]);
+      }
+    }
+    temp.jewelSize = items;
+
     items = new List<FilterSelValue>();
     for (var i = 0; i<fValue.discount.length; i++){
       if(fValue.discount[i].isChecked){
@@ -1255,6 +1292,57 @@ class _filterPage extends State<FilterPage> {
                           ),
 
                         ))),
+          ));
+    }
+    else if(source == "jewelSize"){
+      return  Container(
+          width: screenSize.width-143,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+              color: Color(0xFFe2e8ec),
+              width: 1,
+            ),
+            //borderRadius: BorderRadius.circular(12),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 15.0),
+            child: fValue.jewelSize.length > 0 ? new ListView.builder(
+                scrollDirection: Axis.vertical,
+                itemCount: fValue.jewelSize.length,
+                itemBuilder: (BuildContext context, int index) =>
+                    Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 0.0),
+                          child: SizedBox(
+                            height: 30,
+                            child: Row(
+                              children: [
+                                Theme(
+                                  data: Theme.of(context).copyWith(
+                                    unselectedWidgetColor: buttonShadowColor,
+                                  ),
+                                  child: Checkbox(
+                                    checkColor: Colors.white,
+                                    activeColor: buttonShadowColor,
+                                    value: fValue.jewelSize[index].isChecked,
+                                    onChanged: (bool value) {
+                                      setState(() {
+                                        fValue.jewelSize[index].isChecked = value;
+                                        setState(() {});
+                                      });
+                                    },
+                                  ),
+                                ),
+
+                                Text(fValue.jewelSize[index].value,),
+                              ],
+                            ),
+                          ),
+
+                        )))
+                : Container(),
           ));
     }
     else if(source == "price") {
@@ -1812,6 +1900,26 @@ class _filterPage extends State<FilterPage> {
                         )
                             : Container(),
                         fValue.design.length>0 ? SizedBox(height: 5,)
+                            : Container(),
+                        fValue.jewelSize.length>0 ? Material(
+                          color: source == "jewelSize" ? buttonShadowColor : Colors.white,
+                          child: InkWell(
+                            onTap: (){
+                              showFilter("jewelSize");
+                            },
+                            child: Container(
+                              child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 8.0, top: 12.0, bottom: 12.0),
+                                    child: Text("Size",
+                                      style: TextStyle(color: source == "jewelSize" ? Colors.white : Colors.black),),
+                                  )),
+                            ),
+                          ),
+                        )
+                            : Container(),
+                        fValue.jewelSize.length>0 ? SizedBox(height: 5,)
                             : Container(),
                         fValue.discount.length > 0 ?  Material(
                           color: source == "discount" ? buttonShadowColor : Colors.white,

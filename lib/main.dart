@@ -158,6 +158,7 @@ class _splashScreen extends State<SplashScreen>{
       currencysymbol = dt[0].currCode;
       titMessage = dt[0].message;
       fontName = dt[0].fontName;
+      isBackendJEMiSys = dt[0].isBackendJEMiSys;
     }
 
     setState(() {

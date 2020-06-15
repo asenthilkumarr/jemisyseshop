@@ -1285,7 +1285,7 @@ class _productDetailPage extends State<ProductDetailPage> {
       param.onlineName = sItem.onlineName;
       param.description = sItem.description;
       param.qty = 1;
-//    param.jewelSize = "";
+      param.jewelSize = sItem.jewelSize;
       param.unitPrice = sItem.onlinePrice;
       param.totalPrice = sItem.onlinePrice;
       param.shippingDays = 7;
@@ -1301,7 +1301,7 @@ class _productDetailPage extends State<ProductDetailPage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => CartPage(pSource: "S", masterScreenFormKey: widget.masterScreenFormKey,)),);
+            builder: (context) => CartPage(pSource: oType, masterScreenFormKey: widget.masterScreenFormKey,)),);
 
     }
     else{
@@ -1395,7 +1395,7 @@ class _productDetailPage extends State<ProductDetailPage> {
                                 ),
                               ),
                               onPressed: () async {
-
+                                AddtoCart(widget.product, "H");
                               },
                             ),
                           ),

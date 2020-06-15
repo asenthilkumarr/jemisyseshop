@@ -29,6 +29,7 @@ import 'package:jemisyseshop/widget/productGridWidget.dart';
 import 'package:jemisyseshop/widget/scrollingText.dart';
 import 'package:jemisyseshop/widget/titleBar.dart';
 import 'package:jemisyseshop/widget/offerTagPainter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../style.dart';
 
 class MasterScreen extends StatelessWidget {
@@ -112,6 +113,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
 
   GlobalKey _keyGoldRate = GlobalKey();
   GlobalKey _keyFiltermenu = GlobalKey();
+
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
   Country sCountry;
@@ -120,6 +122,29 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
 
   CarouselController buttonCarouselController = CarouselController();
 
+  static const snackBarDuration = Duration(seconds: 3);
+  DateTime backButtonPressTime;
+
+  void checkLogin() async{
+    Customer param = Customer();
+    param.eMail = await Commonfn.getUserID();
+    param.password = await Commonfn.getPassword();
+    bool isLogin = await Commonfn.getLoginStatus();
+    if(isLogin != null && isLogin == true){
+      var dt = await dataService.GetCustomer(param);
+      if (dt.returnStatus != null && dt.returnStatus == 'OK') {
+        userID = dt.eMail.toString();
+        userName = dt.firstName.toString().toUpperCase();
+        isLogin = true;
+        var cartdt = await dataService.GetCart(userID, "S");
+        cartCount = cartdt.length;
+        setState(() {
+
+        });
+      }
+    }
+
+  }
   Future<void> initPlatformState() async {
     String tudid="";
     try {
@@ -132,14 +157,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   Future<void> getDefault() async {
     var sitem = country.firstWhere((d) => d.shortCode == _selCountry);
     sCountry = sitem;
-
-    await initPlatformState();
-//    Dialogs.showLoadingDialog(context, _keyLoader);//invoking go
     await getDefaultData();
-    await getGroup();
-    await getProduct();
-    await getMostPopular();
-//    Navigator.of(_keyLoader.currentContext,rootNavigator: true).pop();//close the dialoge
 
     if(titMessage == "") hideTitleMessage = true;
 
@@ -148,6 +166,14 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
         Duration(seconds: 1),showGoldRate,
       );
     }
+
+    await checkLogin();
+    await initPlatformState();
+//    Dialogs.showLoadingDialog(context, _keyLoader);//invoking go
+    await getGroup();
+    await getProduct();
+    await getMostPopular();
+//    Navigator.of(_keyLoader.currentContext,rootNavigator: true).pop();//close the dialoge
     setState(() {
     });
   }
@@ -309,7 +335,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
         .size
         .width;
     double _height = 70;
-    print(screenWidth);
+
     if (screenWidth > 1600)
       _height = 400;
     else if (screenWidth >= 1300)
@@ -807,7 +833,9 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
         if(index == 0){
           _tabControllerFilter.index = 0;
           _filter="ALL";
+//          Dialogs.showLoadingDialog(context, _keyLoader); //invoking go
           await getProduct();
+//          Navigator.of(_keyLoader.currentContext, rootNavigator: true)\.pop(); //close the dialoge
         }
 
         setState(() {
@@ -841,7 +869,9 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
 //      indicatorWeight: 1.0,
       onTap: (index) async {
         _filter = smitem[index];
+//        Dialogs.showLoadingDialog(context, _keyLoader); //invoking go
         await getProduct();
+//        Navigator.of(_keyLoader.currentContext, rootNavigator: true).pop(); //close the dialoge
         setState(() {
         });
       },
@@ -964,7 +994,6 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                               'assets/filter_icon.png', height: 20,),
                             onPressed: () {
                               Filter_Click("HOME");
-                              print('filter');
                             }
                         ),
                       ),
@@ -1240,7 +1269,6 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
 //                                                iconSize: 20,
                             onPressed: () {
                               Filter_Click("TOPSELLERS");
-                              print('filter');
                             }
                         ),
                       ),
@@ -1279,9 +1307,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   void showGoldRate(){
     Future.delayed(Duration.zero, () => objGoldRate.showGoldRate(context, hideTitleMessage, _keyGoldRate));
   }
-  static const snackBarDuration = Duration(seconds: 3);
 
-  DateTime backButtonPressTime;
   void showInfoFlushbar(String msg) {
     Flushbar(
       margin: EdgeInsets.all(8),
@@ -1326,29 +1352,17 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
 
     getDefault();
 
-    //    WidgetsBinding.instance.addPostFrameCallback((_) {
-//      images.forEach((imageUrl) {
-//        precacheImage(NetworkImage(imageUrl), context);
-//      });
-//    });
-
-
-
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery
-        .of(context)
-        .size;
-    //    double screenheight = screenSize.height;
-//    if (!kIsWeb) screenheight = screenSize.height - 24;
+    final screenSize = MediaQuery.of(context).size;
+
     int itemCount = GridItemCount(screenSize.width);
     double itemheight = GridItemHeight(screenSize.height, screenSize.width);
 
     return Scaffold(
       key: scaffoldKey,
-//      appBar: pageAppBar(),
       drawer: MenuItemWedget(scaffoldKey: scaffoldKey, isLogin: isLogin),
       body: SafeArea(
         child: WillPopScope(

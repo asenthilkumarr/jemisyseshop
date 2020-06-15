@@ -125,8 +125,9 @@ class Setting {
   String startupImageName;
   String imageFolderName;
   String fontName;
+  bool isBackendJEMiSys;
 
-  Setting({ this.appName, this.currCode, this.startupImageName, this.imageFolderName, this.fontName, this.message});
+  Setting({ this.appName, this.currCode, this.startupImageName, this.imageFolderName, this.fontName, this.message, this.isBackendJEMiSys});
 
   factory Setting.fromJson(Map<String, dynamic> json) {
     imgFolderName = json['imageFolderName'];
@@ -140,6 +141,7 @@ class Setting {
       startupImageName: startupimageUrl+json['startupImageName'],
       imageFolderName: json['imageFolderName'],
       fontName: json['fontName'],
+      isBackendJEMiSys: json['isBackendJEMiSys'] == 1 ? true : false
     );
   }
 }
@@ -168,8 +170,11 @@ class Product {
   double sellRate;
   double goldWeight;
   double labourPrice;
+  int qtyOnHand;
   String designName;
   String brand;
+  String jewelSize;
+  String jewelLength;
   String shortDescription;
   String description;
   int shippingDays;
@@ -187,7 +192,7 @@ class Product {
       {this.groupName, this.onlineName, this.designCode, this.version, this.metalType, this.onSale, this.listingPrice,
         this.onlinePrice, this.discountPercentage, this.salesType, this.weightFrom, this.weightTo, this.productType,
         this.imageFile1, this.imageFile2, this.imageFile3, this.imageFile4, this.imageFile5,
-        this.itemCode, this.tax, this.sellRate, this.goldWeight, this.labourPrice, this.designName, this.brand,
+        this.itemCode, this.tax, this.sellRate, this.goldWeight, this.labourPrice, this.qtyOnHand, this.designName, this.brand, this.jewelSize, this.jewelLength,
         this.shortDescription, this.description, this.shippingDays, this.labelLine1, this.labelLine2, this.labelLine3, this.labelLine4, this.labelLine5,
         this.noOfImages, this.isShowEvenIfStockIsNull, this.homeTryOn});
 
@@ -239,8 +244,11 @@ class Product {
       sellRate: json['sellRate'].toDouble(),
       goldWeight: json['goldWeight'].toDouble(),
       labourPrice: json['labourPrice'].toDouble(),
+      qtyOnHand: json['qtyOnHand'],
       designName: json['designName'],
       brand: json['brand'],
+      jewelSize: json['jewelSize'],
+      jewelLength: json['jewelLength'],
       shortDescription: json['shortDescription'],
       description: json['description'],
       shippingDays: json['shippingDays'],

@@ -31,7 +31,6 @@ class DataService {
   }
   Future<List<Cart>> GetCart(String eMail, String orderType) async {
     List<Cart> result = [];
-    print(eMail);
     http.Response response = await http.get(
       apiurl + "Cart/GetCart?eMail="+eMail+"&orderType="+orderType,
         headers: userheaders,
@@ -42,7 +41,6 @@ class DataService {
         var iRow = Cart.fromData(i);
         result.add(iRow);
       }
-      print(result.length);
       return result;
     }
     else {
@@ -187,14 +185,11 @@ class DataService {
   }
   Future<Customer> GetCustomer(Customer param) async {
     Customer result;
-    // print("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
-    // print(param.toParam());
     http.Response response = await http.post(
         apiurl + "Customer/GetCustomer",
         headers: userheaders,
         body: json.encode(param.toParam())
     );
-    print(response.statusCode.toString()+"== "+response.body.toString());
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
       for (Map i in data) {
@@ -203,6 +198,22 @@ class DataService {
       }
       return result;
 
+    }
+    else {
+      return result;
+      //throw Exception('Failed to load album');
+    }
+  }
+  Future<String> UpdateMember(String mode, Customer param) async {
+    String result = "ERROR";
+    http.Response response = await http.post(
+        apiurl + "Customer/UpdateMember?mode="+mode,
+        headers: userheaders,
+        body: json.encode(param.toParam())
+    );
+    if (response.statusCode == 200) {
+      result = "OK";
+      return result;
     }
     else {
       return result;

@@ -319,60 +319,54 @@ class Dialogs {
           ),
           actions:
           <Widget>[
-           Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children : <Widget>[
-                Center(
-                  child: SizedBox(width: 280,
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: FlatButton(
-                            shape: new RoundedRectangleBorder(
-                              borderRadius: new BorderRadius.circular(4.0),
-                              // side: BorderSide(color: Colors.red),
-                            ),
+           Center(
+             child: SizedBox(width: 280,
+               child: Row(
+                 children: <Widget>[
+                   Expanded(
+                     child: FlatButton(
+                       shape: new RoundedRectangleBorder(
+                         borderRadius: new BorderRadius.circular(4.0),
+                         // side: BorderSide(color: Colors.red),
+                       ),
 
-                            color: Color(0xFFFF8752),
-                            textColor: Colors.white,
-                            padding: EdgeInsets.all(5.0),
-                            onPressed: () {
-                              Navigator.of(context).pop(true);
-                            },
-                            child: Text(btnConfirm,
-                              style: TextStyle(
-                                fontSize: 13.0,
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 8,),
-                        Expanded(
-                          child: FlatButton(
-                            shape: new RoundedRectangleBorder(
-                              borderRadius: new BorderRadius.circular(4.0),
-                              // side: BorderSide(color: Colors.red),
-                            ),
-                            color:Color(0xFF00ACC1),
-                            textColor: Colors.white,
-                            padding: EdgeInsets.all(5.0),
-                            onPressed: () {
-                              Navigator.of(context).pop(false);
-                            },
-                            child: Text(btnCancel,
-                              style: TextStyle(
-                                fontSize: 13.0,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+                       color: Color(0xFFFF8752),
+                       textColor: Colors.white,
+                       padding: EdgeInsets.all(5.0),
+                       onPressed: () {
+                         Navigator.of(context).pop(true);
+                       },
+                       child: Text(btnConfirm,
+                         style: TextStyle(
+                           fontSize: 13.0,
+                         ),
+                       ),
+                     ),
+                   ),
+                   SizedBox(width: 8,),
+                   Expanded(
+                     child: FlatButton(
+                       shape: new RoundedRectangleBorder(
+                         borderRadius: new BorderRadius.circular(4.0),
+                         // side: BorderSide(color: Colors.red),
+                       ),
+                       color:Color(0xFF00ACC1),
+                       textColor: Colors.white,
+                       padding: EdgeInsets.all(5.0),
+                       onPressed: () {
+                         Navigator.of(context).pop(false);
+                       },
+                       child: Text(btnCancel,
+                         style: TextStyle(
+                           fontSize: 13.0,
+                         ),
+                       ),
+                     ),
+                   ),
+                 ],
+               ),
+             ),
+           ),
           ],
         );
       },
