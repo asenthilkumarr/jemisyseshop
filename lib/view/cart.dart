@@ -1,13 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/model/dialogs.dart';
+import 'package:jemisyseshop/style.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
+import 'package:jemisyseshop/view/productDetails.dart';
 
 import 'login.dart';
 
@@ -29,6 +29,10 @@ class _cartPage extends State<CartPage> {
   String source = "S";
   List<String> qtylist = ["1", "2", "3"];
   List<String> sizelist = ['15', '18', '20'];
+  double sumValue = 0;
+  double shippingCharge = 0;
+  double shippingInsurance = 0;
+  int itemCount = 0;
 
   Future<List<Cart>> getDefaultData(String _source) async {
     cartlist = new List<Cart>();
@@ -37,6 +41,12 @@ class _cartPage extends State<CartPage> {
     if(widget.pSource=="S"){
       cartCount = dt.length;
       widget.masterScreenFormKey?.currentState?.reset();
+    }
+    sumValue = 0;
+    itemCount = 0;
+    for(var i in dt){
+      sumValue+=i.totalPrice;
+      itemCount++;
     }
     setState(() {
 
@@ -50,11 +60,12 @@ class _cartPage extends State<CartPage> {
     param.eMail = userID;
     param.recordNo = dt2.recordNo;
     param.designCode = dt2.designCode;
+    param.version = dt2.version;
     param.itemCode = dt2.itemCode;
     param.onlineName = dt2.onlineName;
     param.description = dt2.description;
     param.qty = 0;
-//    param.jewelSize = "";
+    param.jewelSize = dt2.jewelSize;
     param.unitPrice = dt2.unitPrice;
     param.totalPrice = dt2.totalPrice;
     param.shippingDays = 0;
@@ -63,7 +74,6 @@ class _cartPage extends State<CartPage> {
     lparam.add(param);
     var dt = await dataService.UpdateCart("U", lparam);
     await getDefaultData(source);
-
   }
 
   void AddtoWishlist(Cart sItem, String oType) async{
@@ -73,6 +83,7 @@ class _cartPage extends State<CartPage> {
       param.eMail = userID;
       param.recordNo = 0;
       param.designCode = sItem.designCode;
+      param.version = sItem.version;
       param.itemCode = sItem.itemCode;
       param.onlineName = sItem.onlineName;
       param.description = sItem.description;
@@ -86,8 +97,7 @@ class _cartPage extends State<CartPage> {
       lparam.add(param);
 
       var dt = await dataService.UpdateCart("I", lparam);
-
-
+      await getDefaultData(source);
     }
     else{
       Navigator.push(
@@ -97,6 +107,31 @@ class _cartPage extends State<CartPage> {
     }
   }
 
+  Future<void> _product_onTap(Cart selItem, BuildContext context) async {
+    List<Product> item = [];
+    if (selItem.itemCode != "")
+      item = await getProductDetail("FROMCART", selItem.itemCode, 0);
+    else
+      item = await getProductDetail("FROMCART", selItem.designCode, selItem.version);
+    if(item.length>0){
+      Navigator.push(context, MaterialPageRoute(
+        builder: (context) =>
+            ProductDetailPage(product: item[0],
+              title: item[0].itemCode,
+              masterScreenFormKey: widget.masterScreenFormKey,),)
+      );
+    }
+
+  }
+  Future<List<Product>> getProductDetail(String productType, String designCode, int version) async {
+    ProductParam param = new ProductParam();
+    param.productType = productType;
+    param.designCode = designCode;
+    param.version = version;
+    param.where = "";
+    var dt = await dataService.GetProductDetails(param);
+    return dt;
+  }
   Widget CartList(Cart dt, int index) {
     bool isSizevlid = false;
     for(var a in sizelist){
@@ -123,12 +158,17 @@ class _cartPage extends State<CartPage> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(left: 0.0, right: 10.0),
-                    child: Image(
-                      image: CachedNetworkImageProvider(
-                        dt.imageFileName,
+                    child: GestureDetector(
+                      onTap: (){
+                        _product_onTap(dt, context);
+                      },
+                      child: Image(
+                        image: CachedNetworkImageProvider(
+                          dt.imageFileName,
+                        ),
+                        fit: BoxFit.fitWidth,
+                        width: 100,
                       ),
-                      fit: BoxFit.fitWidth,
-                      width: 100,
                     ),
                   ),
                   Column(
@@ -272,15 +312,15 @@ class _cartPage extends State<CartPage> {
                         Navigator.of(
                             _keyLoader.currentContext, rootNavigator: true)
                             .pop(); //close the dialoge
-
-                        Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  CartPage(pSource: "W",
-                                    masterScreenFormKey: widget
-                                        .masterScreenFormKey,)),);
+//
+//                        Navigator.pop(context);
+//                        Navigator.push(
+//                          context,
+//                          MaterialPageRoute(
+//                              builder: (context) =>
+//                                  CartPage(pSource: "W",
+//                                    masterScreenFormKey: widget
+//                                        .masterScreenFormKey,)),);
                       }
                       else {
 
@@ -373,60 +413,121 @@ class _cartPage extends State<CartPage> {
             centerTitle: true,
           ),
           body: SafeArea(
-              child: Stack(
-                  fit: StackFit.expand,
-                  children: <Widget>[
-                    Container(
-                      decoration: BoxDecoration(
-                        // Box decoration takes a gradient
-                        gradient: LinearGradient(
-                          // Where the linear gradient begins and ends
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          // Add one stop for each color. Stops should increase from 0 to 1
-                          stops: [0, 1],
-                          colors: [
-                            // Colors are easy thanks to Flutter's Colors class.
-                            Color(0xFFF0F1EE),
-                            Color(0xFFF0F1EE),
-                          ],
-                        ),
+              child: Column(
+                children: [
+                  Container(
+                    color: Color(0xFF517295),
+                    height: 40,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 0.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left:8.0),
+                                  child: Text("Items ($itemCount)", style: TextStyle(color: Colors.white),),
+                                )),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right:8.0),
+                                  child: Text("$currencysymbol${formatterint.format(sumValue)}", style: TextStyle(color: Colors.white)),
+                                )),
+                          ),
+                        ],
                       ),
                     ),
-                    ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      itemCount: cartlist.length,
-                      itemBuilder: (BuildContext context, int index) =>
-                          CartList(cartlist[index], index),
-                    )
-/*
-                    SingleChildScrollView(
-                      child: Container(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              //Customtitle(context, "Cart"),
+                  ),
+                  Flexible(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          for(var i = 0; i< cartlist.length; i++)
+                            CartList(cartlist[i], i),
+                          sumValue != 0 ? Container(
+                            child: Padding(
+                              padding: const EdgeInsets.only(left:20.0, right: 20.0, top:30.0, bottom: 30),
+                              child: Column(
+                                children: [
+                                  Text("Summary", style: TextStyle(fontSize: 18.0),),
+                                  SizedBox(height: 10,),
+                                  Row(
+//                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                    children: [
+                                      Expanded(
+                                          child: Text("Sub Total")),
+                                      Expanded(
+                                        child: Align(
+                                          alignment: Alignment.centerRight,
+                                            child: Text("$currencysymbol${formatterint.format(sumValue)}")),
+                                      )
+                                    ],
+                                  ),
+                                  SizedBox(height: 5,),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                          child: Text("Shipping Charge")),
+                                      Expanded(
+                                        child: Align(
+                                            alignment: Alignment.centerRight,
+                                            child: shippingCharge != 0 ? Text("$currencysymbol${formatterint.format(shippingCharge)}")
+                                        : Text("Free")),
+                                      )
+                                    ],
+                                  ),
+                                  SizedBox(height: 5,),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                          child: Text("Shipping Insurance")),
+                                      Expanded(
+                                        child: Align(
+                                            alignment: Alignment.centerRight,
+                                            child: shippingInsurance != 0 ? Text("$currencysymbol${formatterint.format(shippingInsurance)}")
+                                                : Text("Free")),
+                                      )
+                                    ],
+                                  ),
+                                  SizedBox(height: 5,),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                          child: Text("Grand Total")),
+                                      Expanded(
+                                        child: Align(
+                                            alignment: Alignment.centerRight,
+                                            child: Text("$currencysymbol${formatterint.format(sumValue)}")),
+                                      )
+                                    ],
+                                  ),
+                                  SizedBox(height: 25,),
+                                ],
+                              ),
+                            ),
+                          ) : Container(),
+                          /*
+                            ListView.builder(
+                              scrollDirection: Axis.vertical,
+                              itemCount: cartlist.length,
+                              itemBuilder: (BuildContext context, int index) =>
+                                CartList(cartlist[index], index),
+                            ),
+                             */
+                        ],
+                      ),
 
-                        /*
-                              FutureBuilder<List<Cart>>(
-//                        future: getGroup(),
-                                builder: (context, snapshot) {
-                                  if (groupdt.length > 0) {
-                                    List<Group> data = groupdt;
-                                    return CategoryListView(data);
-                                  } else if (snapshot.hasError) {
-                                    return Text("${snapshot.error}");
-                                  }
-                                  return Container();
-                                },
-                              )
-                              */
-                            ]
-                        ),
-                      ),
                     ),
-                    */
-                  ]
+                  ),
+                ],
+
               )
           ),
         bottomNavigationBar: BottomAppBar(

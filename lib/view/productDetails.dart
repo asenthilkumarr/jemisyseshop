@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
@@ -16,7 +15,6 @@ import 'package:jemisyseshop/view/login.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
 import 'package:jemisyseshop/widget/imageSlide.dart';
 import 'package:jemisyseshop/widget/offerTagPainter.dart';
-import 'package:jemisyseshop/widget/titleBar.dart';
 import 'package:share/share.dart';
 
 import '../style.dart';
@@ -198,7 +196,6 @@ class _productDetailPage extends State<ProductDetailPage> {
                                             favorite = true;
                                            // AddWishList(widget.product, "W");
                                           }
-                                          print(favorite);
                                           setState(() {});
                                         },
                                       )
@@ -472,7 +469,7 @@ class _productDetailPage extends State<ProductDetailPage> {
                                           item.goldWeight >0 ? Row(
                                             children: [
                                               SizedBox(
-                                                  width: 100,
+                                                  width: 120,
                                                   child: Align(
                                                       alignment: Alignment.centerRight,
                                                       child: Text("Weight : ")
@@ -543,6 +540,36 @@ class _productDetailPage extends State<ProductDetailPage> {
                                               Flexible(
                                                 flex: 3,
                                                 child: Text("${item.brand}"),
+                                              )
+                                            ],
+                                          ) : Container(),
+                                          item.jewelSize != "" ? Row(
+                                            children: [
+                                              SizedBox(
+                                                  width: 120,
+                                                  child: Align(
+                                                    alignment: Alignment.centerRight,
+                                                    child: Text("Size : "),
+                                                  )
+                                              ),
+                                              Flexible(
+                                                flex: 3,
+                                                child: Text("${item.jewelSize}"),
+                                              )
+                                            ],
+                                          ) : Container(),
+                                          item.jewelLength != "" ? Row(
+                                            children: [
+                                              SizedBox(
+                                                  width: 120,
+                                                  child: Align(
+                                                    alignment: Alignment.centerRight,
+                                                    child: Text("Length : "),
+                                                  )
+                                              ),
+                                              Flexible(
+                                                flex: 3,
+                                                child: Text("${item.jewelLength}"),
                                               )
                                             ],
                                           ) : Container(),
@@ -1219,57 +1246,6 @@ class _productDetailPage extends State<ProductDetailPage> {
                   ),
                 ),
               ) : SizedBox(height: 1, width: 1,),
-/*
-              Positioned(
-                right: 5,
-                top: 4,
-                child: Container(
-                  //width: 50.0,
-                  //height: 50.0,
-                  padding: const EdgeInsets.all(1.0),
-                  //I used some padding without fixed width and height
-                  decoration: new BoxDecoration(
-                    shape: BoxShape.circle,
-                    // You can use like this way or like the below line
-                    //borderRadius: new BorderRadius.circular(30.0),
-                    color: listLabelbgColor, //Colors.grey,
-                    boxShadow: [
-                      BoxShadow(
-                        color: listbgColor, //Colors.grey.withOpacity(0.5),
-                        spreadRadius: 2,
-                        blurRadius: 3,
-                        offset: Offset(0, 2), // changes position of shadow
-                      ),
-                    ],
-                  ),
-
-                  child: Container(
-                    padding: const EdgeInsets.all(2.0),
-                    //I used some padding without fixed width and height
-                    decoration: new BoxDecoration(
-                      shape: BoxShape.circle,
-                      // You can use like this way or like the below line
-                      //borderRadius: new BorderRadius.circular(30.0),
-                      color: Colors.white,
-                    ),
-                    child: SizedBox(width: 45,
-                        height: 45,
-                        child: IconButton(
-                         icon: Icon(favorite ? Icons.favorite : Icons.favorite_border, color: Colors.redAccent,),
-                         onPressed: (){
-                           if(favorite)
-                             favorite = false;
-                           else
-                             favorite = true;
-                           print(favorite);
-                           setState(() {});
-                         },
-                        )
-                    ),
-                  ),
-                ),
-              ),
-              */
             ]
         )
     );
@@ -1281,6 +1257,7 @@ class _productDetailPage extends State<ProductDetailPage> {
       param.eMail = userID;
       param.recordNo = 0;
       param.designCode = sItem.designCode;
+      param.version = sItem.version;
       param.itemCode = sItem.itemCode;
       param.onlineName = sItem.onlineName;
       param.description = sItem.description;

@@ -29,8 +29,8 @@ bool hideTitleMessage = false;
 int hMenuCount = 3;
 int fMenuCount = 4;
 
-final formatter2dec = new NumberFormat('##0.00', 'en_US');
-final formatterint = new NumberFormat('##0', 'en_US');
+final formatter2dec = new NumberFormat('#,##0.00', 'en_US');
+final formatterint = new NumberFormat('#,##0', 'en_US');
 
 class Commonfn{
   static void saveUser(String userID, String password, bool isLogin) async{

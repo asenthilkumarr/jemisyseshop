@@ -20,6 +20,7 @@ class Cart{
   int recordNo;
   String macID;
   String designCode;
+  int version;
   String itemCode;
   String onlineName;
   String description;
@@ -33,7 +34,7 @@ class Cart{
   String imageFileName;
   DateTime createdDate;
 
-  Cart({this.eMail, this.recordNo, this.macID, this.designCode, this.itemCode, this.onlineName,
+  Cart({this.eMail, this.recordNo, this.macID, this.designCode, this.version, this.itemCode, this.onlineName,
   this.description, this.qty, this.jewelSize, this.unitPrice, this.totalPrice, this.shippingDays, this.isSizeCanChange, this.orderType,
     this.imageFileName, this.createdDate});
 
@@ -43,6 +44,7 @@ class Cart{
       recordNo: json['recordNo'],
       macID: json['macID'],
       designCode: json['designCode'],
+        version: json['version'],
         itemCode: json['inventoryCode'],
       onlineName: json['onlineName'],
       description: json['description'],
@@ -63,6 +65,7 @@ class Cart{
     'recordNo': recordNo,
     'macID': macID,
     'designCode':designCode,
+    'version' :version,
     'inventoryCode':itemCode != ""? itemCode : null,
     'description':description,
     'qty':qty,

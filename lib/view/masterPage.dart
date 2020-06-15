@@ -129,8 +129,8 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     Customer param = Customer();
     param.eMail = await Commonfn.getUserID();
     param.password = await Commonfn.getPassword();
-    bool isLogin = await Commonfn.getLoginStatus();
-    if(isLogin != null && isLogin == true){
+    bool tisLogin = await Commonfn.getLoginStatus();
+    if(tisLogin != null && tisLogin == true){
       var dt = await dataService.GetCustomer(param);
       if (dt.returnStatus != null && dt.returnStatus == 'OK') {
         userID = dt.eMail.toString();

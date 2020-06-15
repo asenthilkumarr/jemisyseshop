@@ -12,27 +12,6 @@ import 'package:jemisyseshop/view/masterPage.dart';
 import 'package:jemisyseshop/widget/expansionTile.dart';
 import 'package:flutter_range_slider/flutter_range_slider.dart' as frs;
 
-class FilterValue{
-  List<FilterSelValue> group=[];
-  List<FilterSelValue> metal=[];
-  List<FilterSelValue> brand=[];
-  List<FilterSelValue> design=[];
-  List<FilterSelValue> discount=[];
-  List<FilterSelValue> jewelSize=[];
-
-  double minprice;
-  double maxprice;
-  double minweight;
-  double maxweight;
-  FilterValue({this.group, this.metal, this.brand, this.design, this.minprice, this.maxweight, this.minweight, this.maxprice});
-}
-class FilterSelValue{
-  bool isChecked;
-  String value;
-  String value3;
-  double value2;
-  FilterSelValue({this.isChecked, this.value, this.value2, this.value3});
-}
 class FilterPage extends StatefulWidget{
 //  final FilterValue fValue;
   final List<Product> productdt;
@@ -531,7 +510,6 @@ class _filterPage extends State<FilterPage> {
                               setState((
                                   ) {
                               });
-                              print(gValue.metal[i].isChecked);
                             },
                           ),
                           */
@@ -574,7 +552,6 @@ class _filterPage extends State<FilterPage> {
                               setState((
                                   ) {
                               });
-                              print(gValue.metal[i].isChecked);
                             },
                           ),
                           */
@@ -2189,4 +2166,26 @@ class _filterPage extends State<FilterPage> {
       ),
     );
   }
+}
+
+class FilterValue{
+  List<FilterSelValue> group=[];
+  List<FilterSelValue> metal=[];
+  List<FilterSelValue> brand=[];
+  List<FilterSelValue> design=[];
+  List<FilterSelValue> discount=[];
+  List<FilterSelValue> jewelSize=[];
+
+  double minprice;
+  double maxprice;
+  double minweight;
+  double maxweight;
+  FilterValue({this.group, this.metal, this.brand, this.design, this.minprice, this.maxweight, this.minweight, this.maxprice});
+}
+class FilterSelValue{
+  bool isChecked;
+  String value;
+  String value3;
+  double value2;
+  FilterSelValue({this.isChecked, this.value, this.value2, this.value3});
 }
