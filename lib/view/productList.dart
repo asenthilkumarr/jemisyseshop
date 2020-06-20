@@ -18,7 +18,9 @@ import 'package:jemisyseshop/widget/titleBar.dart';
 class ProductListPage extends StatefulWidget{
   final List<Product> productdt;
   final String title;
-  ProductListPage({this.productdt, this.title});
+  final GlobalKey<FormState> masterScreenFormKey;
+
+  ProductListPage({this.productdt, this.title, this.masterScreenFormKey});
   @override
   _productListPage createState() => _productListPage();
 }
@@ -307,7 +309,7 @@ class _productListPage extends State<ProductListPage> {
                     delegate: SliverChildListDelegate(
                       [
                         for(var i in fproductdt)
-                          ProductGridWidget(item: i,),
+                          ProductGridWidget(item: i, masterScreenFormKey: widget.masterScreenFormKey,),
                       ],
                     ),
                   ),

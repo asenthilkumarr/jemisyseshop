@@ -8,7 +8,7 @@ import 'package:jemisyseshop/view/login.dart';
 import '../style.dart';
 import 'goldRate.dart';
 
-Widget titleBar(BuildContext context, GlobalKey<ScaffoldState> scaffoldKey, GlobalKey _keyGoldRate) {
+Widget titleBar(BuildContext context, GlobalKey<ScaffoldState> scaffoldKey, GlobalKey _keyGoldRate, GlobalKey<State> _formKeyReset) {
   GoldRateWedgit objGoldRate = new GoldRateWedgit();
   return Container(
     color: primary1Color,
@@ -68,23 +68,14 @@ Widget titleBar(BuildContext context, GlobalKey<ScaffoldState> scaffoldKey, Glob
                                         if(isLogin == true) {
                                           Navigator.push(
                                             context,
-                                            PageRouteBuilder(
-                                              pageBuilder: (c, a1, a2) =>
-                                                  CartPage(pSource: "S",),
-                                              transitionsBuilder: (c, anim, a2,
-                                                  child) =>
-                                                  FadeTransition(opacity: anim,
-                                                      child: child),
-                                              transitionDuration: Duration(
-                                                  milliseconds: 300),
-                                            ),
-                                          );
+                                            MaterialPageRoute(
+                                                builder: (context) => CartPage(pSource: "S",)),);
                                         }
                                         else{
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (context) => LoginPage()),);
+                                                builder: (context) => LoginPage(masterScreenFormKey: _formKeyReset,)),);
                                         }
                                       },),
                                     new Positioned( // draw a red marble
@@ -96,10 +87,11 @@ Widget titleBar(BuildContext context, GlobalKey<ScaffoldState> scaffoldKey, Glob
                                             color: Colors.white,
                                             shape: BoxShape.circle
                                         ),
+                                        key: _formKeyReset,
                                         child: Padding(
                                           padding: const EdgeInsets.all(3.0),
                                           child: new Text(
-                                            '5',
+                                            cartCount.toString(),
                                             style: new TextStyle(
                                               color: Colors.red,
                                               fontSize: 9,

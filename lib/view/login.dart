@@ -1,18 +1,21 @@
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/model/dialogs.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
 import 'package:jemisyseshop/view/registration.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../style.dart';
 import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
 import 'dart:core';
 
 class LoginPage extends StatefulWidget{
+  final GlobalKey<FormState> masterScreenFormKey;
+  LoginPage({this.masterScreenFormKey});
+
   @override
   _LoginPage createState() => _LoginPage();
 }
@@ -64,12 +67,17 @@ class _LoginPage extends State<LoginPage>{
       param.password = txtpassword.text.trim();
 
       var dt = await dataService.GetCustomer(param);
-      Navigator.of(_keyLoaderLogin.currentContext, rootNavigator: true)
-          .pop(); //close the dialoge
+
       if (dt.returnStatus != null && dt.returnStatus == 'OK') {
         userID = dt.eMail.toString();
         userName = dt.firstName.toString().toUpperCase();
         isLogin=true ;
+        var cartdt = await dataService.GetCart(userID, "S");
+        cartCount = cartdt.length;
+        widget.masterScreenFormKey?.currentState?.reset();
+        Commonfn.saveUser(txtuserid.text, txtpassword.text, true);
+        Navigator.of(_keyLoaderLogin.currentContext, rootNavigator: true).pop(); //close the dialoge
+
         Navigator.pop(context, dt.eMail);
         res = 'OK';
       }
@@ -77,19 +85,26 @@ class _LoginPage extends State<LoginPage>{
 //        Dialogs.AlertMessage(context,
 //            dt.returnStatus);
         showInfoFlushbar(context,dt.returnStatus);
+        Navigator.of(_keyLoaderLogin.currentContext, rootNavigator: true).pop(); //close the dialoge
 
       }
     }
     return res;
 
   }
-
+  void loadDefault() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if(await prefs.getString('userID') != null){
+      txtuserid.text = await Commonfn.getUserID();
+    }
+  }
 
   @override
   void initState() {
 
     super.initState();
     ShowRetypePassword();
+    loadDefault();
   }
 
   @override
@@ -101,7 +116,7 @@ class _LoginPage extends State<LoginPage>{
 
         home: Scaffold(
           appBar: AppBar(
-            title: Text('Login',style: TextStyle(color: Colors.white,fontWeight:FontWeight.bold )),
+            title: Text('Login',style: TextStyle(color: Colors.white,)),
             leading: IconButton(icon:Icon(Icons.arrow_back,color: Colors.white,),
               onPressed:() => Navigator.pop(context, false),
             ),

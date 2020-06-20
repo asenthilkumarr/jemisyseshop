@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
@@ -16,7 +15,6 @@ import 'package:jemisyseshop/view/login.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
 import 'package:jemisyseshop/widget/imageSlide.dart';
 import 'package:jemisyseshop/widget/offerTagPainter.dart';
-import 'package:jemisyseshop/widget/titleBar.dart';
 import 'package:share/share.dart';
 
 import '../style.dart';
@@ -24,7 +22,10 @@ import '../style.dart';
 class ProductDetailPage extends StatefulWidget{
   final Product product;
   final String title;
-  ProductDetailPage({this.product, this.title});
+  final GlobalKey<FormState> masterScreenFormKey;
+  final String source;
+
+  ProductDetailPage({this.product, this.title, this.masterScreenFormKey, this.source});
   @override
   _productDetailPage createState() => _productDetailPage();
 }
@@ -99,13 +100,6 @@ class _productDetailPage extends State<ProductDetailPage> {
     if (item.imageFile5 != "")
       timgList.add(item.imageFile5);
 
-//    return Card(
-//        shape: RoundedRectangleBorder(
-//          side: BorderSide(
-//            color: listbgColor,
-//            width: 1.0,
-//          ),
-//        ),
     return Container(
         margin: const EdgeInsets.only(left:8.0, top:4.0, right:8.0, bottom:10.0),
         padding: const EdgeInsets.all(0.0),
@@ -203,7 +197,6 @@ class _productDetailPage extends State<ProductDetailPage> {
                                             favorite = true;
                                            // AddWishList(widget.product, "W");
                                           }
-                                          print(favorite);
                                           setState(() {});
                                         },
                                       )
@@ -477,7 +470,7 @@ class _productDetailPage extends State<ProductDetailPage> {
                                           item.goldWeight >0 ? Row(
                                             children: [
                                               SizedBox(
-                                                  width: 100,
+                                                  width: 120,
                                                   child: Align(
                                                       alignment: Alignment.centerRight,
                                                       child: Text("Weight : ")
@@ -548,6 +541,36 @@ class _productDetailPage extends State<ProductDetailPage> {
                                               Flexible(
                                                 flex: 3,
                                                 child: Text("${item.brand}"),
+                                              )
+                                            ],
+                                          ) : Container(),
+                                          item.jewelSize != "" ? Row(
+                                            children: [
+                                              SizedBox(
+                                                  width: 120,
+                                                  child: Align(
+                                                    alignment: Alignment.centerRight,
+                                                    child: Text("Size : "),
+                                                  )
+                                              ),
+                                              Flexible(
+                                                flex: 3,
+                                                child: Text("${item.jewelSize}"),
+                                              )
+                                            ],
+                                          ) : Container(),
+                                          item.jewelLength != "" ? Row(
+                                            children: [
+                                              SizedBox(
+                                                  width: 120,
+                                                  child: Align(
+                                                    alignment: Alignment.centerRight,
+                                                    child: Text("Length : "),
+                                                  )
+                                              ),
+                                              Flexible(
+                                                flex: 3,
+                                                child: Text("${item.jewelLength}"),
                                               )
                                             ],
                                           ) : Container(),
@@ -1224,57 +1247,6 @@ class _productDetailPage extends State<ProductDetailPage> {
                   ),
                 ),
               ) : SizedBox(height: 1, width: 1,),
-/*
-              Positioned(
-                right: 5,
-                top: 4,
-                child: Container(
-                  //width: 50.0,
-                  //height: 50.0,
-                  padding: const EdgeInsets.all(1.0),
-                  //I used some padding without fixed width and height
-                  decoration: new BoxDecoration(
-                    shape: BoxShape.circle,
-                    // You can use like this way or like the below line
-                    //borderRadius: new BorderRadius.circular(30.0),
-                    color: listLabelbgColor, //Colors.grey,
-                    boxShadow: [
-                      BoxShadow(
-                        color: listbgColor, //Colors.grey.withOpacity(0.5),
-                        spreadRadius: 2,
-                        blurRadius: 3,
-                        offset: Offset(0, 2), // changes position of shadow
-                      ),
-                    ],
-                  ),
-
-                  child: Container(
-                    padding: const EdgeInsets.all(2.0),
-                    //I used some padding without fixed width and height
-                    decoration: new BoxDecoration(
-                      shape: BoxShape.circle,
-                      // You can use like this way or like the below line
-                      //borderRadius: new BorderRadius.circular(30.0),
-                      color: Colors.white,
-                    ),
-                    child: SizedBox(width: 45,
-                        height: 45,
-                        child: IconButton(
-                         icon: Icon(favorite ? Icons.favorite : Icons.favorite_border, color: Colors.redAccent,),
-                         onPressed: (){
-                           if(favorite)
-                             favorite = false;
-                           else
-                             favorite = true;
-                           print(favorite);
-                           setState(() {});
-                         },
-                        )
-                    ),
-                  ),
-                ),
-              ),
-              */
             ]
         )
     );
@@ -1286,11 +1258,12 @@ class _productDetailPage extends State<ProductDetailPage> {
       param.eMail = userID;
       param.recordNo = 0;
       param.designCode = sItem.designCode;
+      param.version = sItem.version;
       param.itemCode = sItem.itemCode;
       param.onlineName = sItem.onlineName;
       param.description = sItem.description;
       param.qty = 1;
-//    param.jewelSize = "";
+      param.jewelSize = sItem.jewelSize;
       param.unitPrice = sItem.onlinePrice;
       param.totalPrice = sItem.onlinePrice;
       param.shippingDays = 7;
@@ -1306,7 +1279,7 @@ class _productDetailPage extends State<ProductDetailPage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => CartPage(pSource: "S",)),);
+            builder: (context) => CartPage(pSource: oType, masterScreenFormKey: widget.masterScreenFormKey,)),);
 
     }
     else{
@@ -1384,7 +1357,7 @@ class _productDetailPage extends State<ProductDetailPage> {
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        widget.product.homeTryOn == true ? Expanded(
+                        widget.product.homeTryOn == true && widget.source == null ? Expanded(
                           child: SizedBox(
                             height:50,
                             child: RaisedButton(
@@ -1400,7 +1373,7 @@ class _productDetailPage extends State<ProductDetailPage> {
                                 ),
                               ),
                               onPressed: () async {
-
+                                AddtoCart(widget.product, "H");
                               },
                             ),
                           ),
@@ -1417,7 +1390,7 @@ class _productDetailPage extends State<ProductDetailPage> {
                               child: Padding(
                                 padding: const EdgeInsets.all(0.0),
                                 child: Text(
-                                  "Buy Now",
+                                  widget.source == null ? "Buy Now" : "Close",
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 15, fontWeight: FontWeight.bold,
@@ -1425,7 +1398,10 @@ class _productDetailPage extends State<ProductDetailPage> {
                                 ),
                               ),
                               onPressed: () async {
+                                if(widget.source == null)
                                 AddtoCart(widget.product, "S");
+                                else
+                                  Navigator.pop(context);
                               },
                             ),
                           ),

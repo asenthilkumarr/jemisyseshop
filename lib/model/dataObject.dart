@@ -20,6 +20,7 @@ class Cart{
   int recordNo;
   String macID;
   String designCode;
+  int version;
   String itemCode;
   String onlineName;
   String description;
@@ -33,7 +34,7 @@ class Cart{
   String imageFileName;
   DateTime createdDate;
 
-  Cart({this.eMail, this.recordNo, this.macID, this.designCode, this.itemCode, this.onlineName,
+  Cart({this.eMail, this.recordNo, this.macID, this.designCode, this.version, this.itemCode, this.onlineName,
   this.description, this.qty, this.jewelSize, this.unitPrice, this.totalPrice, this.shippingDays, this.isSizeCanChange, this.orderType,
     this.imageFileName, this.createdDate});
 
@@ -43,6 +44,7 @@ class Cart{
       recordNo: json['recordNo'],
       macID: json['macID'],
       designCode: json['designCode'],
+        version: json['version'],
         itemCode: json['inventoryCode'],
       onlineName: json['onlineName'],
       description: json['description'],
@@ -63,6 +65,7 @@ class Cart{
     'recordNo': recordNo,
     'macID': macID,
     'designCode':designCode,
+    'version' :version,
     'inventoryCode':itemCode != ""? itemCode : null,
     'description':description,
     'qty':qty,
@@ -125,8 +128,9 @@ class Setting {
   String startupImageName;
   String imageFolderName;
   String fontName;
+  String isBackendJEMiSys;
 
-  Setting({ this.appName, this.currCode, this.startupImageName, this.imageFolderName, this.fontName, this.message});
+  Setting({ this.appName, this.currCode, this.startupImageName, this.imageFolderName, this.fontName, this.message, this.isBackendJEMiSys});
 
   factory Setting.fromJson(Map<String, dynamic> json) {
     imgFolderName = json['imageFolderName'];
@@ -140,6 +144,7 @@ class Setting {
       startupImageName: startupimageUrl+json['startupImageName'],
       imageFolderName: json['imageFolderName'],
       fontName: json['fontName'],
+      isBackendJEMiSys: json['isBackendJEMiSys']
     );
   }
 }
@@ -168,8 +173,11 @@ class Product {
   double sellRate;
   double goldWeight;
   double labourPrice;
+  int qtyOnHand;
   String designName;
   String brand;
+  String jewelSize;
+  String jewelLength;
   String shortDescription;
   String description;
   int shippingDays;
@@ -187,7 +195,7 @@ class Product {
       {this.groupName, this.onlineName, this.designCode, this.version, this.metalType, this.onSale, this.listingPrice,
         this.onlinePrice, this.discountPercentage, this.salesType, this.weightFrom, this.weightTo, this.productType,
         this.imageFile1, this.imageFile2, this.imageFile3, this.imageFile4, this.imageFile5,
-        this.itemCode, this.tax, this.sellRate, this.goldWeight, this.labourPrice, this.designName, this.brand,
+        this.itemCode, this.tax, this.sellRate, this.goldWeight, this.labourPrice, this.qtyOnHand, this.designName, this.brand, this.jewelSize, this.jewelLength,
         this.shortDescription, this.description, this.shippingDays, this.labelLine1, this.labelLine2, this.labelLine3, this.labelLine4, this.labelLine5,
         this.noOfImages, this.isShowEvenIfStockIsNull, this.homeTryOn});
 
@@ -239,8 +247,11 @@ class Product {
       sellRate: json['sellRate'].toDouble(),
       goldWeight: json['goldWeight'].toDouble(),
       labourPrice: json['labourPrice'].toDouble(),
+      qtyOnHand: json['qtyOnHand'],
       designName: json['designName'],
       brand: json['brand'],
+      jewelSize: json['jewelSize'],
+      jewelLength: json['jewelLength'],
       shortDescription: json['shortDescription'],
       description: json['description'],
       shippingDays: json['shippingDays'],
@@ -326,6 +337,7 @@ class Customer{
   String eMail;
   String referralEmail;
   String password;
+  String title;
   String firstName;
   String lastName;
   String gender;
@@ -334,21 +346,24 @@ class Customer{
   String mode;
 //  DateTime createdDate;
   String returnStatus;
+  Address address;
 
-  Customer({this.eMail, this.referralEmail, this.password, this.firstName, this.lastName, this.gender,
-    this.dOB, this.mobileNumber, this.mode,  this.returnStatus});
+  Customer({this.eMail, this.referralEmail, this.password, this.title, this.firstName, this.lastName, this.gender,
+    this.dOB, this.mobileNumber, this.mode,  this.returnStatus, this.address});
 
   factory Customer.fromJson(Map<String, dynamic> json){
     return Customer(
         eMail: json['eMail'],
         referralEmail: json['referralEmail'],
         password: json['password'],
+        title: json['title'],
         firstName: json['firstName'],
         lastName: json['lastName'],
         gender: json['gender'],
         dOB: json['dOB'],
         mobileNumber: json['mobileNumber'],
-        returnStatus:json['returnStatus']
+        returnStatus:json['returnStatus'],
+      address: Address.fromJson(json['address'])
     );
   }
 
@@ -364,6 +379,99 @@ class Customer{
     'mode':mode,
   };
 }
+class Address {
+  String eMail;
+  String title;
+  String fullName;
+  String mobileNo;
+  String address1;
+  String address2;
+  String address3;
+  String address4;
+  String city;
+  String state;
+  String country;
+  String pinCode;
+
+  Address(
+      {this.eMail, this.title, this.fullName, this.mobileNo, this.address1, this.address2, this.address3, this.address4,
+        this.city, this.state, this.country, this.pinCode});
+
+  factory Address.fromJson(Map<String, dynamic> json){
+    return Address(
+      eMail: json['eMail'],
+      title: json['title'],
+      address1: json['address1'],
+      address2: json['address2'],
+      address3: json['address3'],
+      address4: json['address4'],
+      city: json['city'],
+      state: json['state'],
+      country: json['country'],
+      pinCode: json['pinCode'],
+    );
+  }
+  Map<String, dynamic> toParam() =>{
+    'eMail':eMail,
+    'title':title,
+    'address1':address1,
+    'address2':address2,
+    'address3':address3,
+    'address4':address4,
+    'city':city,
+    'state':state,
+    'country':country,
+    'pinCode':pinCode
+  };
+}
+class Country{
+  String country;
+  int orderOfDisplay;
+  bool homeTryOn;
+  Country({this.country, this.orderOfDisplay, this.homeTryOn});
+  factory Country.fromJson(Map<String, dynamic> json){
+    return Country(
+      country: json['country'],
+      homeTryOn: json['homeTryon'] == 0 ? false : true,
+      orderOfDisplay: json['orderOfDisplay']
+    );
+  }
+}
+class StateList{
+  String country;
+  String state;
+  int orderOfDisplay;
+  bool homeTryOn;
+  bool cityState;
+  StateList({this.country, this.state, this.orderOfDisplay, this.homeTryOn, this.cityState});
+  factory StateList.fromJson(Map<String, dynamic> json){
+    return StateList(
+      country: json['country'],
+      state: json['state'],
+      homeTryOn: json['homeTryon'] == 0 ? false : true,
+      orderOfDisplay: json['orderOfDisplay'],
+      cityState: json['homeTryon'] == 0 ? false : true,
+    );
+  }
+}
+class City{
+  String country;
+  String state;
+  String city;
+  int orderOfDisplay;
+  bool homeTryOn;
+  City({this.country, this.state, this.city, this.orderOfDisplay, this.homeTryOn});
+  factory City.fromJson(Map<String, dynamic> json){
+    return City(
+      country: json['country'],
+      state: json['state'],
+      city: json['city'],
+      homeTryOn: json['homeTryon'] == 0 ? false : true,
+      orderOfDisplay: json['orderOfDisplay'],
+    );
+  }
+}
+
 class ItemMasterList{
   String inventoryCode;
   String description;
@@ -377,10 +485,15 @@ class ItemMasterList{
     'imageUrl': imageUrl
   };
 }
-class Country{
+class Country2{
   String name;
   String shortCode;
   String currency;
   String imageUrl;
-  Country(this.name, this.shortCode, this.currency, this.imageUrl);
+  Country2(this.name, this.shortCode, this.currency, this.imageUrl);
+}
+class RadioButtonListValue {
+  String name;
+  int index;
+  RadioButtonListValue({this.name, this.index});
 }

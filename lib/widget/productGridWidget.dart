@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
+import 'package:jemisyseshop/model/dialogs.dart';
 import 'package:jemisyseshop/view/productDetails.dart';
 import 'package:jemisyseshop/view/productList.dart';
 
@@ -16,12 +17,15 @@ import 'offerTagPainter.dart';
 
 class ProductGridWidget extends StatelessWidget {
   final Product item;
-  ProductGridWidget({this.item});
+  final GlobalKey<FormState> masterScreenFormKey;
+
+  ProductGridWidget({this.item, this.masterScreenFormKey});
+
   Future<void> _product_onTap(Product selItem, BuildContext context) async {
     Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ProductDetailPage(product: item, title: item.itemCode,),)
+          builder: (context) => ProductDetailPage(product: item, title: item.itemCode, masterScreenFormKey: masterScreenFormKey,),)
     );
   }
   @override
@@ -161,25 +165,31 @@ class ProductGridWidget extends StatelessWidget {
 class ProductGridWidgetHome extends StatelessWidget {
   final Product item;
   final String productType;
-  ProductGridWidgetHome({this.item, this.productType});
+  final GlobalKey<FormState> masterScreenFormKey;
+  final _keyLoader = new GlobalKey<FormState>();
+
+  ProductGridWidgetHome({this.item, this.productType, this.masterScreenFormKey});
   String _where="ALL";
   DataService dataService = DataService();
 
   Future<void> _product_onTap(String productType, Product selItem, BuildContext context) async {
+    Dialogs.showLoadingDialog(context, _keyLoader); //invoking go
     var productdetail = await getProductDetail(productType, selItem.designCode, selItem.version);
+    Navigator.of(_keyLoader.currentContext, rootNavigator: true).pop(); //close the dialoge
+
     if (productdetail.length > 1) {
       Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ProductListPage(productdt: productdetail, title: selItem.designCode,),)
+            builder: (context) => ProductListPage(productdt: productdetail, title: selItem.designCode, masterScreenFormKey: masterScreenFormKey,),)
       );
     }
     else if (productdetail.length > 0) {
       Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) =>
-              ProductDetailPage(product: productdetail[0],
-                title: productdetail[0].designCode,),)
+          MaterialPageRoute(
+            builder: (context) => ProductDetailPage(product: productdetail[0],
+                title: productdetail[0].designCode, masterScreenFormKey: masterScreenFormKey,),)
       );
     }
 //    else {

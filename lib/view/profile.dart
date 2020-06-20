@@ -8,6 +8,7 @@ import 'package:jemisyseshop/model/dialogs.dart';
 import 'package:jemisyseshop/view/cart.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
 import 'package:jemisyseshop/view/registration.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../style.dart';
 import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
 import 'dart:core';
@@ -61,7 +62,16 @@ class _ProfilePage extends State<ProfilePage>{
     }
     return res;
   }
+void signOut() async{
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.setBool("isLogin", false);
+  userID="";
+  userName ="";
+  isLogin=false;
+  cartCount = 0;
 
+  Navigator.pop(context,false);
+}
 
   @override
   void initState() {
@@ -79,7 +89,7 @@ class _ProfilePage extends State<ProfilePage>{
 
         home: Scaffold(
           appBar: AppBar(
-            title: Text('My Account',style: TextStyle(color: Colors.white,fontWeight:FontWeight.bold )),
+            title: Text('My Account',style: TextStyle(color: Colors.white,)),
             leading: IconButton(icon:Icon(Icons.arrow_back,color: Colors.white,),
               onPressed:() {
                 Navigator.pop(context,false);
@@ -204,7 +214,7 @@ class _ProfilePage extends State<ProfilePage>{
                                                       mainAxisAlignment: MainAxisAlignment.start,
                                                       crossAxisAlignment: CrossAxisAlignment.start,
                                                       children: [
-                                                        Text('My Orders' ,
+                                                        Text('My Cart' ,
                                                             style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,fontSize: 14)
                                                           //style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold,fontSize: 14),
                                                         ),
@@ -233,12 +243,17 @@ class _ProfilePage extends State<ProfilePage>{
                                                       mainAxisAlignment: MainAxisAlignment.start,
                                                       crossAxisAlignment: CrossAxisAlignment.start,
                                                       children: [
-                                                        Text('My Home Try-on' ,
+                                                        Text('My Home Try-On' ,
                                                             style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,fontSize: 14)
                                                           //style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold,fontSize: 14),
                                                         ),
                                                       ]),
-                                                  onTap: () { /* react to the tile being tapped */ }
+                                                  onTap: () { /* react to the tile being tapped */
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) => CartPage(pSource: "H",)),);
+                                                  }
                                               )
                                           ),
                                         ],
@@ -292,10 +307,7 @@ class _ProfilePage extends State<ProfilePage>{
                                                 ],
                                               ),
                                               onPressed: () {
-                                                Navigator.pop(context,false);
-                                                userID="";
-                                                userName ="";
-                                                isLogin=false;
+                                                signOut();
                                               },
                                             ),
                                           ),
