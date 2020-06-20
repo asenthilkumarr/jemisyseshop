@@ -23,8 +23,9 @@ class ProductDetailPage extends StatefulWidget{
   final Product product;
   final String title;
   final GlobalKey<FormState> masterScreenFormKey;
+  final String source;
 
-  ProductDetailPage({this.product, this.title, this.masterScreenFormKey});
+  ProductDetailPage({this.product, this.title, this.masterScreenFormKey, this.source});
   @override
   _productDetailPage createState() => _productDetailPage();
 }
@@ -1356,7 +1357,7 @@ class _productDetailPage extends State<ProductDetailPage> {
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        widget.product.homeTryOn == true ? Expanded(
+                        widget.product.homeTryOn == true && widget.source == null ? Expanded(
                           child: SizedBox(
                             height:50,
                             child: RaisedButton(
@@ -1389,7 +1390,7 @@ class _productDetailPage extends State<ProductDetailPage> {
                               child: Padding(
                                 padding: const EdgeInsets.all(0.0),
                                 child: Text(
-                                  "Buy Now",
+                                  widget.source == null ? "Buy Now" : "Close",
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 15, fontWeight: FontWeight.bold,
@@ -1397,7 +1398,10 @@ class _productDetailPage extends State<ProductDetailPage> {
                                 ),
                               ),
                               onPressed: () async {
+                                if(widget.source == null)
                                 AddtoCart(widget.product, "S");
+                                else
+                                  Navigator.pop(context);
                               },
                             ),
                           ),

@@ -8,7 +8,7 @@ import 'package:jemisyseshop/model/dialogs.dart';
 import 'package:jemisyseshop/style.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
 import 'package:jemisyseshop/view/productDetails.dart';
-
+import 'package:jemisyseshop/view/address.dart';
 import 'login.dart';
 
 class CartPage extends StatefulWidget{
@@ -69,34 +69,35 @@ class _cartPage extends State<CartPage> {
     param.unitPrice = dt2.unitPrice;
     param.totalPrice = dt2.totalPrice;
     param.shippingDays = 0;
-    param.isSizeCanChange = true;
+    param.isSizeCanChange = dt2.isSizeCanChange;
     param.orderType = dt2.orderType;
     lparam.add(param);
     var dt = await dataService.UpdateCart("U", lparam);
     await getDefaultData(source);
   }
 
-  void AddtoWishlist(Cart sItem, String oType) async{
+  void AddtoWishlist(Cart sItem, String oType, String mode) async{
     if(isLogin == true){
       List<Cart> lparam = [];
+
       Cart param = new Cart();
       param.eMail = userID;
-      param.recordNo = 0;
+      param.recordNo = sItem.recordNo;
       param.designCode = sItem.designCode;
       param.version = sItem.version;
       param.itemCode = sItem.itemCode;
       param.onlineName = sItem.onlineName;
       param.description = sItem.description;
-      param.qty = 1;
+      param.qty = sItem.qty;
       param.jewelSize = sItem.jewelSize;
       param.unitPrice = sItem.unitPrice;
       param.totalPrice = sItem.totalPrice;
       param.shippingDays = 7;
-      param.isSizeCanChange = true;
+      param.isSizeCanChange = sItem.isSizeCanChange;
       param.orderType = oType;
       lparam.add(param);
 
-      var dt = await dataService.UpdateCart("I", lparam);
+      var dt = await dataService.UpdateCart(mode, lparam);
       await getDefaultData(source);
     }
     else{
@@ -118,10 +119,10 @@ class _cartPage extends State<CartPage> {
         builder: (context) =>
             ProductDetailPage(product: item[0],
               title: item[0].itemCode,
-              masterScreenFormKey: widget.masterScreenFormKey,),)
+              masterScreenFormKey: widget.masterScreenFormKey,
+            source: "Cart",),)
       );
     }
-
   }
   Future<List<Product>> getProductDetail(String productType, String designCode, int version) async {
     ProductParam param = new ProductParam();
@@ -307,8 +308,8 @@ class _cartPage extends State<CartPage> {
                       if (result == "Move to Wishlist") {
                         Dialogs.showLoadingDialog(
                             context, _keyLoader); //invoking go
-                        await DeleteCart(dt, index);
-                        await AddtoWishlist(dt, "W");
+//                        await DeleteCart(dt, index);
+                        await AddtoWishlist(dt, "W", "S2W");
                         Navigator.of(
                             _keyLoader.currentContext, rootNavigator: true)
                             .pop(); //close the dialoge
@@ -356,6 +357,40 @@ class _cartPage extends State<CartPage> {
                     ),
                   ),
                 )),
+            source == "W" ? Positioned(
+                right: 0.0,
+                bottom: 0.0,
+                child: GestureDetector(
+                  onTap: () async {
+                      var result = await Dialogs.ConfirmDialog(
+                          context, "Confirm move to cart",
+                          "Are you sure you want to move this jewellery to cart?",
+                          "Move", "Cancel");
+                      if (result == false) {
+                        Dialogs.showLoadingDialog(
+                            context, _keyLoader); //invoking go
+                        await AddtoWishlist(dt, "S", "W2S");
+                        Navigator.of(
+                            _keyLoader.currentContext, rootNavigator: true)
+                            .pop(); //close the dialoge
+                      }
+
+                    //Navigator.of(context).pop();
+                  },
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CircleAvatar(
+                        radius: 12.0,
+                        backgroundColor: primary1Color,
+                        child: Icon(
+                          Icons.shopping_cart, color: Colors.white, size: 20,),
+                      ),
+                    ),
+                  ),
+                ))
+            : Container(),
           ],
         ),
       ),
@@ -389,11 +424,7 @@ class _cartPage extends State<CartPage> {
       theme: MasterScreen.themeData(context),
       home: Scaffold(
           appBar: AppBar(
-            title: Row(
-              children: [
-                Text(txtTitle, style: TextStyle(color: Colors.white),),
-              ],
-            ),
+            title: Text(txtTitle, style: TextStyle(color: Colors.white),),
             leading: IconButton(icon:Icon(Icons.arrow_back,color: Colors.white,),
               onPressed:() {
 //                Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
@@ -417,7 +448,7 @@ class _cartPage extends State<CartPage> {
                 children: [
                   Container(
                     color: Color(0xFF517295),
-                    height: 40,
+                    height: 45,
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 0.0),
                       child: Row(
@@ -429,7 +460,7 @@ class _cartPage extends State<CartPage> {
                               alignment: Alignment.centerLeft,
                                 child: Padding(
                                   padding: const EdgeInsets.only(left:8.0),
-                                  child: Text("Items ($itemCount)", style: TextStyle(color: Colors.white),),
+                                  child: Text("Items ($itemCount)", style: TextStyle(color: Colors.white, fontSize: 17),),
                                 )),
                           ),
                           Expanded(
@@ -438,7 +469,7 @@ class _cartPage extends State<CartPage> {
                               alignment: Alignment.centerRight,
                                 child: Padding(
                                   padding: const EdgeInsets.only(right:8.0),
-                                  child: Text("$currencysymbol${formatterint.format(sumValue)}", style: TextStyle(color: Colors.white)),
+                                  child: Text("$currencysymbol${formatterint.format(sumValue)}", style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold)),
                                 )),
                           ),
                         ],
@@ -456,8 +487,8 @@ class _cartPage extends State<CartPage> {
                               padding: const EdgeInsets.only(left:20.0, right: 20.0, top:30.0, bottom: 30),
                               child: Column(
                                 children: [
-                                  Text("Summary", style: TextStyle(fontSize: 18.0),),
-                                  SizedBox(height: 10,),
+                                  Text("Summary", style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),),
+                                  SizedBox(height: 15,),
                                   Row(
 //                                  crossAxisAlignment: CrossAxisAlignment.stretch,
                                     children: [
@@ -466,7 +497,7 @@ class _cartPage extends State<CartPage> {
                                       Expanded(
                                         child: Align(
                                           alignment: Alignment.centerRight,
-                                            child: Text("$currencysymbol${formatterint.format(sumValue)}")),
+                                            child: Text("$currencysymbol${formatterint.format(sumValue)}", style: TextStyle(fontWeight: FontWeight.bold),)),
                                       )
                                     ],
                                   ),
@@ -504,7 +535,7 @@ class _cartPage extends State<CartPage> {
                                       Expanded(
                                         child: Align(
                                             alignment: Alignment.centerRight,
-                                            child: Text("$currencysymbol${formatterint.format(sumValue)}")),
+                                            child: Text("$currencysymbol${formatterint.format(sumValue)}", style: TextStyle(fontWeight: FontWeight.bold))),
                                       )
                                     ],
                                   ),
@@ -513,14 +544,6 @@ class _cartPage extends State<CartPage> {
                               ),
                             ),
                           ) : Container(),
-                          /*
-                            ListView.builder(
-                              scrollDirection: Axis.vertical,
-                              itemCount: cartlist.length,
-                              itemBuilder: (BuildContext context, int index) =>
-                                CartList(cartlist[index], index),
-                            ),
-                             */
                         ],
                       ),
 
@@ -530,8 +553,7 @@ class _cartPage extends State<CartPage> {
 
               )
           ),
-        bottomNavigationBar: BottomAppBar(
-
+        bottomNavigationBar: source != "W" ? BottomAppBar(
       child: Container(
       height: 50,
         child: Padding(
@@ -549,7 +571,7 @@ class _cartPage extends State<CartPage> {
                       child: Padding(
                         padding: const EdgeInsets.all(0.0),
                         child: Text(
-                          "PLACE ORDER",
+                          source=="S" ? "PLACE ORDER" : "Make an appointment",
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 15, fontWeight: FontWeight.bold,
@@ -557,7 +579,14 @@ class _cartPage extends State<CartPage> {
                         ),
                       ),
                       onPressed: () async {
+                        if(source=="S"){
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (context) =>
+                                  AddressPage(itemCount: itemCount,totalAmount: sumValue,)));
+                        }
+                        else{
 
+                        }
                       },
                     ),
                   ),
@@ -566,7 +595,8 @@ class _cartPage extends State<CartPage> {
           ),
         ),
       )
-    ),
+    )
+        : Container(height: 1,),
       ),
     );
   }

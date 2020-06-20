@@ -29,7 +29,6 @@ import 'package:jemisyseshop/widget/productGridWidget.dart';
 import 'package:jemisyseshop/widget/scrollingText.dart';
 import 'package:jemisyseshop/widget/titleBar.dart';
 import 'package:jemisyseshop/widget/offerTagPainter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../style.dart';
 
 class MasterScreen extends StatelessWidget {
@@ -116,7 +115,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
 
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
-  Country sCountry;
+  //Country2 sCountry2;
   int menuSelected = 0;
   int submenuSelectedIndex = 0;
 
@@ -155,25 +154,24 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     }
   }
   Future<void> getDefault() async {
-    var sitem = country.firstWhere((d) => d.shortCode == _selCountry);
-    sCountry = sitem;
+//    var sitem = country.firstWhere((d) => d.shortCode == _selCountry);
+//    sCountry = sitem;
     await getDefaultData();
 
     if(titMessage == "") hideTitleMessage = true;
-
     if(hideGoldRate == false){
       Timer(
         Duration(seconds: 1),showGoldRate,
       );
     }
 
-    await checkLogin();
-    await initPlatformState();
-//    Dialogs.showLoadingDialog(context, _keyLoader);//invoking go
     await getGroup();
     await getProduct();
     await getMostPopular();
-//    Navigator.of(_keyLoader.currentContext,rootNavigator: true).pop();//close the dialoge
+    if(!kIsWeb){
+      await checkLogin();
+      await initPlatformState();
+    }
     setState(() {
     });
   }
@@ -183,6 +181,9 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     param.mode = "ACTIVE";
     var dt = await dataService.GetDefaultData(param);
     dDt = dt;
+    setState(() {
+
+    });
     return dt;
   }
   Future<List<Group>> getGroup() async {
@@ -250,10 +251,10 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
         PopupMenuItem<String>(
             child: Row(
               children: [
-                Image.asset(
-                  sCountry.imageUrl, height: 20, fit: BoxFit.fitHeight,),
+//                Image.asset(
+//                  sCountry.imageUrl, height: 20, fit: BoxFit.fitHeight,),
                 SizedBox(width: 10,),
-                Text(sCountry.currency)
+//                Text(sCountry.currency)
               ],
             ))
       ],
@@ -445,13 +446,13 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
               },
             ),
           ),
-          IconButton(
-            icon: new Image.asset(sCountry.imageUrl),
-            iconSize: 20,
-            onPressed: () {
-              _showPopupMenu();
-            },
-          ),
+//          IconButton(
+//            icon: new Image.asset(sCountry.imageUrl),
+//            iconSize: 20,
+//            onPressed: () {
+//              _showPopupMenu();
+//            },
+//          ),
           Center(
             child: Padding(
               padding: const EdgeInsets.only(right: 5.0),

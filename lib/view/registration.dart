@@ -86,7 +86,7 @@ class _Registration extends State<Registration>{
              userID = dt.eMail.toString();
              userName = dt.firstName.toString().toUpperCase();
              isLogin = true;
-             if(isBackendJEMiSys){
+             if(isBackendJEMiSys == "Y"){
                await dataService.UpdateMember("I", param);
              }
 
@@ -108,7 +108,6 @@ class _Registration extends State<Registration>{
     return res;
   }
 
-
   String ShowRetypePassword() {
     if (PasswordEnter == "Y") {
       return 'Y';
@@ -116,7 +115,6 @@ class _Registration extends State<Registration>{
     else
       return 'N';
   }
-
 
   @override
   void initState() {
@@ -134,7 +132,7 @@ class _Registration extends State<Registration>{
 
         home: Scaffold(
           appBar: AppBar(
-            title: Text('Register',style: TextStyle(color: Colors.white,fontWeight:FontWeight.bold )),
+            title: Text('Register',style: TextStyle(color: Colors.white,)),
             leading: IconButton(icon:Icon(Icons.arrow_back,color: Colors.white,),
               onPressed:() {
                 Navigator.pop(context, false);

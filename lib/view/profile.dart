@@ -89,7 +89,7 @@ void signOut() async{
 
         home: Scaffold(
           appBar: AppBar(
-            title: Text('My Account',style: TextStyle(color: Colors.white,fontWeight:FontWeight.bold )),
+            title: Text('My Account',style: TextStyle(color: Colors.white,)),
             leading: IconButton(icon:Icon(Icons.arrow_back,color: Colors.white,),
               onPressed:() {
                 Navigator.pop(context,false);
@@ -214,7 +214,7 @@ void signOut() async{
                                                       mainAxisAlignment: MainAxisAlignment.start,
                                                       crossAxisAlignment: CrossAxisAlignment.start,
                                                       children: [
-                                                        Text('My Orders' ,
+                                                        Text('My Cart' ,
                                                             style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,fontSize: 14)
                                                           //style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold,fontSize: 14),
                                                         ),

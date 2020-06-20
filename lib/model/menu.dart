@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jemisyseshop/style.dart';
 import 'package:jemisyseshop/test.dart';
-import 'package:jemisyseshop/view/home.dart';
-import 'package:jemisyseshop/view/home2.dart';
-import 'package:jemisyseshop/view/home3.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
 import 'common.dart';
 
@@ -77,18 +74,12 @@ void _openPage(menuItem, BuildContext context) {
             case 'Home':
               return MasterScreen(currentIndex: 0, key: null,);
               break;
-            case 'Home 2':
-              return HomeScreen2();
-              break;
-//            case 'Top Sales':
-//              return TopSellingScreen();
-//              break;
             case 'Category':
               return MasterScreen(currentIndex: 1, key: null,);
               break;
 
             default:
-              return HomeScreen();
+              return MasterScreen(currentIndex: 0, key: null,);
           }
         }), (Route<dynamic> route) => false);
   }
@@ -101,12 +92,9 @@ void _openPage(menuItem, BuildContext context) {
 //        case 'Category':
 //          return CategoryScreen();
 //          break;
-        case 'Home 3':
-          return HomeScreen3();
-          break;
 
         default:
-          return HomeScreen();
+          return MasterScreen(currentIndex: 0, key: null,);
       }
     }));
   }

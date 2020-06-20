@@ -1209,10 +1209,10 @@ class _filterPage extends State<FilterPage> {
                                       setState(() {});
                                     }
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(left:8.0),
-                                  child: Text(fValue.design[index].value,),
-                                ),
+//                                Padding(
+//                                  padding: const EdgeInsets.only(left:8.0),
+//                                  child: Text(fValue.design[index].value,),
+//                                ),
                               ],
                             ),
                           ),

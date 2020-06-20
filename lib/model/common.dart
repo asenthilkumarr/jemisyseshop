@@ -9,18 +9,19 @@ String imageUrl = "";
 String bannerimageUrl = '';
 String startupimageUrl = "";
 String fontName = "Loto";
-bool isBackendJEMiSys = false;
+String isBackendJEMiSys = "N";
 
 String userID = "";
 String userName = "";
 bool isLogin = false;
 String udid = "";
 int cartCount = 0;
+Customer customerdata;
 
 String titMessage = "";
 
-final List<Country> country = [
-  Country('Singapore', 'SG', 'SGD', 'assets/SG.png'),
+final List<Country2> country = [
+  Country2('Singapore', 'SG', 'SGD', 'assets/SG.png'),
 ];
 String currencysymbol = "\$";
 String appTitle = "JEMiSys eShop";
