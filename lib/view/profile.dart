@@ -295,10 +295,10 @@ void signOut() async{
                                             child: RaisedButton(
                                               shape: new RoundedRectangleBorder(
                                                 borderRadius: new BorderRadius.circular(30.0),
-                                                side: BorderSide(color:Color(0xFF88A9BB)),
+                                                side: BorderSide(color: buttonShadowColor),
                                               ),
                                               color: buttonColor,
-                                              textColor: Colors.white,
+                                              textColor: buttonTextColor,
                                               padding: EdgeInsets.all(13.0),
                                               child: Row(
                                                 mainAxisSize: MainAxisSize.min,

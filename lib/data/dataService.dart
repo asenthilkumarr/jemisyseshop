@@ -12,6 +12,38 @@ class DataService {
     "APIKey": "SkVNaVN5czo1MzU2NDNBVDk4NjU0MzU2"
   };
 
+  Future<ReturnResponse> GetCheckStockOnline(String eMail) async {
+    ReturnResponse result = new ReturnResponse();
+    http.Response response = await http.get(
+      apiurl + "Product/GetCheckStockOnline?eMail="+eMail,
+      headers: userheaders,
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      result = ReturnResponse.fromData(data);
+      return result;
+    }
+    else {
+      return result;
+    }
+  }
+  Future<ReturnResponse> UpdateOrder(OrderData param) async {
+    ReturnResponse result = new ReturnResponse();
+    http.Response response = await http.post(
+        apiurl + "Order/UpdateOrder",
+        headers: userheaders,
+        body: json.encode(param.toParam()),
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      result = ReturnResponse.fromData(data);
+      print(result.returnStatus);
+      return result;
+    }
+    else {
+      return result;
+    }
+  }
   Future<List<Country>> GetCountry(String country) async {
     List<Country> result = [];
     http.Response response = await http.get(

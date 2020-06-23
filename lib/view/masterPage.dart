@@ -17,6 +17,7 @@ import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/model/dialogs.dart';
 import 'package:jemisyseshop/model/menu.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:jemisyseshop/view/cart.dart';
 import 'package:jemisyseshop/view/contactUs.dart';
 import 'package:jemisyseshop/view/filter.dart';
 import 'package:jemisyseshop/view/login.dart';
@@ -24,6 +25,7 @@ import 'package:jemisyseshop/view/productDetails.dart';
 import 'package:jemisyseshop/view/productList.dart';
 import 'package:jemisyseshop/view/profile.dart';
 import 'package:jemisyseshop/view/registration.dart';
+import 'package:jemisyseshop/widget/cartNotification.dart';
 import 'package:jemisyseshop/widget/goldRate.dart';
 import 'package:jemisyseshop/widget/productGridWidget.dart';
 import 'package:jemisyseshop/widget/scrollingText.dart';
@@ -89,6 +91,9 @@ class MasterPage extends StatefulWidget{
 
 class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   DataService dataService = DataService();
+  GoldRateWedgit objGoldRate = new GoldRateWedgit();
+  CartNotification objCartNote = new CartNotification();
+
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   final _formKeyReset = GlobalKey<FormState>();
   List<Group> groupdt = List<Group>();
@@ -102,15 +107,18 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
 
   String _selgroup = 'RINGS';
   String _selCountry = 'SG';
-  String _filter = "ALL", _filterType = "BYGROUP", _where;
+  String _filter = "ALL",
+      _filterType = "BYGROUP",
+      _where;
   int _selectedCategoryIndex = 0;
   ScrollController _scrollController = new ScrollController();
   ItemScrollController _scrollControllerlist = ItemScrollController();
+  ItemScrollController _scrollControllerCartlist = ItemScrollController();
   TabController _tabController;
   TabController _tabControllerFilter;
-  GoldRateWedgit objGoldRate = new GoldRateWedgit();
 
   GlobalKey _keyGoldRate = GlobalKey();
+  GlobalKey _keyShowCart = GlobalKey();
   GlobalKey _keyFiltermenu = GlobalKey();
 
   var scaffoldKey = GlobalKey<ScaffoldState>();
@@ -118,18 +126,19 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   //Country2 sCountry2;
   int menuSelected = 0;
   int submenuSelectedIndex = 0;
-
+  bool showCartNotification = false;
   CarouselController buttonCarouselController = CarouselController();
 
   static const snackBarDuration = Duration(seconds: 3);
   DateTime backButtonPressTime;
+  BuildContext dialogContext;
 
-  void checkLogin() async{
+  void checkLogin() async {
     Customer param = Customer();
     param.eMail = await Commonfn.getUserID();
     param.password = await Commonfn.getPassword();
     bool tisLogin = await Commonfn.getLoginStatus();
-    if(tisLogin != null && tisLogin == true){
+    if (tisLogin != null && tisLogin == true) {
       var dt = await dataService.GetCustomer(param);
       if (dt.returnStatus != null && dt.returnStatus == 'OK') {
         userID = dt.eMail.toString();
@@ -137,15 +146,209 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
         isLogin = true;
         var cartdt = await dataService.GetCart(userID, "S");
         cartCount = cartdt.length;
+        LoadCart(cartdt);
         setState(() {
 
         });
       }
     }
-
   }
+
+  void LoadCart(List<Cart> cartdt) {
+    double itemWidth = 200;
+    final screenSize = MediaQuery
+        .of(context)
+        .size;
+    if (cartdt.length > 1)
+      itemWidth = (screenSize.width / 2) - 20;
+    else
+      itemWidth = screenSize.width - 40;
+    if (cartCount > 0) {
+      showCartNotification = true;
+      showGeneralDialog(
+          context: context,
+          barrierDismissible: false,
+          barrierLabel: MaterialLocalizations
+              .of(context)
+              .modalBarrierDismissLabel,
+          barrierColor: Colors.black45,
+          transitionDuration: const Duration(milliseconds: 200),
+
+          pageBuilder: (context,
+              Animation animation,
+              Animation secondaryAnimation) {
+//                dialogContext context;
+            return Material(
+              type: MaterialType.transparency,
+              child: Container(
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      //width: MediaQuery.of(context).size.width - 10,
+                      height: 300,
+                      padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+                      color: Colors.white,
+                      child: Stack(
+                        children: [
+                          Column(
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text("Hello ${customerdata.firstName}",
+                                    style: TextStyle(fontSize: 16,
+                                        fontStyle: FontStyle.italic),)
+                                ],
+                              ),
+                              SizedBox(height: 10,),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text("Your cart is waiting",
+                                    style: TextStyle(fontSize: 18,
+                                        color: Color(0xFF80CBC4)),)
+                                ],
+                              ),
+                              SizedBox(height: 10,),
+                              Container(
+                                height: 170,
+                                child: ScrollablePositionedList.builder(
+                                  itemScrollController: _scrollControllerCartlist,
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: cartdt.length,
+                                  itemBuilder: (BuildContext context,
+                                      int index) =>
+                                      Container(
+                                        width: itemWidth,
+                                        child: Container(
+                                          height: 150,
+                                          child: Card(
+                                            child: Padding(
+                                              padding: const EdgeInsets
+                                                  .fromLTRB(
+                                                  0.0, 0.0, 0.0, 0.0),
+                                              child: Column(
+                                                children: <Widget>[
+                                                  Row(
+                                                    mainAxisAlignment: MainAxisAlignment
+                                                        .center,
+                                                    children: <Widget>[
+                                                      _sizedContainer(
+                                                        Image(
+                                                          image: CachedNetworkImageProvider(
+                                                            cartdt[index]
+                                                                .imageFileName,
+                                                          ),
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                  Spacer(),
+                                                  Container(
+                                                    width: (screenSize.width /
+                                                        2) - 50,
+//                                            color: listLabelbgColor,
+                                                    child: Column(
+                                                      mainAxisAlignment: MainAxisAlignment
+                                                          .center,
+                                                      children: <Widget>[
+                                                        SizedBox(height: 2,),
+                                                        Text(
+                                                            "$currencysymbol${formatterint
+                                                                .format(
+                                                                cartdt[index]
+                                                                    .totalPrice)}",
+                                                            style: TextStyle(
+                                                                fontWeight: FontWeight
+                                                                    .bold)),
+                                                        Center(child: Text(
+                                                          '${cartdt[index]
+                                                              .description}',
+                                                          softWrap: true,)),
+                                                        SizedBox(height: 2,),
+                                                        //Spacer(),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 5,)
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                ),
+                              ),
+                              Spacer(),
+                              Container(
+                                height: 40,
+                                child: RaisedButton(
+                                  shape: new RoundedRectangleBorder(
+                                    borderRadius: new BorderRadius.circular(
+                                        10.0),
+                                    side: BorderSide(color: Color(0xFF88A9BB)),
+                                  ),
+                                  color: Color(0xFF517295),
+                                  padding: const EdgeInsets.fromLTRB(
+                                      50.0, 0, 50, 0),
+                                  child: Text(
+                                    "GO TO CART",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  onPressed: () async {
+                                    Navigator.pop(context);
+                                    Navigator.push(context, MaterialPageRoute(
+                                      builder: (context) =>
+                                          CartPage(
+                                            masterScreenFormKey: _formKeyReset,
+                                            pSource: "S",),));
+                                  },
+                                ),
+                              ),
+                              SizedBox(height: 8,)
+                            ],
+                          ),
+                          Positioned(
+                              right: 0.0,
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Align(
+                                  alignment: Alignment.topCenter,
+                                  child: CircleAvatar(
+                                    radius: 14.0,
+                                    backgroundColor: Colors.red,
+                                    child: Icon(
+                                        Icons.close, color: Colors.white),
+                                  ),
+                                ),
+                              )),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          });
+    }
+  }
+
   Future<void> initPlatformState() async {
-    String tudid="";
+    String tudid = "";
     try {
       tudid = await FlutterUdid.udid;
       udid = tudid;
@@ -153,28 +356,29 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
       tudid = 'Failed to get UDID.';
     }
   }
+
   Future<void> getDefault() async {
 //    var sitem = country.firstWhere((d) => d.shortCode == _selCountry);
 //    sCountry = sitem;
     await getDefaultData();
 
-    if(titMessage == "") hideTitleMessage = true;
-    if(hideGoldRate == false){
+    if (titMessage == "") hideTitleMessage = true;
+    if (hideGoldRate == false) {
       Timer(
-        Duration(seconds: 1),showGoldRate,
+        Duration(seconds: 1), showGoldRate,
       );
     }
 
     await getGroup();
     await getProduct();
     await getMostPopular();
-    if(!kIsWeb){
+    if (!kIsWeb) {
       await checkLogin();
       await initPlatformState();
     }
-    setState(() {
-    });
+    setState(() {});
   }
+
   Future<List<DefaultData>> getDefaultData() async {
     DefaultDataParam param = new DefaultDataParam();
     param.docType = "BANNER";
@@ -186,13 +390,15 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     });
     return dt;
   }
+
   Future<List<Group>> getGroup() async {
     var dt = await dataService.GetGroup();
     groupdt = dt;
-    if(dt.length>0)
+    if (dt.length > 0)
       _selgroup = dt[0].groupName;
     return dt;
   }
+
   Future<List<Product>> getProduct() async {
     ProductParam param = new ProductParam();
     param.productType = _selgroup;
@@ -206,7 +412,9 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     fselProductlist = dt;
     return dt;
   }
-  Future<List<Product>> getProductDetail(String productType, String designCode, int version) async {
+
+  Future<List<Product>> getProductDetail(String productType, String designCode,
+      int version) async {
     ProductParam param = new ProductParam();
     param.productType = productType;
     param.designCode = designCode;
@@ -218,6 +426,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     });
     return dt;
   }
+
   Future<List<Product>> getMostPopular() async {
     ProductParam param = new ProductParam();
     param.productType = "ALL";
@@ -229,6 +438,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     ftopSellersProductlist = dt;
     return dt;
   }
+
   void getSelProduct() {
     var sitem = productdt.where((d) => d.groupName == _selgroup)
         .toList();
@@ -237,6 +447,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     selProductlist = sitem;
     fselProductlist = sitem;
   }
+
   void _showPopupMenu() async {
     double screenWidth = MediaQuery
         .of(context)
@@ -261,15 +472,18 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
       elevation: 8.0,
     );
   }
+
   Future<void> _group_onTap(String productType, BuildContext context) async {
-    Dialogs.showLoadingDialog(context, _keyLoader);//invoking go
+    Dialogs.showLoadingDialog(context, _keyLoader); //invoking go
     var productdetail = await getProductDetail(productType, "", 1);
-    Navigator.of(_keyLoader.currentContext,rootNavigator: true).pop();//close the dialoge
+    Navigator.of(_keyLoader.currentContext, rootNavigator: true)
+        .pop(); //close the dialoge
     if (productdetail.length > 1) {
       Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ProductListPage(productdt: productdetail, title: productType,),)
+            builder: (context) =>
+                ProductListPage(productdt: productdetail, title: productType,),)
       );
     }
     else if (productdetail.length > 0) {
@@ -289,8 +503,9 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
 //      );
 //    }
   }
+
   void Filter_Click(String source) async {
-    if(source == "HOME"){
+    if (source == "HOME") {
       List<Product> gFilter = await Navigator.push(
         context,
         PageRouteBuilder(
@@ -309,11 +524,12 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
         });
       }
     }
-    else{
+    else {
       List<Product> gFilter = await Navigator.push(
         context,
         PageRouteBuilder(
-          pageBuilder: (c, a1, a2) => FilterPage(productdt: topSellersProductlist,),
+          pageBuilder: (c, a1, a2) =>
+              FilterPage(productdt: topSellersProductlist,),
           transitionsBuilder: (c, anim, a2, child) =>
               FadeTransition(opacity: anim, child: child),
           transitionDuration: Duration(milliseconds: 300),
@@ -356,7 +572,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
           options: CarouselOptions(
             autoPlay: true,
             height: _height,
-            aspectRatio: 16/9,
+            aspectRatio: 16 / 9,
             viewportFraction: 0.8,
             initialPage: 0,
             enableInfiniteScroll: true,
@@ -384,6 +600,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
       );
     }
   }
+
   Widget titleMessage() {
     return !hideTitleMessage ? Padding(
         padding: const EdgeInsets.only(bottom: 1.0),
@@ -398,7 +615,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                     child: Container(
                       height: 20,
                       child: ScrollingText(text: titMessage,
-                          textStyle: TextStyle(color: Colors.white),),
+                        textStyle: TextStyle(color: Colors.white),),
                     ),
                   ),
                   Positioned(
@@ -406,7 +623,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                       child: GestureDetector(
                         onTap: () {
                           hideTitleMessage = true;
-                          setState(() { });
+                          setState(() {});
                         },
                         child: Icon(
                           Icons.close, color: Colors.white, size: 18,),
@@ -417,6 +634,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
         ))
         : Container();
   }
+
   Widget pageAppBar() {
     return AppBar(
 //      title: Text("JEMiSys eShop"),
@@ -492,6 +710,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
         ]
     );
   }
+
   double GridItemHeight(double screenHeight, double screenWidth) {
     double itemHeight = 0.55;
     if (screenHeight > 880)
@@ -505,6 +724,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     itemHeight = 1;
     return itemHeight;
   }
+
   int GridItemCount(double screenwidth) {
     int itemCount = 0,
         a = 0;
@@ -527,13 +747,14 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
 
     return itemCount;
   }
+
   Widget TopSellingListitem(DesignCode item) {
     final screenSize = MediaQuery
         .of(context)
         .size;
     int count = GridItemCount(screenSize.width);
     return Container(
-        width: screenSize.width / count-4,
+        width: screenSize.width / count - 4,
         //color: Colors.grey,
         child: Card(
             shape: RoundedRectangleBorder(
@@ -581,13 +802,20 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                                 children: [
                                   SizedBox(child: Text('')),
                                   Spacer(),
-                                  item.tagPrice > 0 && item.promotionPrice != 0 ?
-                                  Text(item.tagPrice > 0 ? '$currencysymbol${formatterint.format(
-                                      item.tagPrice)}' : '${formatter2dec.format(
+                                  item.tagPrice > 0 && item.promotionPrice != 0
+                                      ?
+                                  Text(item.tagPrice > 0
+                                      ? '$currencysymbol${formatterint.format(
+                                      item.tagPrice)}'
+                                      : '${formatter2dec.format(
                                       item.grossWeight)}g',
-                                      style: TextStyle(decoration: TextDecoration.lineThrough))
-                                      : Text(item.goldWeight2 > 0 ? '${formatter2dec.format(
-                                      item.goldWeight2)} -' : ''),
+                                      style: TextStyle(
+                                          decoration: TextDecoration
+                                              .lineThrough))
+                                      : Text(item.goldWeight2 > 0
+                                      ? '${formatter2dec.format(
+                                      item.goldWeight2)} -'
+                                      : ''),
                                 ],
                               ),
                               SizedBox(height: 5,),
@@ -597,9 +825,12 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                                   Spacer(),
                                   item.tagPrice > 0 && item.promotionPrice > 0 ?
                                   Text('$currencysymbol${formatterint.format(
-                                      item.promotionPrice)}', style: TextStyle(fontWeight: FontWeight.bold))
-                                      : Text(item.tagPrice > 0 ? '$currencysymbol${formatterint.format(
-                                      item.tagPrice)}' : 'Wt.: ${formatter2dec.format(
+                                      item.promotionPrice)}', style: TextStyle(
+                                      fontWeight: FontWeight.bold))
+                                      : Text(item.tagPrice > 0
+                                      ? '$currencysymbol${formatterint.format(
+                                      item.tagPrice)}'
+                                      : 'Wt.: ${formatter2dec.format(
                                       item.grossWeight)}g'),
                                 ],
                               ),
@@ -628,7 +859,8 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                                           width: 40,
                                           child: Text(item.discountCode,
                                             style: TextStyle(
-                                                fontSize: 13, color: Colors.white),
+                                                fontSize: 13,
+                                                color: Colors.white),
                                           )
                                       ),
                                     ])
@@ -643,6 +875,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
         )
     );
   }
+
   Widget TopSellingListView(List<DesignCode> data) {
     return
       new ListView.builder(
@@ -652,7 +885,9 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
             TopSellingListitem(data[index]),
       );
   }
-  Widget CategoryListitem(BuildContext context, Group dt, int index, int totindex) {
+
+  Widget CategoryListitem(BuildContext context, Group dt, int index,
+      int totindex) {
     int nindex = index;
 
     if (dt.groupName != null) {
@@ -682,8 +917,8 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                         await getProduct();
                         //getSelProduct();
                         if (index < totindex - 1 && index > 1) {
-                          if(_selectedCategoryIndex<index)
-                            nindex = index -1;
+                          if (_selectedCategoryIndex < index)
+                            nindex = index - 1;
                           else
                             nindex = index;
 
@@ -692,8 +927,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                         }
                         _selectedCategoryIndex = index;
 
-                        setState(() {
-                        });
+                        setState(() {});
                       },
                       child: _sizedContainer(
                         Image(
@@ -729,14 +963,15 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
       return new Text('ERROR');
     }
   }
+
   Widget CategoryListView(List<Group> data) {
     return new ScrollablePositionedList.builder(
-        itemScrollController: _scrollControllerlist,
-        scrollDirection: Axis.horizontal,
-        itemCount: data.length,
-        itemBuilder: (BuildContext context, int index) =>
-            CategoryListitem(context, data[index], index, data.length),
-      );
+      itemScrollController: _scrollControllerlist,
+      scrollDirection: Axis.horizontal,
+      itemCount: data.length,
+      itemBuilder: (BuildContext context, int index) =>
+          CategoryListitem(context, data[index], index, data.length),
+    );
   }
 
   Widget CategoryGriditem(Group item) {
@@ -745,7 +980,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
         .size;
     int count = GridItemCount(screenSize.width);
     return Container(
-        width: screenSize.width / count-4,
+        width: screenSize.width / count - 4,
         //color: Colors.grey,
         child: Container(
             decoration: BoxDecoration(
@@ -763,48 +998,53 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
 //              ),
 //            ),
             child: GestureDetector(
-                onTap: (){
+                onTap: () {
                   _group_onTap(item.groupName, context);
                 },
                 child: Stack(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(left:20.0, right:20.0, bottom:25.0, top:10.0),
-                    child: Align(
-                      alignment: FractionalOffset.center,
-                      child: Image(
-                        image: CachedNetworkImageProvider(
-                          item.imageFileName,
-                        ),
-                        fit: BoxFit.fitHeight,
-                      ),
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 20.0, right: 20.0, bottom: 25.0, top: 10.0),
+                        child: Align(
+                          alignment: FractionalOffset.center,
+                          child: Image(
+                            image: CachedNetworkImageProvider(
+                              item.imageFileName,
+                            ),
+                            fit: BoxFit.fitHeight,
+                          ),
 //                  child: Image.network(
 //                    item.imageUrl, fit: BoxFit.fitHeight,),
-                    ),
-                  ),
-                  Align(
-                      alignment: FractionalOffset.bottomCenter,
-                      child: Container(
-                        color: listbgColor,
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              left: 10.0, right: 10.0, top: 8.0, bottom: 8.0),
-                          child: Row(
-                            children: [
-                              Spacer(),
-                              Text(item.groupName),
-                              Spacer(),
-                            ],
-                          ),
                         ),
-                      )
-                  ),
+                      ),
+                      Align(
+                          alignment: FractionalOffset.bottomCenter,
+                          child: Container(
+                            color: listbgColor,
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 10.0,
+                                  right: 10.0,
+                                  top: 8.0,
+                                  bottom: 8.0),
+                              child: Row(
+                                children: [
+                                  Spacer(),
+                                  Text(item.groupName),
+                                  Spacer(),
+                                ],
+                              ),
+                            ),
+                          )
+                      ),
 
-                ]
-            ))
+                    ]
+                ))
         )
     );
   }
+
   Widget _sizedContainer(Widget child) {
     return SizedBox(
       width: 80.0,
@@ -820,20 +1060,22 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
 
     return new TabBar(
       isScrollable: true,
-      controller: _tabController, indicatorColor: listLabelbgColor, tabs: [
-      for(var i in hitem)
-        Tab(
-          child: Text(
-            i,
-            style: TextStyle(color: Colors.black),
+      controller: _tabController,
+      indicatorColor: listLabelbgColor,
+      tabs: [
+        for(var i in hitem)
+          Tab(
+            child: Text(
+              i,
+              style: TextStyle(color: Colors.black),
+            ),
           ),
-        ),
-    ],
+      ],
       onTap: (index) async {
         menuSelected = index;
-        if(index == 0){
+        if (index == 0) {
           _tabControllerFilter.index = 0;
-          _filter="ALL";
+          _filter = "ALL";
 //          Dialogs.showLoadingDialog(context, _keyLoader); //invoking go
           await getProduct();
 //          Navigator.of(_keyLoader.currentContext, rootNavigator: true)\.pop(); //close the dialoge
@@ -845,7 +1087,8 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
       },
     );
   }
-  Widget subMenu(){
+
+  Widget subMenu() {
     List<String> smitem = [
       'ALL',
       'NEW ARRIVAL',
@@ -862,40 +1105,42 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
             child: Text(
               i,
               style: TextStyle(
-                  color: Colors.black, fontSize: 13, fontWeight: FontWeight.normal ),
+                  color: Colors.black,
+                  fontSize: 13,
+                  fontWeight: FontWeight.normal),
             ),
           ),
       ],
-      labelPadding: EdgeInsets.only(left: 10, right:10),
+      labelPadding: EdgeInsets.only(left: 10, right: 10),
 //      indicatorWeight: 1.0,
       onTap: (index) async {
         _filter = smitem[index];
 //        Dialogs.showLoadingDialog(context, _keyLoader); //invoking go
         await getProduct();
 //        Navigator.of(_keyLoader.currentContext, rootNavigator: true).pop(); //close the dialoge
-        setState(() {
-        });
+        setState(() {});
       },
     );
   }
 
-  Widget mainContainer(int itemCount, double itemheight, double screenwidth){
-    if(menuSelected == 0){
+  Widget mainContainer(int itemCount, double itemheight, double screenwidth) {
+    if (menuSelected == 0) {
       return Flexible(
         child: homeWidget(itemCount, itemheight, screenwidth),
       );
     }
-    else if(menuSelected == 1){
+    else if (menuSelected == 1) {
       return Flexible(
         child: categoryWidget(itemCount, itemheight, screenwidth),
       );
     }
-    else if(menuSelected == 2){
+    else if (menuSelected == 2) {
       return Flexible(
         child: topSellersWidget(itemCount, itemheight, screenwidth),
       );
     }
   }
+
   Widget homeWidget(int itemCount, double itemheight, double screenwidth) {
     return Container(
       child: CustomScrollView(
@@ -985,7 +1230,8 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                         child: Text(_selgroup,
                             style: TextStyle(
                                 fontSize: 17,
-                                color: Colors.white, fontWeight: FontWeight.bold)),
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold)),
                       ),
                       Spacer(),
                       SizedBox(
@@ -1040,7 +1286,9 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
             delegate: SliverChildListDelegate(
               [
                 for(var i in fselProductlist)
-                  ProductGridWidgetHome(productType: "", item: i, masterScreenFormKey: _formKeyReset,),
+                  ProductGridWidgetHome(productType: "",
+                    item: i,
+                    masterScreenFormKey: _formKeyReset,),
               ],
             ),
           ),
@@ -1065,11 +1313,11 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                 ),
               )
           ),
-                SliverToBoxAdapter(
-                  child: Container(
-                    height: 150,
-                  ),
-                ),
+          SliverToBoxAdapter(
+            child: Container(
+              height: 150,
+            ),
+          ),
           //Coming Soon Data
 //          SliverList(
 //            delegate: SliverChildListDelegate(
@@ -1104,6 +1352,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
       ),
     );
   }
+
   Widget categoryWidget(int itemCount, double itemheight, double screenwidth) {
     return Container(
       child: CustomScrollView(
@@ -1194,7 +1443,9 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
       ),
     );
   }
-  Widget topSellersWidget(int itemCount, double itemheight, double screenwidth) {
+
+  Widget topSellersWidget(int itemCount, double itemheight,
+      double screenwidth) {
     return Container(
       child: CustomScrollView(
         controller: _scrollController,
@@ -1259,7 +1510,8 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                         child: Text('TOP SELLERS',
                           style: TextStyle(
                               fontSize: 17,
-                              color: Colors.white, fontWeight: FontWeight.bold),),
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),),
                       ),
                       Spacer(),
                       SizedBox(
@@ -1294,7 +1546,9 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
             delegate: SliverChildListDelegate(
               [
                 for(var i in ftopSellersProductlist)
-                  ProductGridWidgetHome(productType: "", item: i, masterScreenFormKey: _formKeyReset,),
+                  ProductGridWidgetHome(productType: "",
+                    item: i,
+                    masterScreenFormKey: _formKeyReset,),
               ],
             ),
           ),
@@ -1305,16 +1559,22 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
       ),
     );
   }
-  void showGoldRate(){
-    Future.delayed(Duration.zero, () => objGoldRate.showGoldRate(context, hideTitleMessage, _keyGoldRate));
+
+  void showGoldRate() {
+    Future.delayed(Duration.zero, () =>
+        objGoldRate.showGoldRate(context, hideTitleMessage, _keyGoldRate));
   }
 
   void showInfoFlushbar(String msg) {
     Flushbar(
       margin: EdgeInsets.all(8),
-      backgroundGradient: LinearGradient(colors: [Color(0xFF757575), Color(0xFF757575)]),
+      backgroundGradient: LinearGradient(
+          colors: [Color(0xFF757575), Color(0xFF757575)]),
       backgroundColor: Colors.red,
-      boxShadows: [BoxShadow(color: listbgColor, offset: Offset(0.0, 2.0), blurRadius: 3.0,)],
+      boxShadows: [
+        BoxShadow(
+          color: listbgColor, offset: Offset(0.0, 2.0), blurRadius: 3.0,)
+      ],
       borderRadius: 8,
 //      title: 'Failed to login!',
       message: '$msg',
@@ -1325,8 +1585,10 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
       ),
       // leftBarIndicatorColor: Colors.blue.shade300,
       duration: Duration(seconds: 1),
-    )..show(context);
+    )
+      ..show(context);
   }
+
   Future<bool> onWillPop() async {
     DateTime currentTime = DateTime.now();
 
@@ -1352,12 +1614,13 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     _tabControllerFilter = new TabController(vsync: this, length: fMenuCount,);
 
     getDefault();
-
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
+    final screenSize = MediaQuery
+        .of(context)
+        .size;
 
     int itemCount = GridItemCount(screenSize.width);
     double itemheight = GridItemHeight(screenSize.height, screenSize.width);
@@ -1370,14 +1633,14 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
             onWillPop: () => onWillPop(),
             child: Container(
                 color: Colors.white,
-                  child: Column(
-                    children: [
-                      titMessage != "" ?  titleMessage() : Container(),
-                      titleBar(context, scaffoldKey, _keyGoldRate, _formKeyReset),
+                child: Column(
+                  children: [
+                    titMessage != "" ? titleMessage() : Container(),
+                    titleBar(context, scaffoldKey, _keyGoldRate, _formKeyReset),
 
-                      mainContainer(itemCount, itemheight, screenSize.width),
-                    ],
-                  )
+                    mainContainer(itemCount, itemheight, screenSize.width),
+                  ],
+                )
 
             )
         ),
@@ -1389,15 +1652,15 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
 
           children: <Widget>[
             SizedBox(
-               width: 50.0,
+              width: 50.0,
               child: FlatButton(
                 color: Colors.white,
-                padding: const EdgeInsets.fromLTRB(0.0,0.0,0.0,0.0),
+                padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(2.0,0.0,2.0,0.0),
+                      padding: const EdgeInsets.fromLTRB(2.0, 0.0, 2.0, 0.0),
                       child: Icon(
                         Icons.home,
                         color: Colors.grey,
@@ -1422,7 +1685,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                   menuSelected = 0;
                   _tabControllerFilter.index = 0;
                   _tabController.index = 0;
-                  _filter="ALL";
+                  _filter = "ALL";
                   await getProduct();
                   _scrollController.animateTo(
                     0.0,
@@ -1439,12 +1702,12 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
               width: 65.0,
               child: FlatButton(
                 color: Colors.white,
-                padding: const EdgeInsets.fromLTRB(0.0,0.0,0.0,0.0),
+                padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(2.0,0.0,2.0,0.0),
+                      padding: const EdgeInsets.fromLTRB(2.0, 0.0, 2.0, 0.0),
                       child: Container(
                         width: 33,
                         height: 24,
@@ -1491,20 +1754,20 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                      builder: (context) => ContactUsPage(),));
+                        builder: (context) => ContactUsPage(),));
                 },
               ),
             ),
             SizedBox(
-               width: 70.0,
+              width: 70.0,
               child: FlatButton(
                 color: Colors.white,
-                padding: const EdgeInsets.fromLTRB(0.0,0.0,0.0,0.0),
+                padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(2.0,0.0,2.0,0.0),
+                      padding: const EdgeInsets.fromLTRB(2.0, 0.0, 2.0, 0.0),
                       child: Icon(
                         Icons.home,
                         color: Colors.grey,
@@ -1531,15 +1794,15 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
               ),
             ),
             SizedBox(
-               width: 50.0,
+              width: 50.0,
               child: FlatButton(
                 color: Colors.white,
-                padding: const EdgeInsets.fromLTRB(0.0,0.0,0.0,0.0),
+                padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(2.0,0.0,2.0,0.0),
+                      padding: const EdgeInsets.fromLTRB(2.0, 0.0, 2.0, 0.0),
                       child: Icon(
                         Icons.person,
                         color: Colors.grey,
@@ -1549,8 +1812,8 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                     SizedBox(height: 0,),
                     Padding(
                       padding: const EdgeInsets.all(0.0),
-                      child: Text(userID==""?
-                        "Login":"Account",
+                      child: Text(userID == "" ?
+                      "Login" : "Account",
                         style: TextStyle(
                             color: Color(0xFF656665),
                             fontSize: 9
@@ -1560,19 +1823,23 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                     ),
                   ],
                 ),
-                onPressed: () {
-                  if(userID=="")
-                    {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                        builder: (context) => LoginPage(masterScreenFormKey: _formKeyReset,)),);
-                    }
-                   else
-                  Navigator.push(
+                onPressed: () async {
+                  if (userID == "") {
+                    var result = await Navigator.push(
                       context,
                       MaterialPageRoute(
-                      builder: (context) => ProfilePage()),);
+                          builder: (context) =>
+                              LoginPage(masterScreenFormKey: _formKeyReset,)),);
+                    if (userID != null && userID != "") {
+                      var cartdt = await dataService.GetCart(userID, "S");
+                      LoadCart(cartdt);
+                    }
+                  }
+                  else
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ProfilePage()),);
                 },
               ),
             ),
@@ -1580,12 +1847,12 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
               width: 50.0,
               child: FlatButton(
                 color: Colors.white,
-                padding: const EdgeInsets.fromLTRB(0.0,0.0,0.0,0.0),
+                padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(2.0,0.0,2.0,0.0),
+                      padding: const EdgeInsets.fromLTRB(2.0, 0.0, 2.0, 0.0),
                       child: Icon(
                         Icons.menu,
                         color: Colors.grey,
@@ -1633,7 +1900,6 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
             label: Text('Top'),
           )),
     );
-
   }
 }
 
