@@ -4,14 +4,15 @@ import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/model/dialogs.dart';
 import 'package:jemisyseshop/style.dart';
-import 'package:jemisyseshop/view/order.dart';
+import 'package:jemisyseshop/view/payment.dart';
 
 import 'masterPage.dart';
 
 class AddressPage extends StatefulWidget{
   final int itemCount;
   final double totalAmount;
-  AddressPage({this.itemCount, this.totalAmount});
+  final List<Cart> itemList;
+  AddressPage({this.itemCount, this.totalAmount, this.itemList});
 
   @override
   _addressPage createState() => _addressPage();
@@ -42,6 +43,9 @@ class _addressPage extends State<AddressPage> {
       name: "Pickup from a Store Nearby",
     ),
   ];
+  int selectedDropdown;
+  String selectedText;
+  final textController = new TextEditingController();
 
   void _handleRadioValueChange(RadioButtonListValue value) {
     if(value.index == 1)
@@ -55,25 +59,6 @@ class _addressPage extends State<AddressPage> {
 
   void getDeliveryAddress() async{
     dAddress = await dataService.GetDeliveryAddress(userID);
-    for(int i = 0;i<dAddress.length;i++){
-      dAddress[i].title = customerdata.title;
-      dAddress[i].fullName = customerdata.firstName;
-    }
-//    if((dAddress == null || dAddress.length == 0)&& customerdata.address.address1 != ""){
-//      dAddress.add(new Address(
-//        title: customerdata.title,
-//        fullName: customerdata.firstName,
-//        mobileNo: customerdata.mobileNumber,
-//        address1: customerdata.address.address1,
-//        address2: customerdata.address.address2,
-//        address3: customerdata.address.address3,
-//        address4: customerdata.address.address4,
-//        city: customerdata.address.city,
-//        state: customerdata.address.state,
-//        country: customerdata.address.country,
-//        pinCode: customerdata.address.pinCode
-//      ));
-//    }
     if(dAddress.length>0){
       selectedAddress = dAddress[0];
       if(sameval)
@@ -88,9 +73,9 @@ class _addressPage extends State<AddressPage> {
     if (mode == "S") {
       dAddress.add(data);
       if (dAddress.length > 0)
-        selectedAddress = dAddress[0];
+        selectedAddress = data;//dAddress[0];
       if (sameval)
-        billingAddress = dAddress[0];
+        billingAddress = data;//dAddress[0];
     }
     else
       billingAddress = data;
@@ -98,6 +83,19 @@ class _addressPage extends State<AddressPage> {
 
     });
   }
+  Future<bool> CheckNull() async{
+    bool isNull = false;
+    if(selectedAddress == null){
+      await Dialogs.AlertMessage(context, "Shipping address cannot be blank, please check");
+      isNull = true;
+    }
+    else if(billingAddress == null){
+      await Dialogs.AlertMessage(context, "Billing address cannot be blank, please check");
+      isNull = true;
+    }
+    return isNull;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -106,14 +104,6 @@ class _addressPage extends State<AddressPage> {
 
     getDeliveryAddress();
   }
-  TextEditingController txtFirstName = TextEditingController();
-
-  int selectedDropdown;
-  String selectedText;
-  final textController = new TextEditingController();
-
-  String _dropdownValue;
-  String _errorText;
 
   @override
   Widget build(BuildContext context) {
@@ -122,14 +112,14 @@ class _addressPage extends State<AddressPage> {
       theme: MasterScreen.themeData(context),
       home: Scaffold(
           appBar: AppBar(
-            title: Text("Address", style: TextStyle(color: Colors.white),),
+            title: Text("Address", style: TextStyle(color: title1Color),),
             leading: IconButton(
-                icon: Icon(Icons.arrow_back, color: Colors.white,),
+                icon: Icon(Icons.arrow_back, color: title1Color,),
                 onPressed: () {
                   Navigator.pop(context, false);
                 }
             ),
-            backgroundColor: Color(0xFFFF8752),
+            backgroundColor: primary1Color,
             centerTitle: true,
           ),
           body: SafeArea(
@@ -156,7 +146,7 @@ class _addressPage extends State<AddressPage> {
 //                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    color: Color(0xFF517295),
+                    color: buttonColor,
                     height: 45,
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 0.0),
@@ -169,7 +159,7 @@ class _addressPage extends State<AddressPage> {
                               alignment: Alignment.centerLeft,
                               child: Padding(
                                 padding: const EdgeInsets.only(left:8.0),
-                                child: Text("Items ($itemCount)", style: TextStyle(color: Colors.white, fontSize: 17),),
+                                child: Text("Items ($itemCount)", style: TextStyle(color: buttonTextColor, fontSize: 17),),
                               )),),
                           Expanded(
                             flex: 1,
@@ -177,7 +167,7 @@ class _addressPage extends State<AddressPage> {
                               alignment: Alignment.centerRight,
                               child: Padding(
                                 padding: const EdgeInsets.only(right:8.0),
-                                child: Text("$currencysymbol${formatterint.format(sumValue)}", style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold)),
+                                child: Text("$currencysymbol${formatterint.format(sumValue)}", style: TextStyle(color: buttonTextColor, fontSize: 17, fontWeight: FontWeight.bold)),
                               )),),
                         ],
                       ),
@@ -201,47 +191,74 @@ class _addressPage extends State<AddressPage> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  SizedBox(height: 5,),
                                   Padding(
-                                    padding: const EdgeInsets.only(left:8.0),
-                                    child: Text("Delivery Mode", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,)),
+                                    padding: const EdgeInsets.fromLTRB(0.1,0.1,0.1,0.0),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          color: listbgColor,
+                                          borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(10.2), topRight: Radius.circular(10.2)
+                                          ),
+                                      ),
+
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(left:5.0, top:5.0, bottom: 5.0),
+                                        child: Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text("Delivery Mode", style: TextStyle(fontWeight: FontWeight.bold),),
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                  Column(
-                                    children:
-                                    fList.map((data) => GestureDetector(
-                                        onTap: (){
-                                          setState(() {
-                                            radioItem = data.name ;
-                                            id = data.index;
-                                            _handleRadioValueChange(data);
-                                          });
-                                        },
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.max,
-                                          children: [
-                                            Radio(
-                                              value: data.index,
-                                              groupValue: id,
-                                              onChanged: (val) {
-                                                setState(() {
-                                                  radioItem = data.name ;
-                                                  id = data.index;
-                                                  _handleRadioValueChange(data);
-                                                });
-                                              },
-                                            ),
-                                            Text("${data.name}", style: TextStyle(fontSize: 17),),
-                                          ],
+                                  Container(
+                                    decoration: BoxDecoration(
+                                        border: Border(
+                                          top: BorderSide(
+                                            width: 1,
+                                            color: listLabelbgColor,
+                                          ),
                                         )
-                                    )
-                                    ).toList(),
+                                    ),
+                                    child: Column(
+                                      children:
+                                      fList.map((data) => Container(
+                                        height: 35,
+                                        child: GestureDetector(
+                                            onTap: (){
+                                              setState(() {
+                                                radioItem = data.name ;
+                                                id = data.index;
+                                                _handleRadioValueChange(data);
+                                              });
+                                            },
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.max,
+                                              children: [
+                                                Radio(
+                                                  value: data.index,
+                                                  groupValue: id,
+                                                  onChanged: (val) {
+                                                    setState(() {
+                                                      radioItem = data.name ;
+                                                      id = data.index;
+                                                      _handleRadioValueChange(data);
+                                                    });
+                                                  },
+                                                ),
+                                                Text("${data.name}",),
+                                              ],
+                                            )
+                                        ),
+                                      )
+                                      ).toList(),
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
                           ),
-                          dAddress.length>0 && radioItem == "Deliver at the Shipping Address" ? Padding(
-                            padding: const EdgeInsets.fromLTRB(15.0,0,15,0),
+                          radioItem == "Deliver at the Shipping Address" ? Padding(
+                            padding: const EdgeInsets.fromLTRB(15.0,5,15,0),
                             child: Container(
                               decoration: BoxDecoration(
                                   border: Border.all(
@@ -252,17 +269,27 @@ class _addressPage extends State<AddressPage> {
                               ),
                               child: Column(
                                 children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left:5.0, top:5.0, bottom: 5.0),
-                                    child: Align(
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: listbgColor,
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(10.2), topRight: Radius.circular(10.2)
+                                      ),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left:5.0, top:5.0, bottom: 5.0),
+                                      child: Align(
                                         alignment: Alignment.centerLeft,
-                                        child: Text("Shipping Address", style: TextStyle(fontSize: 18),)),
+                                        child: Text("Shipping Address", style: TextStyle(fontWeight: FontWeight.bold),),
+                                      ),
+                                    ),
                                   ),
-                                  Align(
+                                  dAddress.length>0 ? Align(
                                     alignment: Alignment.centerLeft,
                                     child: Padding(
                                       padding: const EdgeInsets.only(left:0.0, right: 0.0),
                                       child: Container(
+                                        height: 35,
                                         decoration: BoxDecoration(
                                             border: Border(
                                               top: BorderSide(
@@ -295,10 +322,10 @@ class _addressPage extends State<AddressPage> {
                                         ),
                                       ),
                                     ),
-                                  ),
-//                          SizedBox(height: 6,),
+                                  )
+                                      : Container(),
 
-                                  Stack(
+                                  dAddress.length>0 ? Stack(
                                     children: [
                                       Padding(
                                         padding: const EdgeInsets.only(left:0.0, right: 0.0),
@@ -317,36 +344,59 @@ class _addressPage extends State<AddressPage> {
                                               )
                                           ),
                                           child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
+                                            padding: const EdgeInsets.fromLTRB(12.0, 8.0, 8.0, 8.0),
                                             child: Column(
                                               mainAxisAlignment: MainAxisAlignment.start,
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
-                                                Text("${selectedAddress.title} ${selectedAddress.fullName}",
-                                                  style: TextStyle(fontWeight: FontWeight.bold),),
-                                                Text("${selectedAddress.address1} ${selectedAddress.address2}"),
-                                                Text("${selectedAddress.address3} ${selectedAddress.pinCode}"),
-                                                Text("${selectedAddress.city} ${selectedAddress.state}"),
-                                                Text("${selectedAddress.country}")
+                                                Row(
+                                                  children: [
+                                                    Text("${selectedAddress.title}",
+                                                      style: TextStyle(fontWeight: FontWeight.bold),),
+                                                    selectedAddress.title != "" ? SizedBox(width: 3,) : Container(),
+                                                    Text("${selectedAddress.fullName}",
+                                                      style: TextStyle(fontWeight: FontWeight.bold),),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Text("${selectedAddress.address1}"),
+                                                    selectedAddress.address1 != "" ? SizedBox(width: 3,) : Container(),
+                                                    Text("${selectedAddress.address2}"),
+                                                  ],
+                                                ),
+                                                selectedAddress.address3 != "" ? Row(
+                                                  children: [
+                                                   Text("${selectedAddress.address3}"),
+                                                    selectedAddress.address3 != "" ? SizedBox(width: 3,) : Container(),
+//                                                    Text("${selectedAddress.pinCode}"),
+                                                  ],
+                                                ) : Container(),
+                                                selectedAddress.city != "" || selectedAddress.state != "" ? Row(
+                                                  children: [
+                                                    selectedAddress.city != "" ? Text("${selectedAddress.city}") : Container(),
+                                                    selectedAddress.city != "" ? SizedBox(width: 3,) : Container(),
+                                                    selectedAddress.state != "" ? Text("${selectedAddress.state}") : Container(),
+                                                  ],
+                                                ) : Container(),
+                                                Row(
+                                                  children: [
+                                                    selectedAddress.country != "" ? Text("${selectedAddress.country}") : Container(),
+                                                    selectedAddress.country != "" ? SizedBox(width: 3,) : Container(),
+                                                    selectedAddress.pinCode != "" ? Text("${selectedAddress.pinCode}") : Container(),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Text("Mobile No. : "),
+                                                    Text(selectedAddress.mobileNo),
+                                                  ],
+                                                ),
                                               ],
                                             ),
                                           ),
                                         ),
                                       ),
-                                      /*
-                                    Positioned(
-                                        right: 25.0,
-                                        top: 8.0,
-                                        child: GestureDetector(
-                                          onTap: () async {
-
-                                          },
-                                          child: Align(
-                                            alignment: Alignment.topCenter,
-                                            child: Text("Edit", style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),),
-                                          ),
-                                        )),
-                                    */
                                       Positioned(
                                           right: 15.0,
                                           bottom: 0.0,
@@ -358,33 +408,34 @@ class _addressPage extends State<AddressPage> {
                                               child: Padding(
                                                 padding: const EdgeInsets.all(8.0),
                                                 child: CircleAvatar(
-                                                  radius: 12.0,
+                                                  radius: 10.0,
                                                   backgroundColor: Colors.green,
                                                   child: Icon(
-                                                    Icons.check, color: Colors.white, size: 20,),
+                                                    Icons.check, color: Colors.white, size: 17,),
                                                 ),
                                               ),
                                             ),
                                           )),
                                     ],
-                                  ),
+                                  )
+                                  : Container(),
                                   enableNewAddress == "A" ? Container(
                                       child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
+                                        padding: const EdgeInsets.fromLTRB(8.0,3.0,8.0,3.0),
                                         child: Material(
                                           child: InkWell(
                                             onTap: () async{
                                               var result = await Navigator.push(context, MaterialPageRoute(
                                                   builder: (context) =>
                                                       AddressEntryPage()));
-                                              if(result != null){
+                                              if(result != null && result != false){
                                                 AddnewAddress("S", result);
                                               }
                                             },
                                             child: Card(
                                               color: listbgColor,//Color(0xFFEEEEEE),
                                               child: Padding(
-                                                padding: const EdgeInsets.fromLTRB(8.0,13.0,8.0,13.0),
+                                                padding: const EdgeInsets.fromLTRB(8.0,10.0,8.0,10.0),
                                                 child: Row(
                                                   mainAxisAlignment: MainAxisAlignment.center,
                                                   children: [
@@ -406,7 +457,7 @@ class _addressPage extends State<AddressPage> {
 
                           SizedBox(height: 5,),
                           dAddress.length>0 && radioItem == "Deliver at the Shipping Address" ? Padding(
-                            padding: const EdgeInsets.only(left:15.0, right: 15.0),
+                            padding: const EdgeInsets.fromLTRB(15.0,5, 15.0,0),
                             child: Container(
                               decoration: BoxDecoration(
                                 border: Border.all(
@@ -416,48 +467,68 @@ class _addressPage extends State<AddressPage> {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+//                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left:15.0),
-                                    child: Text("Billing Address", style: TextStyle(fontSize: 18),),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: listbgColor,
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(10.2), topRight: Radius.circular(10.2)
+                                      ),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left:5.0, top:5.0, bottom: 5.0),
+                                      child: Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text("Billing Address", style: TextStyle(fontWeight: FontWeight.bold),),
+                                      ),
+                                    ),
                                   ),
-                                  GestureDetector(
-                                      onTap: (){
-                                        setState(() {
-                                          if(sameval) {
-                                            sameval = false;
-                                            billingAddress = null;
-                                          }
-                                          else{
-                                            sameval = true;
-                                            billingAddress = selectedAddress;
-                                          }
-                                        });
-                                      },
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.max,
-                                        children: [
-                                          Checkbox(
-                                              value: sameval,
-                                              onChanged: (bool val) {
-                                                setState(() {
-                                                  if(sameval){
-                                                    sameval = false;
-                                                    billingAddress = null;
-                                                  }
-
-                                                  else{
-                                                    sameval = true;
-                                                    billingAddress = selectedAddress;
-                                                  }
-
-                                                });
-                                              }
+                                  Container(
+                                    height: 35,
+                                    decoration: BoxDecoration(
+                                        border: Border(
+                                          top: BorderSide(
+                                            width: 1,
+                                            color: listLabelbgColor,
                                           ),
-                                          Text("Same as shipping address", style: TextStyle(fontSize: 17),),
-                                        ],
-                                      )
+                                        )
+                                    ),
+                                    child: GestureDetector(
+                                        onTap: (){
+                                          setState(() {
+                                            if(sameval) {
+                                              sameval = false;
+                                              billingAddress = null;
+                                            }
+                                            else{
+                                              sameval = true;
+                                              billingAddress = selectedAddress;
+                                            }
+                                          });
+                                        },
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.max,
+                                          children: [
+                                            Checkbox(
+                                                value: sameval,
+                                                onChanged: (bool val) {
+                                                  setState(() {
+                                                    if(sameval){
+                                                      sameval = false;
+                                                      billingAddress = null;
+                                                    }
+                                                    else{
+                                                      sameval = true;
+                                                      billingAddress = selectedAddress;
+                                                    }
+                                                  });
+                                                }
+                                            ),
+                                            Text("Same as shipping address",),
+                                          ],
+                                        )
+                                    ),
                                   ),
                                   billingAddress != null ? Stack(
                                     children: [
@@ -478,17 +549,54 @@ class _addressPage extends State<AddressPage> {
                                               )
                                           ),
                                           child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
+                                            padding: const EdgeInsets.fromLTRB(12.0,8.0,8.0,8.0),
                                             child: Column(
                                               mainAxisAlignment: MainAxisAlignment.start,
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
-                                                Text("${billingAddress.title} ${billingAddress.fullName}",
-                                                  style: TextStyle(fontWeight: FontWeight.bold),),
-                                                Text("${billingAddress.address1} ${billingAddress.address2}"),
-                                                Text("${billingAddress.address3} ${billingAddress.pinCode}"),
-                                                Text("${billingAddress.city} ${billingAddress.state}"),
-                                                Text("${billingAddress.country}")
+                                                Row(
+                                                  children: [
+                                                    Text("${billingAddress.title}",
+                                                      style: TextStyle(fontWeight: FontWeight.bold),),
+                                                    billingAddress.title != "" ? SizedBox(width: 3,) : Container(),
+                                                    Text("${billingAddress.fullName}",
+                                                      style: TextStyle(fontWeight: FontWeight.bold),),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    billingAddress.address1 != "" ? Text("${billingAddress.address1}") : Container(),
+                                                    billingAddress.address1 != "" ? SizedBox(width: 3,) : Container(),
+                                                    billingAddress.address2 != "" ? Text("${billingAddress.address2}") : Container(),
+                                                  ],
+                                                ),
+                                                billingAddress.address3 != "" ? Row(
+                                                  children: [
+                                                    Text("${billingAddress.address3}"),
+                                                    billingAddress.address3 != "" ? SizedBox(width: 3,) : Container(),
+//                                                    Text("${selectedAddress.pinCode}"),
+                                                  ],
+                                                ) : Container(),
+                                                billingAddress.city != "" || billingAddress.state != "" ? Row(
+                                                  children: [
+                                                    billingAddress.city != null ? Text("${billingAddress.city}") : Container(),
+                                                    billingAddress.city != null ? SizedBox(width: 3,) : Container(),
+                                                    billingAddress.state != null ? Text("${billingAddress.state}") : Container(),
+                                                  ],
+                                                ) : Container(),
+                                                Row(
+                                                  children: [
+                                                    billingAddress.country != "" ? Text("${billingAddress.country}") : Container(),
+                                                    billingAddress.country != "" ? SizedBox(width: 3,) : Container(),
+                                                    billingAddress.country != "" ? Text("${billingAddress.pinCode}") : Container(),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Text("Mobile No. : "),
+                                                    Text(billingAddress.mobileNo),
+                                                  ],
+                                                ),
                                               ],
                                             ),
                                           ),
@@ -525,10 +633,10 @@ class _addressPage extends State<AddressPage> {
                                               child: Padding(
                                                 padding: const EdgeInsets.all(8.0),
                                                 child: CircleAvatar(
-                                                  radius: 12.0,
+                                                  radius: 10.0,
                                                   backgroundColor: Colors.green,
                                                   child: Icon(
-                                                    Icons.check, color: Colors.white, size: 20,),
+                                                    Icons.check, color: Colors.white, size: 17,),
                                                 ),
                                               ),
                                             ),
@@ -536,23 +644,23 @@ class _addressPage extends State<AddressPage> {
                                     ],
                                   )
                                   : Container(),
-                                      Container(
+                                     sameval == false ? Container(
                                       child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
+                                        padding: const EdgeInsets.fromLTRB(8.0,3.0,8.0,3.0),
                                         child: Material(
                                           child: InkWell(
                                             onTap: () async{
                                               var result = await Navigator.push(context, MaterialPageRoute(
                                                   builder: (context) =>
                                                       AddressEntryPage()));
-                                              if(result != null){
-                                                AddnewAddress("B", result);
+                                              if(result != null && result != false){
+                                                AddnewAddress("S", result);
                                               }
                                             },
                                             child: Card(
                                               color: listbgColor,//Color(0xFFEEEEEE),
                                               child: Padding(
-                                                padding: const EdgeInsets.fromLTRB(8.0,13.0,8.0,13.0),
+                                                padding: const EdgeInsets.fromLTRB(8.0,10.0,8.0,10.0),
                                                 child: Row(
                                                   mainAxisAlignment: MainAxisAlignment.center,
                                                   children: [
@@ -564,7 +672,8 @@ class _addressPage extends State<AddressPage> {
                                           ),
                                         ),
                                       )
-                                  ),
+                                  )
+                                  : Container(),
                                 ],
                               ),
                             ),
@@ -606,9 +715,12 @@ class _addressPage extends State<AddressPage> {
                         ),
                       ),
                       onPressed: () async {
-                        Navigator.push(context, MaterialPageRoute(
-                            builder: (context) =>
-                                OrderPage()));
+                        var status = await CheckNull();
+                        if(!status){
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (context) =>
+                                  PaymentPage(itemCount: itemCount,totalAmount: sumValue,sAddress: selectedAddress, dAddress: billingAddress,)));
+                        }
                       },
                     ),
                   ),
@@ -660,11 +772,17 @@ class _addressEntryPage extends State<AddressEntryPage>{
   Country _dropdownCountryValue;
   StateList _dropdownStateValue;
   City _dropdownCityValue;
-//  List<StateList> statelist = new List<StateList>();
+
   void getDefault() async{
+    Dialogs.showLoadingDialog(context, _keyLoader); //invoking go
+
     countrylist = await dataService.GetCountry("*ALL");
     statelist = await dataService.GetState("*ALL");
     setAddress();
+
+    Navigator.of(
+        _keyLoader.currentContext, rootNavigator: true)
+        .pop(); //close the dialoge
     setState(() {
 
     });
@@ -680,7 +798,11 @@ class _addressEntryPage extends State<AddressEntryPage>{
   void getCity(String country, String state) async {
     citylist =new List<City>();
     _dropdownCityValue = null;
+//    Dialogs.showLoadingDialog(context, _keyLoader); //invoking go
     citylist = await dataService.GetCity(country, state);
+//    Navigator.of(
+//        _keyLoader.currentContext, rootNavigator: true)
+//        .pop(); //close the dialoge
     setState(() {
 
     });
@@ -689,17 +811,18 @@ class _addressEntryPage extends State<AddressEntryPage>{
     param.eMail = userID;
     param.title = _dropdownTitleValue;
     param.fullName = txtFirstName.text.toString();
+    param.mobileNo = txtMobileno.text.toString();
     param.address1 = txtAddress1.text.toString();
     param.address2 = txtAddress2.text.toString();
     param.address3 = txtAddress3.text.toString();
     param.pinCode = txtPincode.text.toString();
-    param.city = txtCity.text.toString();
+    if(_dropdownCityValue != null)
+      param.city = _dropdownCityValue.city;
     param.state = _dropdownStateValue.state;
     param.country = _dropdownCountryValue.country;
    Navigator.pop(context, param);
   }
   void setAddress() async{
-    print(widget.addressdt.title);
     if(widget.addressdt.title!="")
       _dropdownTitleValue = widget.addressdt.title;
     txtFirstName.text = widget.addressdt.fullName;

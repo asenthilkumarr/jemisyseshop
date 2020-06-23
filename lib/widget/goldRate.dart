@@ -5,13 +5,14 @@ import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 
-class GoldRateWedgit{
+class GoldRateWedgit {
 
-  Future<void> showGoldRate(BuildContext context, bool hideTitleMessage, GlobalKey _keyGoldRate) async {
+  Future<void> showGoldRate(BuildContext context, bool hideTitleMessage,
+      GlobalKey _keyGoldRate) async {
     DataService obj = new DataService();
     List<GoldRate> _goldrate = List<GoldRate>();
     double p = 100.0;
-    hideGoldRate =true;
+    hideGoldRate = true;
     bool _fromTop = true;
     _goldrate = await obj.GetGoldSellingRate();
 
@@ -21,9 +22,10 @@ class GoldRateWedgit{
       p = 75.0;
     else if (!kIsWeb && hideTitleMessage)
       p = 70.0;
-    final RenderBox renderBoxRed = _keyGoldRate.currentContext.findRenderObject();
+    final RenderBox renderBoxRed = _keyGoldRate.currentContext
+        .findRenderObject();
     final positionRed = renderBoxRed.localToGlobal(Offset.zero);
-    double topp = positionRed.dy+30;
+    double topp = positionRed.dy + 30;
 //    double rightp = positionRed.dx;
     showGeneralDialog(
         barrierLabel: "Label",
@@ -50,34 +52,41 @@ class GoldRateWedgit{
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text('Gold Rate', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                                  Text('Gold Rate', style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),),
                                   SizedBox(height: 10,),
                                   for(var irow in _goldrate)
-                    Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                                    children: [
-                                      Flexible(
-                                        flex: 1,
-                                        child: Align(
-                                          alignment: Alignment.centerRight,
-                                            child: Text('${irow.goldType}: ')),
-                                      ),
-                                      Flexible(
-                                        flex: 2,
-                                        child: Text('$currencysymbol${formatter2dec.format(irow.sellRate)}'),
-                                      ),
+                                    Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Flexible(
+                                                flex: 1,
+                                                child: Align(
+                                                    alignment: Alignment
+                                                        .centerRight,
+                                                    child: Text(
+                                                        '${irow.goldType}: ')),
+                                              ),
+                                              Flexible(
+                                                flex: 2,
+                                                child: Text(
+                                                    '$currencysymbol${formatter2dec
+                                                        .format(
+                                                        irow.sellRate)}'),
+                                              ),
 //                                      Padding(
 //                                        padding: const EdgeInsets.only(
 //                                            right: 15.0),
 //                                        child: Text('${irow.goldType} :'),
 //                                      ),
 //                                      Text('$currencysymbol${irow.sellRate}'),
-                                    ],
-                                  ),
-                                  SizedBox(height: 10,),
-                                  ]),
+                                            ],
+                                          ),
+                                          SizedBox(height: 10,),
+                                        ]),
 //                                  Row(
 //                                    children: [
 //                                      Padding(

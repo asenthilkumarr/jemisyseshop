@@ -1266,6 +1266,7 @@ class _productDetailPage extends State<ProductDetailPage> {
       param.jewelSize = sItem.jewelSize;
       param.unitPrice = sItem.onlinePrice;
       param.totalPrice = sItem.onlinePrice;
+      param.imageFileName = sItem.imageFile1.replaceAll(imageUrl, "");
       param.shippingDays = 7;
       param.isSizeCanChange = true;
       param.orderType = oType;

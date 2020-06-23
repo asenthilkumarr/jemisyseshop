@@ -25,7 +25,7 @@ class _cartPage extends State<CartPage> {
   final _keyLoader = new GlobalKey<FormState>();
   List<Cart> cartlist = new List<Cart>();
   String dropdownValue = '15';
-  String txtTitle="";
+  String txtTitle = "";
   String source = "S";
   List<String> qtylist = ["1", "2", "3"];
   List<String> sizelist = ['15', '18', '20'];
@@ -38,14 +38,14 @@ class _cartPage extends State<CartPage> {
     cartlist = new List<Cart>();
     var dt = await dataService.GetCart(userID, _source);
     cartlist = dt;
-    if(widget.pSource=="S"){
+    if (widget.pSource == "S") {
       cartCount = dt.length;
       widget.masterScreenFormKey?.currentState?.reset();
     }
     sumValue = 0;
     itemCount = 0;
-    for(var i in dt){
-      sumValue+=i.totalPrice;
+    for (var i in dt) {
+      sumValue += i.totalPrice;
       itemCount++;
     }
     setState(() {
@@ -76,8 +76,8 @@ class _cartPage extends State<CartPage> {
     await getDefaultData(source);
   }
 
-  void AddtoWishlist(Cart sItem, String oType, String mode) async{
-    if(isLogin == true){
+  void AddtoWishlist(Cart sItem, String oType, String mode) async {
+    if (isLogin == true) {
       List<Cart> lparam = [];
 
       Cart param = new Cart();
@@ -100,7 +100,7 @@ class _cartPage extends State<CartPage> {
       var dt = await dataService.UpdateCart(mode, lparam);
       await getDefaultData(source);
     }
-    else{
+    else {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -113,18 +113,21 @@ class _cartPage extends State<CartPage> {
     if (selItem.itemCode != "")
       item = await getProductDetail("FROMCART", selItem.itemCode, 0);
     else
-      item = await getProductDetail("FROMCART", selItem.designCode, selItem.version);
-    if(item.length>0){
+      item =
+      await getProductDetail("FROMCART", selItem.designCode, selItem.version);
+    if (item.length > 0) {
       Navigator.push(context, MaterialPageRoute(
         builder: (context) =>
             ProductDetailPage(product: item[0],
               title: item[0].itemCode,
               masterScreenFormKey: widget.masterScreenFormKey,
-            source: "Cart",),)
+              source: "Cart",),)
       );
     }
   }
-  Future<List<Product>> getProductDetail(String productType, String designCode, int version) async {
+
+  Future<List<Product>> getProductDetail(String productType, String designCode,
+      int version) async {
     ProductParam param = new ProductParam();
     param.productType = productType;
     param.designCode = designCode;
@@ -133,15 +136,16 @@ class _cartPage extends State<CartPage> {
     var dt = await dataService.GetProductDetails(param);
     return dt;
   }
+
   Widget CartList(Cart dt, int index) {
     bool isSizevlid = false;
-    for(var a in sizelist){
-      if(dt.jewelSize != null && dt.jewelSize == a){
+    for (var a in sizelist) {
+      if (dt.jewelSize != null && dt.jewelSize == a) {
         isSizevlid = true;
         break;
       }
     }
-    if(isSizevlid == false)
+    if (isSizevlid == false)
       sizelist.add(dt.jewelSize);
     var now = new DateTime.now();
     var formatter = new DateFormat('dd-MM-yyyy');
@@ -160,7 +164,7 @@ class _cartPage extends State<CartPage> {
                   Padding(
                     padding: const EdgeInsets.only(left: 0.0, right: 10.0),
                     child: GestureDetector(
-                      onTap: (){
+                      onTap: () {
                         _product_onTap(dt, context);
                       },
                       child: Image(
@@ -362,18 +366,18 @@ class _cartPage extends State<CartPage> {
                 bottom: 0.0,
                 child: GestureDetector(
                   onTap: () async {
-                      var result = await Dialogs.ConfirmDialog(
-                          context, "Confirm move to cart",
-                          "Are you sure you want to move this jewellery to cart?",
-                          "Move", "Cancel");
-                      if (result == false) {
-                        Dialogs.showLoadingDialog(
-                            context, _keyLoader); //invoking go
-                        await AddtoWishlist(dt, "S", "W2S");
-                        Navigator.of(
-                            _keyLoader.currentContext, rootNavigator: true)
-                            .pop(); //close the dialoge
-                      }
+                    var result = await Dialogs.ConfirmDialog(
+                        context, "Confirm move to cart",
+                        "Are you sure you want to move this jewellery to cart?",
+                        "Move", "Cancel");
+                    if (result == false) {
+                      Dialogs.showLoadingDialog(
+                          context, _keyLoader); //invoking go
+                      await AddtoWishlist(dt, "S", "W2S");
+                      Navigator.of(
+                          _keyLoader.currentContext, rootNavigator: true)
+                          .pop(); //close the dialoge
+                    }
 
                     //Navigator.of(context).pop();
                   },
@@ -390,11 +394,28 @@ class _cartPage extends State<CartPage> {
                     ),
                   ),
                 ))
-            : Container(),
+                : Container(),
           ],
         ),
       ),
     );
+  }
+  void proceedToOrder() async{
+    if (source == "S") {
+      var status = await dataService.GetCheckStockOnline(customerdata.eMail);
+      if(status.status == 1 && status.returnStatus == "OK"){
+        Navigator.push(context, MaterialPageRoute(
+            builder: (context) =>
+                AddressPage(itemCount: itemCount,
+                  totalAmount: sumValue,itemList: cartlist,)));
+      }
+      else{
+        await Dialogs.AlertMessage(context, status.returnStatus);
+      }
+    }
+    else {
+
+    }
   }
 
   @override
@@ -420,18 +441,19 @@ class _cartPage extends State<CartPage> {
         .size;
 
     return MaterialApp(
-      title:  'Cart',
+      title: 'Cart',
       theme: MasterScreen.themeData(context),
       home: Scaffold(
-          appBar: AppBar(
-            title: Text(txtTitle, style: TextStyle(color: Colors.white),),
-            leading: IconButton(icon:Icon(Icons.arrow_back,color: Colors.white,),
-              onPressed:() {
+        appBar: AppBar(
+          title: Text(txtTitle, style: TextStyle(color: Colors.white),),
+          leading: IconButton(
+              icon: Icon(Icons.arrow_back, color: Colors.white,),
+              onPressed: () {
 //                Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
 //                    MasterScreen()), (Route<dynamic> route) => false);
-                 Navigator.pop(context, false);
+                Navigator.pop(context, false);
               }
-            ),
+          ),
 //            actions: <Widget>[
 //              IconButton(
 //                icon: Icon(Icons.home,color: Colors.white,),
@@ -440,163 +462,181 @@ class _cartPage extends State<CartPage> {
 //                },
 //              ),
 //            ],
-            backgroundColor: Color(0xFFFF8752),
-            centerTitle: true,
-          ),
-          body: SafeArea(
-              child: Column(
-                children: [
-                  Container(
-                    color: Color(0xFF517295),
-                    height: 45,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 0.0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: Align(
+          backgroundColor: Color(0xFFFF8752),
+          centerTitle: true,
+        ),
+        body: SafeArea(
+            child: Column(
+              children: [
+                Container(
+                  color: Color(0xFF517295),
+                  height: 45,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 0.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: Align(
                               alignment: Alignment.centerLeft,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left:8.0),
-                                  child: Text("Items ($itemCount)", style: TextStyle(color: Colors.white, fontSize: 17),),
-                                )),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Align(
-                              alignment: Alignment.centerRight,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(right:8.0),
-                                  child: Text("$currencysymbol${formatterint.format(sumValue)}", style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold)),
-                                )),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Flexible(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          for(var i = 0; i< cartlist.length; i++)
-                            CartList(cartlist[i], i),
-                          sumValue != 0 ? Container(
-                            child: Padding(
-                              padding: const EdgeInsets.only(left:20.0, right: 20.0, top:30.0, bottom: 30),
-                              child: Column(
-                                children: [
-                                  Text("Summary", style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),),
-                                  SizedBox(height: 15,),
-                                  Row(
-//                                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                                    children: [
-                                      Expanded(
-                                          child: Text("Sub Total")),
-                                      Expanded(
-                                        child: Align(
-                                          alignment: Alignment.centerRight,
-                                            child: Text("$currencysymbol${formatterint.format(sumValue)}", style: TextStyle(fontWeight: FontWeight.bold),)),
-                                      )
-                                    ],
-                                  ),
-                                  SizedBox(height: 5,),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                          child: Text("Shipping Charge")),
-                                      Expanded(
-                                        child: Align(
-                                            alignment: Alignment.centerRight,
-                                            child: shippingCharge != 0 ? Text("$currencysymbol${formatterint.format(shippingCharge)}")
-                                        : Text("Free")),
-                                      )
-                                    ],
-                                  ),
-                                  SizedBox(height: 5,),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                          child: Text("Shipping Insurance")),
-                                      Expanded(
-                                        child: Align(
-                                            alignment: Alignment.centerRight,
-                                            child: shippingInsurance != 0 ? Text("$currencysymbol${formatterint.format(shippingInsurance)}")
-                                                : Text("Free")),
-                                      )
-                                    ],
-                                  ),
-                                  SizedBox(height: 5,),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                          child: Text("Grand Total")),
-                                      Expanded(
-                                        child: Align(
-                                            alignment: Alignment.centerRight,
-                                            child: Text("$currencysymbol${formatterint.format(sumValue)}", style: TextStyle(fontWeight: FontWeight.bold))),
-                                      )
-                                    ],
-                                  ),
-                                  SizedBox(height: 25,),
-                                ],
-                              ),
-                            ),
-                          ) : Container(),
-                        ],
-                      ),
-
-                    ),
-                  ),
-                ],
-
-              )
-          ),
-        bottomNavigationBar: source != "W" ? BottomAppBar(
-      child: Container(
-      height: 50,
-        child: Padding(
-          padding: const EdgeInsets.only(left:1.0, right: 1.0),
-          child: new Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Expanded(
-                  child: SizedBox(
-                    height:50,
-                    child: RaisedButton(
-                      color: Color(0xFF517295),
-                      padding: const EdgeInsets.fromLTRB(0.0,0.0,0.0,0.0),
-                      child: Padding(
-                        padding: const EdgeInsets.all(0.0),
-                        child: Text(
-                          source=="S" ? "PLACE ORDER" : "Make an appointment",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 15, fontWeight: FontWeight.bold,
-                          ),
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: Text("Items ($itemCount)",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 17),),
+                              )),
                         ),
-                      ),
-                      onPressed: () async {
-                        if(source=="S"){
-                          Navigator.push(context, MaterialPageRoute(
-                              builder: (context) =>
-                                  AddressPage(itemCount: itemCount,totalAmount: sumValue,)));
-                        }
-                        else{
-
-                        }
-                      },
+                        Expanded(
+                          flex: 1,
+                          child: Align(
+                              alignment: Alignment.centerRight,
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: Text(
+                                    "$currencysymbol${formatterint.format(
+                                        sumValue)}", style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold)),
+                              )),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ]
-          ),
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        for(var i = 0; i < cartlist.length; i++)
+                          CartList(cartlist[i], i),
+                        sumValue != 0 ? Container(
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: 20.0, right: 20.0, top: 30.0, bottom: 30),
+                            child: Column(
+                              children: [
+                                Text("Summary", style: TextStyle(fontSize: 20.0,
+                                    fontWeight: FontWeight.bold),),
+                                SizedBox(height: 15,),
+                                Row(
+//                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    Expanded(
+                                        child: Text("Sub Total")),
+                                    Expanded(
+                                      child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Text(
+                                            "$currencysymbol${formatterint
+                                                .format(sumValue)}",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),)),
+                                    )
+                                  ],
+                                ),
+                                SizedBox(height: 5,),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                        child: Text("Shipping Charge")),
+                                    Expanded(
+                                      child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: shippingCharge != 0 ? Text(
+                                              "$currencysymbol${formatterint
+                                                  .format(shippingCharge)}")
+                                              : Text("Free")),
+                                    )
+                                  ],
+                                ),
+                                SizedBox(height: 5,),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                        child: Text("Shipping Insurance")),
+                                    Expanded(
+                                      child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: shippingInsurance != 0 ? Text(
+                                              "$currencysymbol${formatterint
+                                                  .format(shippingInsurance)}")
+                                              : Text("Free")),
+                                    )
+                                  ],
+                                ),
+                                SizedBox(height: 5,),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                        child: Text("Grand Total")),
+                                    Expanded(
+                                      child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Text(
+                                              "$currencysymbol${formatterint
+                                                  .format(sumValue)}",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight
+                                                      .bold))),
+                                    )
+                                  ],
+                                ),
+                                SizedBox(height: 25,),
+                              ],
+                            ),
+                          ),
+                        ) : Container(),
+                      ],
+                    ),
+
+                  ),
+                ),
+              ],
+
+            )
         ),
-      )
-    )
-        : Container(height: 1,),
+        bottomNavigationBar: source != "W" ? BottomAppBar(
+            child: Container(
+              height: 50,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 1.0, right: 1.0),
+                child: new Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Expanded(
+                        child: SizedBox(
+                          height: 50,
+                          child: RaisedButton(
+                            color: Color(0xFF517295),
+                            padding: const EdgeInsets.fromLTRB(
+                                0.0, 0.0, 0.0, 0.0),
+                            child: Padding(
+                              padding: const EdgeInsets.all(0.0),
+                              child: Text(
+                                source == "S"
+                                    ? "PLACE ORDER"
+                                    : "Make an appointment",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15, fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            onPressed: () async {
+                              proceedToOrder();
+                            },
+                          ),
+                        ),
+                      ),
+                    ]
+                ),
+              ),
+            )
+        )
+            : Container(height: 1,),
       ),
     );
   }

@@ -1,20 +1,63 @@
+import 'dart:convert';
+
 import 'package:jemisyseshop/model/common.dart';
 
-class ReturnResponse{
-  String returnStatus;
-  String errorMessage;
-  int status;
-  String value;
-  ReturnResponse({this.status, this.returnStatus, this.errorMessage, this.value});
-  factory ReturnResponse.fromData(Map<String, dynamic> json){
-    return ReturnResponse(
-      returnStatus: json['returnStatus'],
-      errorMessage: json['errorMessage'],
-      status: json['status'],
-      value: json['value']
-    );
-  }
+class OrderData {
+  String eMail;
+  double totalAmount;
+  double discount;
+  double netAmount;
+  String referraleMail;
+  String deliveryMode;
+  String customerTitle;
+  String customerName;
+  String mobileNo;
+  Address shippingAddress;
+  Address billingAddress;
+  String dstoreCode;
+  String payMode1;
+  double payMode1_Amt;
+  String payMode1_Ref;
+  String payMode2;
+  double payMode2_Amt;
+  String payMode2_Ref;
+  String payMode3;
+  double payMode3_Amt;
+  String payMode3_Ref;
+  String mode;
+  OrderData({this.eMail, this.totalAmount, this.discount, this.netAmount, this.referraleMail,
+  this.deliveryMode, this.customerTitle, this.customerName, this.mobileNo,
+  this.shippingAddress, this.billingAddress, this.dstoreCode,
+  this.payMode1, this.payMode1_Amt, this.payMode1_Ref,
+  this.payMode2, this.payMode2_Amt, this.payMode2_Ref,
+  this.payMode3, this.payMode3_Amt, this.payMode3_Ref, this.mode});
+
+  Map<String, dynamic> toParam() =>{
+    'eMail':eMail,
+    'totalAmount':totalAmount,
+    'discount':discount,
+    'netAmount':netAmount,
+    'referraleMail':referraleMail,
+    'deliveryMode':deliveryMode,
+    'customerTitle':customerTitle,
+    'customerName':customerName,
+    'mobileNo':mobileNo,
+    'shippingAddress':shippingAddress.toParam(),
+    'billingAddress':billingAddress.toParam(),
+    'dstoreCode':dstoreCode,
+    'payMode1':payMode1,
+    'payMode1_Amt':payMode1_Amt,
+    'payMode1_Ref':payMode1_Ref,
+    'payMode2':payMode2,
+    'payMode2_Amt':payMode2_Amt,
+    'payMode2_Ref':payMode2_Ref,
+    'payMode3':payMode3,
+    'payMode3_Amt':payMode3_Amt,
+    'payMode3_Ref':payMode3_Ref,
+    'mode':mode
+  };
 }
+
 class Cart{
   String eMail;
   int recordNo;
@@ -73,6 +116,7 @@ class Cart{
     'unitPrice':unitPrice,
     'totalPrice':totalPrice,
     'shippingDays':shippingDays,
+    'imageFileName':imageFileName,
     'isSizeCanChange': isSizeCanChange == true ? 1 : 0,
     'orderType':orderType,
   };
@@ -379,6 +423,21 @@ class Customer{
     'mode':mode,
   };
 }
+class ReturnResponse{
+  String returnStatus;
+  String errorMessage;
+  int status;
+  String value;
+  ReturnResponse({this.status, this.returnStatus, this.errorMessage, this.value});
+  factory ReturnResponse.fromData(Map<String, dynamic> json){
+    return ReturnResponse(
+        returnStatus: json['returnStatus'],
+        errorMessage: json['errorMessage'],
+        status: json['status'],
+        value: json['value']
+    );
+  }
+}
 class Address {
   String eMail;
   String title;
@@ -401,6 +460,8 @@ class Address {
     return Address(
       eMail: json['eMail'],
       title: json['title'],
+      fullName: json['fullName'],
+      mobileNo: json['mobileNumber'],
       address1: json['address1'],
       address2: json['address2'],
       address3: json['address3'],
@@ -414,6 +475,8 @@ class Address {
   Map<String, dynamic> toParam() =>{
     'eMail':eMail,
     'title':title,
+    'fullName':fullName,
+    'mobileNumber':mobileNo,
     'address1':address1,
     'address2':address2,
     'address3':address3,
