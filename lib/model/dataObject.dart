@@ -9,9 +9,6 @@ class OrderData {
   double netAmount;
   String referraleMail;
   String deliveryMode;
-  String customerTitle;
-  String customerName;
-  String mobileNo;
   Address shippingAddress;
   Address billingAddress;
   String dstoreCode;
@@ -26,8 +23,7 @@ class OrderData {
   String payMode3_Ref;
   String mode;
   OrderData({this.eMail, this.totalAmount, this.discount, this.netAmount, this.referraleMail,
-  this.deliveryMode, this.customerTitle, this.customerName, this.mobileNo,
-  this.shippingAddress, this.billingAddress, this.dstoreCode,
+  this.deliveryMode, this.shippingAddress, this.billingAddress, this.dstoreCode,
   this.payMode1, this.payMode1_Amt, this.payMode1_Ref,
   this.payMode2, this.payMode2_Amt, this.payMode2_Ref,
   this.payMode3, this.payMode3_Amt, this.payMode3_Ref, this.mode});
@@ -39,9 +35,6 @@ class OrderData {
     'netAmount':netAmount,
     'referraleMail':referraleMail,
     'deliveryMode':deliveryMode,
-    'customerTitle':customerTitle,
-    'customerName':customerName,
-    'mobileNo':mobileNo,
     'shippingAddress':shippingAddress.toParam(),
     'billingAddress':billingAddress.toParam(),
     'dstoreCode':dstoreCode,
@@ -491,12 +484,14 @@ class Country{
   String country;
   int orderOfDisplay;
   bool homeTryOn;
-  Country({this.country, this.orderOfDisplay, this.homeTryOn});
+  bool cityState;
+  Country({this.country, this.orderOfDisplay, this.homeTryOn, this.cityState});
   factory Country.fromJson(Map<String, dynamic> json){
     return Country(
       country: json['country'],
       homeTryOn: json['homeTryon'] == 0 ? false : true,
-      orderOfDisplay: json['orderOfDisplay']
+      orderOfDisplay: json['orderOfDisplay'],
+      cityState: json['cityState'] == 0 ? false : true,
     );
   }
 }
@@ -513,7 +508,7 @@ class StateList{
       state: json['state'],
       homeTryOn: json['homeTryon'] == 0 ? false : true,
       orderOfDisplay: json['orderOfDisplay'],
-      cityState: json['homeTryon'] == 0 ? false : true,
+      cityState: json['cityState'] == 0 ? false : true,
     );
   }
 }

@@ -255,7 +255,7 @@ class _paymentPage extends State<PaymentPage> {
                             child: Padding(
                               padding: const EdgeInsets.all(0.0),
                               child: Text(
-                                "Pay Now ($currencysymbol${formatterint.format(
+                                "Pay Now       ($currencysymbol${formatterint.format(
                                     sumValue)})",
                                 style: TextStyle(
                                   color: buttonTextColor,
@@ -316,13 +316,10 @@ class _paymentDetailPage extends State<PaymentDetailPage> {
     param.discount = 0;
     param.netAmount = widget.totalAmount;
     param.deliveryMode = "H";
-    param.customerTitle = widget.sAddress.title;
-    param.customerName = widget.sAddress.fullName;
-    param.mobileNo = widget.sAddress.mobileNo;
     param.shippingAddress = widget.sAddress;
     param.billingAddress = widget.dAddress;
     param.dstoreCode = null;
-    param.payMode1 = "CC";
+    param.payMode1 = "VISA / MASTER";
     param.payMode1_Amt = widget.totalAmount;
     param.payMode1_Ref = "435435676756765";
     param.payMode2 = null;
@@ -531,7 +528,7 @@ class _paymentDetailPage extends State<PaymentDetailPage> {
                             child: Padding(
                               padding: const EdgeInsets.all(0.0),
                               child: Text(
-                                "Pay Now ($currencysymbol${formatterint.format(
+                                "Pay Now       ($currencysymbol${formatterint.format(
                                     widget.totalAmount)})",
                                 style: TextStyle(
                                   color: buttonTextColor,

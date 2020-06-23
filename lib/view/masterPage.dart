@@ -289,7 +289,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                               ),
                               Spacer(),
                               Container(
-                                height: 35,
+                                height: 40,
                                 child: RaisedButton(
                                   shape: new RoundedRectangleBorder(
                                     borderRadius: new BorderRadius.circular(
@@ -298,7 +298,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                                   ),
                                   color: Color(0xFF517295),
                                   padding: const EdgeInsets.fromLTRB(
-                                      50.0, 10, 50, 10),
+                                      50.0, 0, 50, 0),
                                   child: Text(
                                     "GO TO CART",
                                     style: TextStyle(

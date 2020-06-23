@@ -73,8 +73,8 @@ class _Registration extends State<Registration>{
            param.eMail = txtEmail.text.trim();
            param.referralEmail = txtRefferdEmail.text.trim();
            param.password = txtPassword.text.trim();
-           param.firstName = txtFirstName.text.trim();
-           param.lastName = txtLastName.text.trim();
+           param.firstName = txtFirstName.text.trim().toUpperCase();
+           param.lastName = txtLastName.text.trim().toUpperCase();
            param.gender = _isRow == true ? "M" : "F";
            param.dOB = "";
            param.mobileNumber = txtMobileNumber.text.trim();
@@ -160,6 +160,7 @@ class _Registration extends State<Registration>{
                           Expanded(
                               child: TextField(
                                 controller: txtFirstName,
+                                textCapitalization: TextCapitalization.characters,
                                 autocorrect: true,
                                 decoration: InputDecoration(
                                   isDense: true,
@@ -188,6 +189,7 @@ class _Registration extends State<Registration>{
                           Expanded(
                               child: TextField(
                                 controller: txtLastName,
+                                textCapitalization: TextCapitalization.characters,
                                 autocorrect: true,
                                 decoration: InputDecoration(
                                   isDense: true,

@@ -258,7 +258,7 @@ class _addressPage extends State<AddressPage> {
                             ),
                           ),
                           radioItem == "Deliver at the Shipping Address" ? Padding(
-                            padding: const EdgeInsets.fromLTRB(15.0,5,15,0),
+                            padding: const EdgeInsets.fromLTRB(15.0,10,15,0),
                             child: Container(
                               decoration: BoxDecoration(
                                   border: Border.all(
@@ -351,18 +351,18 @@ class _addressPage extends State<AddressPage> {
                                               children: [
                                                 Row(
                                                   children: [
-                                                    Text("${selectedAddress.title}",
-                                                      style: TextStyle(fontWeight: FontWeight.bold),),
+                                                    selectedAddress.title != "" ? Text("${selectedAddress.title}",
+                                                      style: TextStyle(fontWeight: FontWeight.bold),) : Container(),
                                                     selectedAddress.title != "" ? SizedBox(width: 3,) : Container(),
-                                                    Text("${selectedAddress.fullName}",
-                                                      style: TextStyle(fontWeight: FontWeight.bold),),
+                                                    selectedAddress.fullName != "" ? Text("${selectedAddress.fullName}",
+                                                      style: TextStyle(fontWeight: FontWeight.bold),) : Container(),
                                                   ],
                                                 ),
                                                 Row(
                                                   children: [
-                                                    Text("${selectedAddress.address1}"),
+                                                    selectedAddress.address1 != "" ? Text("${selectedAddress.address1}") : Container(),
                                                     selectedAddress.address1 != "" ? SizedBox(width: 3,) : Container(),
-                                                    Text("${selectedAddress.address2}"),
+                                                    selectedAddress.address2 != "" ? Text("${selectedAddress.address2}") : Container(),
                                                   ],
                                                 ),
                                                 selectedAddress.address3 != "" ? Row(
@@ -386,12 +386,12 @@ class _addressPage extends State<AddressPage> {
                                                     selectedAddress.pinCode != "" ? Text("${selectedAddress.pinCode}") : Container(),
                                                   ],
                                                 ),
-                                                Row(
+                                                selectedAddress.mobileNo != "" ? Row(
                                                   children: [
                                                     Text("Mobile No. : "),
                                                     Text(selectedAddress.mobileNo),
                                                   ],
-                                                ),
+                                                ) : Container(),
                                               ],
                                             ),
                                           ),
@@ -429,7 +429,7 @@ class _addressPage extends State<AddressPage> {
                                                   builder: (context) =>
                                                       AddressEntryPage()));
                                               if(result != null && result != false){
-                                                AddnewAddress("S", result);
+                                                AddnewAddress("S", result);//Shipping Address
                                               }
                                             },
                                             child: Card(
@@ -457,7 +457,7 @@ class _addressPage extends State<AddressPage> {
 
                           SizedBox(height: 5,),
                           dAddress.length>0 && radioItem == "Deliver at the Shipping Address" ? Padding(
-                            padding: const EdgeInsets.fromLTRB(15.0,5, 15.0,0),
+                            padding: const EdgeInsets.fromLTRB(15.0,10, 15.0,0),
                             child: Container(
                               decoration: BoxDecoration(
                                 border: Border.all(
@@ -556,11 +556,11 @@ class _addressPage extends State<AddressPage> {
                                               children: [
                                                 Row(
                                                   children: [
-                                                    Text("${billingAddress.title}",
-                                                      style: TextStyle(fontWeight: FontWeight.bold),),
+                                                    billingAddress.title != "" ? Text("${billingAddress.title}",
+                                                      style: TextStyle(fontWeight: FontWeight.bold),) : Container(),
                                                     billingAddress.title != "" ? SizedBox(width: 3,) : Container(),
-                                                    Text("${billingAddress.fullName}",
-                                                      style: TextStyle(fontWeight: FontWeight.bold),),
+                                                    billingAddress.fullName != "" ? Text("${billingAddress.fullName}",
+                                                      style: TextStyle(fontWeight: FontWeight.bold),) : Container(),
                                                   ],
                                                 ),
                                                 Row(
@@ -577,11 +577,11 @@ class _addressPage extends State<AddressPage> {
 //                                                    Text("${selectedAddress.pinCode}"),
                                                   ],
                                                 ) : Container(),
-                                                billingAddress.city != "" || billingAddress.state != "" ? Row(
+                                                billingAddress.city != null || billingAddress.state != "" ? Row(
                                                   children: [
-                                                    billingAddress.city != null ? Text("${billingAddress.city}") : Container(),
-                                                    billingAddress.city != null ? SizedBox(width: 3,) : Container(),
-                                                    billingAddress.state != null ? Text("${billingAddress.state}") : Container(),
+                                                    billingAddress.city != null && billingAddress.city != "" ? Text("${billingAddress.city}") : Container(),
+                                                    billingAddress.city != null && billingAddress.city != "" ? SizedBox(width: 3,) : Container(),
+                                                    billingAddress.state != null && billingAddress.state != "" ? Text("${billingAddress.state}") : Container(),
                                                   ],
                                                 ) : Container(),
                                                 Row(
@@ -591,12 +591,12 @@ class _addressPage extends State<AddressPage> {
                                                     billingAddress.country != "" ? Text("${billingAddress.pinCode}") : Container(),
                                                   ],
                                                 ),
-                                                Row(
+                                                billingAddress.mobileNo != "" ? Row(
                                                   children: [
                                                     Text("Mobile No. : "),
                                                     Text(billingAddress.mobileNo),
                                                   ],
-                                                ),
+                                                ) : Container(),
                                               ],
                                             ),
                                           ),
@@ -610,8 +610,8 @@ class _addressPage extends State<AddressPage> {
                                               var result = await Navigator.push(context, MaterialPageRoute(
                                                   builder: (context) =>
                                                       AddressEntryPage(addressdt: billingAddress,)));
-                                              if(result != null) {
-                                                AddnewAddress("B", result);
+                                              if(result != null && result != false){
+                                                AddnewAddress("B", result);//Billing Address
                                               }
                                             },
                                             child: Align(
@@ -654,7 +654,7 @@ class _addressPage extends State<AddressPage> {
                                                   builder: (context) =>
                                                       AddressEntryPage()));
                                               if(result != null && result != false){
-                                                AddnewAddress("S", result);
+                                                AddnewAddress("B", result);
                                               }
                                             },
                                             child: Card(
@@ -790,7 +790,8 @@ class _addressEntryPage extends State<AddressEntryPage>{
   void getSelectedState(String country) async{
     selectedState = new List<StateList>();
     _dropdownStateValue = null;
-    selectedState = statelist.where((e) => e.country == country).toList();
+    if(_dropdownCountryValue.cityState == false)
+      selectedState = statelist.where((e) => e.country == country).toList();
     setState(() {
 
     });
@@ -810,7 +811,7 @@ class _addressEntryPage extends State<AddressEntryPage>{
   void updateAddress() async{
     param.eMail = userID;
     param.title = _dropdownTitleValue;
-    param.fullName = txtFirstName.text.toString();
+    param.fullName = txtFirstName.text.toString().toUpperCase();
     param.mobileNo = txtMobileno.text.toString();
     param.address1 = txtAddress1.text.toString();
     param.address2 = txtAddress2.text.toString();
@@ -818,7 +819,8 @@ class _addressEntryPage extends State<AddressEntryPage>{
     param.pinCode = txtPincode.text.toString();
     if(_dropdownCityValue != null)
       param.city = _dropdownCityValue.city;
-    param.state = _dropdownStateValue.state;
+    if(_dropdownStateValue != null)
+      param.state = _dropdownStateValue.state;
     param.country = _dropdownCountryValue.country;
    Navigator.pop(context, param);
   }
@@ -844,6 +846,9 @@ class _addressEntryPage extends State<AddressEntryPage>{
         await getCity(widget.addressdt.country, widget.addressdt.state);
       }
     }
+    setState(() {
+
+    });
   }
   @override
   void initState(){
@@ -960,6 +965,7 @@ class _addressEntryPage extends State<AddressEntryPage>{
                                   Flexible(
                                     child: TextField(
                                       controller: txtFirstName,
+                                      textCapitalization: TextCapitalization.characters,
                                       autocorrect: true,
                                       decoration: InputDecoration(
                                         isDense: true,
