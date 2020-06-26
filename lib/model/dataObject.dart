@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:jemisyseshop/model/common.dart';
 
 class OrderData {
@@ -165,9 +163,11 @@ class Setting {
   String startupImageName;
   String imageFolderName;
   String fontName;
+  bool isERPandEShopOnSameServer;
   String isBackendJEMiSys;
+  String paymentGateway;
 
-  Setting({ this.appName, this.currCode, this.startupImageName, this.imageFolderName, this.fontName, this.message, this.isBackendJEMiSys});
+  Setting({ this.appName, this.currCode, this.startupImageName, this.imageFolderName, this.fontName, this.message, this.isERPandEShopOnSameServer, this.isBackendJEMiSys, this.paymentGateway});
 
   factory Setting.fromJson(Map<String, dynamic> json) {
     imgFolderName = json['imageFolderName'];
@@ -181,7 +181,9 @@ class Setting {
       startupImageName: startupimageUrl+json['startupImageName'],
       imageFolderName: json['imageFolderName'],
       fontName: json['fontName'],
-      isBackendJEMiSys: json['isBackendJEMiSys']
+      isERPandEShopOnSameServer: json['isERPandEShopOnSameServer'] == 0 ? false : true,
+      isBackendJEMiSys: json['isBackendJEMiSys'],
+        paymentGateway: json['paymentGateway']
     );
   }
 }
@@ -380,27 +382,32 @@ class Customer{
   String gender;
   String dOB;
   String mobileNumber;
+  double pointsAvailable;
+  double pointsDollor;
   String mode;
 //  DateTime createdDate;
   String returnStatus;
   Address address;
 
   Customer({this.eMail, this.referralEmail, this.password, this.title, this.firstName, this.lastName, this.gender,
-    this.dOB, this.mobileNumber, this.mode,  this.returnStatus, this.address});
+    this.dOB, this.mobileNumber, this.pointsAvailable, this.pointsDollor, this.mode,  this.returnStatus, this.address});
 
   factory Customer.fromJson(Map<String, dynamic> json){
+    print(json);
     return Customer(
-        eMail: json['eMail'],
-        referralEmail: json['referralEmail'],
-        password: json['password'],
-        title: json['title'],
-        firstName: json['firstName'],
-        lastName: json['lastName'],
-        gender: json['gender'],
-        dOB: json['dOB'],
-        mobileNumber: json['mobileNumber'],
-        returnStatus:json['returnStatus'],
-      address: Address.fromJson(json['address'])
+      eMail: json['eMail'],
+      referralEmail: json['referralEmail'],
+      password: json['password'],
+      title: json['title'],
+      firstName: json['firstName'],
+      lastName: json['lastName'],
+      gender: json['gender'],
+      dOB: json['dOB'],
+      mobileNumber: json['mobileNumber'],
+      pointsAvailable: double.parse(json['pointsAvailable'].toString()),
+      pointsDollor: double.parse(json['pointsDollor'].toString()),
+      returnStatus: json['returnStatus'],
+      address: json['address'] != null ? Address.fromJson(json['address']) : null,
     );
   }
 
@@ -543,15 +550,58 @@ class ItemMasterList{
     'imageUrl': imageUrl
   };
 }
+class SendEmail {
+  String source;
+  String storeCode;
+  String macid;
+  String mailHost;
+  String mailFrom;
+  String mailTo;
+  String mailSubject;
+  String mailBody;
+  String mailAttachFileName;
+  String docno;
+  String returnStatus;
+  String errormsg;
+  String status;
+  String connectionString;
+  String doctype;
+  String vipname;
+  String userid;
+  String SendeMailToCustomerInvoiceResult;
+  SendEmail({
+    this.source, this.storeCode , this.macid, this.mailHost, this.mailFrom, this.mailTo,
+    this.mailSubject,this.mailBody,this.mailAttachFileName,this.docno,this.returnStatus,this.errormsg,this.status,
+    this.doctype,this.vipname,this.userid,this.SendeMailToCustomerInvoiceResult
+  });
+  factory SendEmail.fromJson(Map<String, dynamic> json){
+    return SendEmail(
+      returnStatus:json['SendeMailToCustomerInvoiceResult'].toString(),
+    );
+  }
+  Map<String, dynamic> toParam() =>{
+
+    'storeCode': storeCode,
+    'docno':docno,
+    'macid':macid,
+    'mailTo':mailTo,
+    'doctype':doctype,
+    'vipname':vipname,
+    'userid':userid,
+
+  };
+}
+class RadioButtonListValue {
+  String name;
+  int index;
+  RadioButtonListValue({this.name, this.index});
+}
+
+
 class Country2{
   String name;
   String shortCode;
   String currency;
   String imageUrl;
   Country2(this.name, this.shortCode, this.currency, this.imageUrl);
-}
-class RadioButtonListValue {
-  String name;
-  int index;
-  RadioButtonListValue({this.name, this.index});
 }

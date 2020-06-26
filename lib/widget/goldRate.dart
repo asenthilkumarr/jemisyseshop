@@ -14,7 +14,7 @@ class GoldRateWedgit {
     double p = 100.0;
     hideGoldRate = true;
     bool _fromTop = true;
-    _goldrate = await obj.GetGoldSellingRate();
+    _goldrate = await obj.getGoldSellingRate();
 
     if (kIsWeb && hideTitleMessage)
       p = 45.0;

@@ -103,9 +103,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
 class SplashScreen extends StatefulWidget{
   @override
-  _splashScreen createState() => _splashScreen();
+  splashScreen createState() => splashScreen();
 }
-class _splashScreen extends State<SplashScreen>{
+class splashScreen extends State<SplashScreen>{
   DataService dataService = DataService();
   List<Setting> sDT = List<Setting>();
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
@@ -121,7 +121,7 @@ class _splashScreen extends State<SplashScreen>{
   }
 
   Future<List<Setting>> getSetting() async {
-    var dt = await dataService.GetSetting();
+    var dt = await dataService.getSetting();
     sDT = dt;
     if(dt.length>0){
       appTitle = dt[0].appName;
@@ -129,6 +129,7 @@ class _splashScreen extends State<SplashScreen>{
       titMessage = dt[0].message;
       fontName = dt[0].fontName;
       isBackendJEMiSys = dt[0].isBackendJEMiSys;
+      paymentGateway = dt[0].paymentGateway;
     }
 
     setState(() {
@@ -157,9 +158,6 @@ class _splashScreen extends State<SplashScreen>{
       body: Builder(
         builder: (context)
     {
-      final screenSize = MediaQuery
-          .of(context)
-          .size;
       getSetting();
       return Stack(
         fit: StackFit.expand,

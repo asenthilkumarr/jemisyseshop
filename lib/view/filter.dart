@@ -2077,7 +2077,7 @@ class _filterPage extends State<FilterPage> {
 //              },
 //            ),
 //          ],
-          backgroundColor: Color(0xFFFF8752),
+          backgroundColor: title1Color,
           centerTitle: true,
         ),
         body: SafeArea(

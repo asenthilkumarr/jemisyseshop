@@ -28,7 +28,7 @@ packages:
       name: carousel_slider
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.0"
+    version: "2.2.1"
   charcode:
     dependency: transitive
     description:
@@ -91,7 +91,7 @@ packages:
       name: file
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.2.0"
+    version: "5.2.1"
   flushbar:
     dependency: "direct main"
     description:
@@ -218,7 +218,7 @@ packages:
       name: path_provider
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.6.10"
+    version: "1.6.11"
   path_provider_linux:
     dependency: transitive
     description:
@@ -356,7 +356,7 @@ packages:
       name: sqflite_common
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.1"
+    version: "1.0.2+1"
   stack_trace:
     dependency: transitive
     description:
@@ -384,7 +384,7 @@ packages:
       name: synchronized
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.2.0"
+    version: "2.2.0+1"
   term_glyph:
     dependency: transitive
     description:
@@ -428,5 +428,5 @@ packages:
     source: hosted
     version: "0.1.0"
 sdks:
-  dart: ">=2.7.2 <3.0.0"
+  dart: ">=2.8.0 <3.0.0"
   flutter: ">=1.17.0 <2.0.0"

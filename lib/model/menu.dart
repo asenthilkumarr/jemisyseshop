@@ -1,33 +1,51 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/style.dart';
 import 'package:jemisyseshop/test.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
+import 'package:jemisyseshop/view/productList.dart';
+import 'package:jemisyseshop/view/profile.dart';
 import 'common.dart';
 
 class menuList{
-  String name;
-  Widget url;
-  menuList(this.name, this.url);
+  String displayname;
+  String productType;
+  String value;
+  menuList(this.displayname, this.productType, this.value);
 }
-final List<String> menuitem = [
+final List<menuList> menuitem =[
+  menuList('Browse Gold Jewellery', "", "GOLDONLY"),
+  menuList('Browse Diamond Jewellery', "", "DIAMONDONLY"),
+  menuList('Browse Silver Jewellery', "", "SILVERONLY"),
+  menuList('Browse Watches', "WATCHES", "WATCHONLY"),
+  menuList('Browse My Transactions', "", ""),
+];
+
+final List<String> menuitem2 = [
   'Home',
-  'Diamond',
-  'Engagement',
-  'Wedding',
-  'GemStone',
-  'Jewellery',
-  'About us',
-  'Contact us'
+  'Browse Gold Ring',
+  'Browse Diamond Ring',
+  'Browse Diamond Earring',
+  'Browse Gold Bangles',
+  'Browse Diamond Bangles',
+  'Browse Watches',
+//  'Engagement',
+//  'Wedding',
+//  'GemStone',
+//  'Jewellery',
+//  'About us',
+//  'Contact us'
 ];
 List<String> hitem = [
   'HOME',
   'CATEGORY',
   'TOP SELLERS',
 ];
-List<String> MenuItemSplit(String type, double screenwidth) {
+List<menuList> MenuItemSplit(String type, double screenwidth) {
   int mainmenucount = 0,
       a = 0;
-  List<String> _items = [];
+  List<menuList> _items = [];
   if (screenwidth > 1200 && menuitem.length < 11)
     mainmenucount = 10;
   else if (screenwidth > 900 && screenwidth <= 1200)
@@ -53,7 +71,7 @@ List<String> MenuItemSplit(String type, double screenwidth) {
     }
   }
   else if (type == 'M') {
-    mainmenucount = 1;
+    mainmenucount = 0;
     for (var i in menuitem) {
       if (a >= mainmenucount) {
         _items.add(i);
@@ -101,10 +119,13 @@ void _openPage(menuItem, BuildContext context) {
 }
 
 class MenuItemWedget extends StatelessWidget {
+  DataService dataService = DataService();
   final GlobalKey<ScaffoldState> scaffoldKey;
   final bool isLogin;
+  final GlobalKey<FormState> masterScreenFormKey;
+  final _keyLoader = new GlobalKey<FormState>();
 
-  MenuItemWedget({Key key, this.scaffoldKey, this.isLogin}) : super(key: key);
+  MenuItemWedget({Key key, this.scaffoldKey, this.isLogin, this.masterScreenFormKey}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -114,52 +135,184 @@ class MenuItemWedget extends StatelessWidget {
     var _items = MenuItemSplit('M', screenSize.width);
     if (_items.length > 0) {
       return new Drawer(
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.all(20),
-            ),
-            Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
-                  child: Text('Menu'),
+        child: SafeArea(
+          child: Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment(-0.4, -0.8),
+                      stops: [0.0, 0.5, 0.5, 1],
+                      colors: [
+                        Color(0xfffff7f3), //red
+                        Color(0xffffffff), //red
+                        Color(0xffffffff), //orange
+                        Color(0xffffffff), //orange
+                      ],
+                      tileMode: TileMode.repeated
+                  ),
+
                 ),
-                Spacer(),
-                GestureDetector(
-                    onTap: () {
-                      Navigator.of(scaffoldKey.currentContext).pop();
-                    },
-                    child: Icon(
-                      Icons.close,
-                      color: Colors.black,
-                    )
-                ),
-                SizedBox(
-                  width: 5,
-                )
-              ],
-            ),
-            for(var item in _items )
-              ListTile(
-                  title: Text(item),
-                  onTap: () {
-                    _openPage(item, context);
-                  }
               ),
-            isLogin ? ListTile(
-                title: Text('Sign out'),
-                onTap: () {
-                  _openPage('Sign out', context);
-                }
-            ) : Container(),
-            ListTile(
-                title: Text('Test'),
-                onTap: () {
-                  _openPage('Test', context);
-                }
-            ),
-          ],
+              Column(
+                children: [
+                  /*
+                Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: Text('Menu'),
+                    ),
+                    Spacer(),
+                    GestureDetector(
+                        onTap: () {
+                          Navigator.of(scaffoldKey.currentContext).pop();
+                        },
+                        child: Icon(
+                          Icons.close,
+                          color: Colors.black,
+                        )
+                    ),
+                    SizedBox(
+                      width: 5,
+                    )
+                  ],
+                ),
+                */
+                  Container(
+                    color: Color(0xFFEBEAF6),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left:15.0, top: 15, right: 15.0, bottom: 15),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 17.0,
+                            backgroundColor: buttonColor,
+                            child: Text("${userName[0]}", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold,),),
+                          ),
+                          SizedBox(width: 15,),
+                          Text(userName,),
+                          Spacer(),
+                          GestureDetector(
+                            onTap: () async {
+                              scaffoldKey.currentState.openEndDrawer();
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ProfilePage()),);
+                            },
+                            child: CircleAvatar(
+                              radius: 15.0,
+                              backgroundColor: Colors
+                                  .green,
+                              child: Icon(
+                                Icons.settings,
+                                color: Colors.white,
+                                size: 23,),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  for(var item in _items)
+                    Column(
+                      children: [
+                        SizedBox(height: 40,),
+                        GestureDetector(
+                          onTap: () async {
+                            if(item.value != "") {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        ProductListPage(
+                                          title: item.displayname.replaceAll(
+                                              "Browse ", ""),
+                                          masterScreenFormKey: masterScreenFormKey,
+                                          fsource: "MENU",
+                                          filterType: item.value,),)
+                              );
+                            }
+                            else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ProfilePage()),);
+                            }
+                            scaffoldKey.currentState.openEndDrawer();
+                          },
+                          child: Container(
+                            color: Colors.black,
+//                height: 60,
+                            child: Row(
+                              children: [
+                                SizedBox(width: 15,),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(height: 12,),
+//                                Text("SHAYA", style: TextStyle(color: Colors.white, fontSize: 19, fontStyle: FontStyle.italic),),
+                                    Text(item.displayname, style: TextStyle(color: Colors.white, fontSize: 16),),
+                                    SizedBox(height: 12,),
+                                  ],
+                                ),
+                                Spacer(),
+                                Icon(Icons.chevron_right, color: Colors.white,size: 30,),
+                              ],
+                            ),
+                          ),
+                        ),
+//                    ListTile(
+//                        title: Text(item),
+//                        onTap: () {
+//                          scaffoldKey.currentState.openEndDrawer();
+//                          _openPage(item, context);
+//                        }
+//                    ),
+                      ],
+                    ),
+//              ListTile(
+//                  title: Text('Jewellery'),
+//                  onTap: () {
+//                    scaffoldKey.currentState.openEndDrawer();
+//                    _openPage('Jewellery', context);
+//                  }
+//              ),
+                SizedBox(height: 5,),
+                  ListTile(
+                      title: Text('About us'),
+                      onTap: () {
+                        scaffoldKey.currentState.openEndDrawer();
+                        _openPage('About us', context);
+                      }
+                  ),
+                  ListTile(
+                      title: Text('Contact us'),
+                      onTap: () {
+                        scaffoldKey.currentState.openEndDrawer();
+                        _openPage('Contact us', context);
+                      }
+                  ),
+//              isLogin ? ListTile(
+//                  title: Text('Sign out'),
+//                  onTap: () {
+//                    scaffoldKey.currentState.openEndDrawer();
+//                    _openPage('Sign out', context);
+//                  }
+//              ) : Container(),
+//              ListTile(
+//                  title: Text('Test'),
+//                  onTap: () {
+//                    scaffoldKey.currentState.openEndDrawer();
+//                    _openPage('Test', context);
+//                  }
+//              ),
+                ],
+              ),
+            ]
+          ),
         ),
       );
     }
@@ -264,7 +417,7 @@ class FilterMenuWedget extends StatelessWidget {
     );
   }
 }
-
+/*
 class HorizontalMenuWedget3 extends StatelessWidget {
 
   @override
@@ -302,7 +455,7 @@ class HorizontalMenuWedget3 extends StatelessWidget {
     );
   }
 }
-
+*/
 class MenuNavigate extends StatelessWidget {
 
   @override

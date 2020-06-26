@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
-import 'package:jemisyseshop/style.dart';
 
 class DataService {
   //SharedPreferences prefs;
@@ -12,7 +11,7 @@ class DataService {
     "APIKey": "SkVNaVN5czo1MzU2NDNBVDk4NjU0MzU2"
   };
 
-  Future<ReturnResponse> GetCheckStockOnline(String eMail) async {
+  Future<ReturnResponse> getCheckStockOnline(String eMail) async {
     ReturnResponse result = new ReturnResponse();
     http.Response response = await http.get(
       apiurl + "Product/GetCheckStockOnline?eMail="+eMail,
@@ -27,7 +26,7 @@ class DataService {
       return result;
     }
   }
-  Future<ReturnResponse> UpdateOrder(OrderData param) async {
+  Future<ReturnResponse> updateOrder(OrderData param) async {
     ReturnResponse result = new ReturnResponse();
     http.Response response = await http.post(
         apiurl + "Order/UpdateOrder",
@@ -44,7 +43,60 @@ class DataService {
       return result;
     }
   }
-  Future<List<Country>> GetCountry(String country) async {
+  Future<ReturnResponse> updateCart(String mode, List<Cart> param) async {
+    ReturnResponse result = new ReturnResponse();
+    http.Response response = await http.post(
+        apiurl + "Cart/UpdateCart?mode="+mode,
+        headers: userheaders,
+        body: json.encode(param.map((e) => e.toParam()).toList())
+    );
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      result = ReturnResponse.fromData(data);
+      return result;
+    }
+    else {
+      return result;
+    }
+  }
+  Future<List<Cart>> getCart(String eMail, String orderType) async {
+    List<Cart> result = [];
+    http.Response response = await http.get(
+      apiurl + "Cart/GetCart?eMail="+eMail+"&orderType="+orderType,
+        headers: userheaders,
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      for (Map i in data) {
+        var iRow = Cart.fromData(i);
+        result.add(iRow);
+      }
+      return result;
+    }
+    else {
+      return result;
+    }
+  }
+  Future<List<GoldRate>> getGoldSellingRate() async {
+    List<GoldRate> result = [];
+    http.Response response = await http.get(
+      apiurl + "GoldRate/GetGoldSellingRate",
+      headers: userheaders,
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      for (Map i in data) {
+        var iRow = GoldRate.fromJson(i);
+        result.add(iRow);
+      }
+      return result;
+    }
+    else {
+      return result;
+    }
+  }
+  Future<List<Country>> getCountry(String country) async {
     List<Country> result = [];
     http.Response response = await http.get(
       apiurl + "Country/GetCountry?country="+country,
@@ -63,7 +115,7 @@ class DataService {
       return result;
     }
   }
-  Future<List<StateList>> GetState(String country) async {
+  Future<List<StateList>> getState(String country) async {
     List<StateList> result = [];
     http.Response response = await http.get(
       apiurl + "Country/GetState?country="+country,
@@ -81,7 +133,7 @@ class DataService {
       return result;
     }
   }
-  Future<List<City>> GetCity(String country, String state) async {
+  Future<List<City>> getCity(String country, String state) async {
     List<City> result = [];
     http.Response response = await http.get(
       apiurl + "Country/GetCity?country="+country+"&state="+state,
@@ -99,60 +151,7 @@ class DataService {
       return result;
     }
   }
-  Future<ReturnResponse> UpdateCart(String mode, List<Cart> param) async {
-    ReturnResponse result = new ReturnResponse();
-    http.Response response = await http.post(
-        apiurl + "Cart/UpdateCart?mode="+mode,
-        headers: userheaders,
-        body: json.encode(param.map((e) => e.toParam()).toList())
-    );
-
-    if (response.statusCode == 200) {
-      var data = jsonDecode(response.body);
-      result = ReturnResponse.fromData(data);
-      return result;
-    }
-    else {
-      return result;
-    }
-  }
-  Future<List<Cart>> GetCart(String eMail, String orderType) async {
-    List<Cart> result = [];
-    http.Response response = await http.get(
-      apiurl + "Cart/GetCart?eMail="+eMail+"&orderType="+orderType,
-        headers: userheaders,
-    );
-    if (response.statusCode == 200) {
-      var data = jsonDecode(response.body);
-      for (Map i in data) {
-        var iRow = Cart.fromData(i);
-        result.add(iRow);
-      }
-      return result;
-    }
-    else {
-      return result;
-    }
-  }
-  Future<List<GoldRate>> GetGoldSellingRate() async {
-    List<GoldRate> result = [];
-    http.Response response = await http.get(
-      apiurl + "GoldRate/GetGoldSellingRate",
-      headers: userheaders,
-    );
-    if (response.statusCode == 200) {
-      var data = jsonDecode(response.body);
-      for (Map i in data) {
-        var iRow = GoldRate.fromJson(i);
-        result.add(iRow);
-      }
-      return result;
-    }
-    else {
-      return result;
-    }
-  }
-  Future<List<Setting>> GetSetting() async {
+  Future<List<Setting>> getSetting() async {
     List<Setting> result = [];
     http.Response response = await http.get(
       apiurl + "Setting/GetSetting",
@@ -170,7 +169,7 @@ class DataService {
       return result;
     }
   }
-  Future<List<DefaultData>> GetDefaultData(DefaultDataParam param) async {
+  Future<List<DefaultData>> getDefaultData(DefaultDataParam param) async {
     List<DefaultData> result = [];
     http.Response response = await http.post(
       apiurl + "Setting/GetDefaultData",
@@ -189,7 +188,7 @@ class DataService {
       return result;
     }
   }
-  Future<List<Product>> GetProductDetails(ProductParam param) async {
+  Future<List<Product>> getProductDetails(ProductParam param) async {
     List<Product> result = [];
     http.Response response = await http.post(
         apiurl + "Product/GetProductDetails",
@@ -208,7 +207,7 @@ class DataService {
       return result;
     }
   }
-  Future<List<Product>> GetProduct(ProductParam param) async {
+  Future<List<Product>> getProduct(ProductParam param) async {
     List<Product> result = [];
     http.Response response = await http.post(
         apiurl + "Product/GetProduct",
@@ -227,7 +226,7 @@ class DataService {
       return result;
     }
   }
-  Future<List<Group>> GetGroup() async {
+  Future<List<Group>> getGroup() async {
     List<Group> result = [];
     Group param = Group();
     param.groupName = "*ACTIVE";
@@ -248,7 +247,7 @@ class DataService {
       return result;
     }
   }
-  Future<Customer> UpdateCustomer(Customer param) async {
+  Future<Customer> updateCustomer(Customer param) async {
     Customer result;
     http.Response response = await http.post(
         apiurl + "Customer/UpdateCustomer",
@@ -270,7 +269,7 @@ class DataService {
       //throw Exception('Failed to load album');
     }
   }
-  Future<List<Address>> GetDeliveryAddress(String eMail) async {
+  Future<List<Address>> getDeliveryAddress(String eMail) async {
     List<Address> result = [];
     http.Response response = await http.get(
       apiurl + "Customer/GetDeliveryAddress?eMail="+eMail,
@@ -288,7 +287,7 @@ class DataService {
       return result;
     }
   }
-  Future<ReturnResponse> UpdateBillingAddress(Address param) async {
+  Future<ReturnResponse> updateBillingAddress(Address param) async {
     ReturnResponse result;
     http.Response response = await http.post(
         apiurl + "Customer/UpdateBillingAddress",
@@ -307,7 +306,7 @@ class DataService {
       //throw Exception('Failed to load album');
     }
   }
-  Future<Customer> GetCustomer(Customer param) async {
+  Future<Customer> getCustomer(Customer param) async {
     Customer result;
     http.Response response = await http.post(
         apiurl + "Customer/GetCustomer",
@@ -328,7 +327,7 @@ class DataService {
       //throw Exception('Failed to load album');
     }
   }
-  Future<String> UpdateMember(String mode, Customer param) async {
+  Future<String> updateMember(String mode, Customer param) async {
     String result = "ERROR";
     http.Response response = await http.post(
         apiurl + "Customer/UpdateMember?mode="+mode,
@@ -344,5 +343,25 @@ class DataService {
       //throw Exception('Failed to load album');
     }
   }
+  Future<SendEmail> sendEmailtoCustomer(SendEmail param) async {
+    SendEmail result;
+    String sparam ='{"param":'+json.encode(param.toParam())+'}';
 
+    http.Response response = await http.post(
+        emailapiurl + "SMSeMailService.svc/SendeMailToCustomerInvoice",
+        headers: userheaders,
+        //ody: json.encode(param.toParam())
+        body: sparam
+    );
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      result = SendEmail.fromJson(data);
+      return result;
+    }
+    else {
+      return result;
+      //throw Exception('Failed to load album');
+    }
+  }
 }

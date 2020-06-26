@@ -46,7 +46,7 @@ class _ProfilePage extends State<ProfilePage>{
       param.eMail = txtuserid.text.trim();
       param.password = txtpassword.text.trim();
 
-      var dt = await dataService.GetCustomer(param);
+      var dt = await dataService.getCustomer(param);
       Navigator.of(_keyLoaderLogin.currentContext, rootNavigator: true)
           .pop(); //close the dialoge
       if (dt.returnStatus != null && dt.returnStatus == 'OK') {

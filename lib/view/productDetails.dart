@@ -1273,7 +1273,7 @@ class _productDetailPage extends State<ProductDetailPage> {
       lparam.add(param);
 
       Dialogs.showLoadingDialog(context, _keyLoader);//invoking go
-      var dt = await dataService.UpdateCart("I", lparam);
+      var dt = await dataService.updateCart("I", lparam);
       Navigator.of(_keyLoader.currentContext,rootNavigator: true).pop();//close the dialoge
 
       Navigator.pop(context);

@@ -139,12 +139,13 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     param.password = await Commonfn.getPassword();
     bool tisLogin = await Commonfn.getLoginStatus();
     if (tisLogin != null && tisLogin == true) {
-      var dt = await dataService.GetCustomer(param);
+      var dt = await dataService.getCustomer(param);
       if (dt.returnStatus != null && dt.returnStatus == 'OK') {
         userID = dt.eMail.toString();
+        password = await Commonfn.getPassword();
         userName = dt.firstName.toString().toUpperCase();
         isLogin = true;
-        var cartdt = await dataService.GetCart(userID, "S");
+        var cartdt = await dataService.getCart(userID, "S");
         cartCount = cartdt.length;
         LoadCart(cartdt);
         setState(() {
@@ -358,8 +359,6 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   }
 
   Future<void> getDefault() async {
-//    var sitem = country.firstWhere((d) => d.shortCode == _selCountry);
-//    sCountry = sitem;
     await getDefaultData();
 
     if (titMessage == "") hideTitleMessage = true;
@@ -383,7 +382,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     DefaultDataParam param = new DefaultDataParam();
     param.docType = "BANNER";
     param.mode = "ACTIVE";
-    var dt = await dataService.GetDefaultData(param);
+    var dt = await dataService.getDefaultData(param);
     dDt = dt;
     setState(() {
 
@@ -392,7 +391,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   }
 
   Future<List<Group>> getGroup() async {
-    var dt = await dataService.GetGroup();
+    var dt = await dataService.getGroup();
     groupdt = dt;
     if (dt.length > 0)
       _selgroup = dt[0].groupName;
@@ -406,10 +405,11 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     param.filter = _filter;
     param.where = _where;
 
-    var dt = await dataService.GetProduct(param);
+    var dt = await dataService.getProduct(param);
     productdt = dt;
     selProductlist = dt;
     fselProductlist = dt;
+
     return dt;
   }
 
@@ -420,7 +420,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     param.designCode = designCode;
     param.version = version;
     param.where = _where;
-    var dt = await dataService.GetProductDetails(param);
+    var dt = await dataService.getProductDetails(param);
     setState(() {
 
     });
@@ -433,7 +433,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     param.filterType = _filterType;
     param.filter = "TOP SELLERS";
     param.where = "";
-    var dt = await dataService.GetProduct(param);
+    var dt = await dataService.getProduct(param);
     topSellersProductlist = dt;
     ftopSellersProductlist = dt;
     return dt;
@@ -1627,7 +1627,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
 
     return Scaffold(
       key: scaffoldKey,
-      drawer: MenuItemWedget(scaffoldKey: scaffoldKey, isLogin: isLogin),
+      drawer: MenuItemWedget(scaffoldKey: scaffoldKey, isLogin: isLogin, masterScreenFormKey: _formKeyReset,),
       body: SafeArea(
         child: WillPopScope(
             onWillPop: () => onWillPop(),
@@ -1831,7 +1831,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                           builder: (context) =>
                               LoginPage(masterScreenFormKey: _formKeyReset,)),);
                     if (userID != null && userID != "") {
-                      var cartdt = await dataService.GetCart(userID, "S");
+                      var cartdt = await dataService.getCart(userID, "S");
                       LoadCart(cartdt);
                     }
                   }
