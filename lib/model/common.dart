@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/model/dialogs.dart';
-import 'package:jemisyseshop/view/masterPage.dart';
+import 'package:jemisyseshop/view/order.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final String apiurl = 'http://51.79.160.233/JEMiSyseShopAPI/api/';
@@ -23,7 +23,17 @@ bool isLogin = false;
 String udid = "";
 int cartCount = 0;
 Customer customerdata;
-
+/*
+String gDocNo = '';
+String gVipName = '';
+String gVipNo = '';
+String gStoreCode = 'HQ';
+String gDate = '';
+String gNextDuedate = '';
+int gTotalAmount =0;
+int gReceivedAmount = 0;
+int gBalanceAmount = 0;
+*/
 String titMessage = "";
 
 final List<Country2> country = [
@@ -35,12 +45,15 @@ bool hideGoldRate = false;
 bool hideTitleMessage = false;
 int hMenuCount = 3;
 int fMenuCount = 4;
-String paymentGateway = "";
+String paymentGateway = "", aboutusUrl = "";
 String isBackendJEMiSys = "N";
 bool isERPandEShopOnSameServer = false;
 
 final formatter2dec = new NumberFormat('#,##0.00', 'en_US');
 final formatterint = new NumberFormat('#,##0', 'en_US');
+
+Color menubgColor = Color(0xFFFFF1F1);
+Color menuitembgColor = Color(0xFF170904);
 
 class Commonfn{
   Future<Customer> getCustomer(String userID, String password) async{
@@ -70,6 +83,28 @@ class Commonfn{
     )..show(context);
   }
 
+  static void setMenuColor(String color, String bgcolor) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString("menuitembgColor", color);
+    await prefs.setString("menubgColor", bgcolor);
+  }
+  static void getMenuColor() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    try {
+      var color = await prefs.getString('menuitembgColor');
+      print(color);
+      if (color != null) {
+        menuitembgColor = new Color(
+            int.parse((color.replaceAll("Color(", "")).replaceAll(")", "")));
+        color = await prefs.getString('menubgColor');
+        menubgColor = new Color(
+            int.parse((color.replaceAll("Color(", "")).replaceAll(")", "")));
+      }
+    }
+    on Exception catch (_){
+
+    }
+  }
   static void saveUser(String userID, String password, bool isLogin) async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString("userID", userID);
@@ -93,10 +128,11 @@ class Commonfn{
   }
 }
 class Paymentfn{
-  void updatePayment(OrderData param, List<Cart> itemList, BuildContext context) async{
+  Future<String> updateOrder(OrderData param, List<Cart> itemList, GlobalKey<FormState> _masterScreenFormKey, BuildContext context) async{
     DataService dataService = DataService();
-
+    String returnmag = "ERROR";
     var status = await dataService.getCheckStockOnline(customerdata.eMail);
+    returnmag = "OK";
     if(status.status == 1 && status.returnStatus == "OK"){
       var result = await dataService.updateOrder(param);
       if(result.status == 1){
@@ -104,14 +140,20 @@ class Paymentfn{
 
         }
         await sendmail(result.value, context);
-        await Dialogs.AlertMessage(context, "Order Completed");
+        returnmag = "OK";
+
         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-            MasterScreen(currentIndex: 0, key: null,)), (Route<dynamic> route) => false);
+            OrderPage(itemlist: itemList, masterScreenFormKey: _masterScreenFormKey,)), (Route<dynamic> route) => false);
+
+//        await Dialogs.AlertMessage(context, "Order Completed");
+//        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+//            MasterScreen(currentIndex: 0, key: null,)), (Route<dynamic> route) => false);
       }
     }
     else{
       await Dialogs.AlertMessage(context, status.returnStatus);
     }
+    return returnmag;
   }
 
   Future<String> sendmail(String docNo, BuildContext context) async {

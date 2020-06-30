@@ -11,6 +11,39 @@ class DataService {
     "APIKey": "SkVNaVN5czo1MzU2NDNBVDk4NjU0MzU2"
   };
 
+  Future<Points> getPoints(String eMail) async {
+    Points result = new Points();
+    http.Response response = await http.get(
+      apiurl + "Customer/GetCustomerPoints?eMail=" + eMail,
+      headers: userheaders,
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      result = Points.fromJson(data);
+      return result;
+    }
+    else {
+      return result;
+    }
+  }
+  Future<List<Store>> getStores() async {
+    List<Store> result = new List<Store>();
+    http.Response response = await http.get(
+      apiurl + "Store/GetStore",
+      headers: userheaders,
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      for (Map i in data) {
+        var iRow = Store.fromData(i);
+        result.add(iRow);
+      }
+      return result;
+    }
+    else {
+      return result;
+    }
+  }
   Future<ReturnResponse> getCheckStockOnline(String eMail) async {
     ReturnResponse result = new ReturnResponse();
     http.Response response = await http.get(
@@ -33,6 +66,43 @@ class DataService {
         headers: userheaders,
         body: json.encode(param.toParam()),
     );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      result = ReturnResponse.fromData(data);
+      return result;
+    }
+    else {
+      return result;
+    }
+  }
+  Future<List<OrderOutstanding>> GetOrderOutstanding(String eMail) async {
+    List<OrderOutstanding> result = [];
+    http.Response response = await http.get(
+      apiurl + "Order/GetOrderOutStanding?eMail="+eMail,
+      headers: userheaders,
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      for (Map i in data) {
+        var iRow = OrderOutstanding.fromData(i);
+        result.add(iRow);
+      }
+      return result;
+    }
+    else {
+      return result;
+    }
+  }
+  Future<ReturnResponse> updateOrderOutstanding(OrderUpdateParam param) async {
+    ReturnResponse result = new ReturnResponse();
+    print("---------AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa------------------");
+    print(param.toParam());
+    http.Response response = await http.post(
+      apiurl + "Order/UpdateOutstandingOrder",
+      headers: userheaders,
+      body: json.encode(param.toParam()),
+    );
+
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
       result = ReturnResponse.fromData(data);

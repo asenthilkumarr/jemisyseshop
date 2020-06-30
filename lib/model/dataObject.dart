@@ -1,5 +1,38 @@
+import 'package:intl/intl.dart';
 import 'package:jemisyseshop/model/common.dart';
 
+class Store{
+  String storeCode;
+  String description;
+  String address1;
+  String address2;
+  String address3;
+  String address4;
+  String state;
+  String pinCode;
+  String telePhone;
+  DateTime openingTime;
+  DateTime closingTime;
+
+  Store({this.storeCode, this.description, this.address1, this.address2, this.address3, this.address4,
+    this.state, this.pinCode, this.telePhone, this.openingTime, this.closingTime});
+
+  factory Store.fromData(Map<String, dynamic> json){
+    return Store(
+      storeCode: json['storeCode'],
+      description: json['description'],
+      address1: json['address1'],
+      address2: json['address2'],
+      address3: json['address3'],
+      address4: json['address4'],
+      state: json['state'],
+      pinCode: json['pinCode'],
+      telePhone: json['telePhone'],
+      openingTime: json['openingTime'].toString() != "0001-01-01T00:00:00" ? DateTime.parse(json["openingTime"]) : null,
+      closingTime: json['closingTime'].toString() != "0001-01-01T00:00:00" ? DateTime.parse(json["closingTime"]) : null,
+    );
+  }
+}
 class OrderData {
   String eMail;
   double totalAmount;
@@ -48,7 +81,58 @@ class OrderData {
     'mode':mode
   };
 }
+class OrderOutstanding{
+  String storeCode;
+  String refNo;
+  String docType;
+  DateTime tranDate;
+  String vipNo;
+  String name;
+  int totalAmount;
+  int receivedAmount;
+  DateTime collectionDate;
+  DateTime nextpaymentDate;
+  String email;
+  int filesCount;
 
+  OrderOutstanding({
+    this.storeCode, this.refNo, this.docType, this.tranDate, this.vipNo, this.name, this.totalAmount, this.receivedAmount,
+    this.collectionDate, this.nextpaymentDate, this.filesCount,this.email
+  });
+
+  factory OrderOutstanding.fromData(Map<String, dynamic> json){
+    print(json);
+    return OrderOutstanding(
+      storeCode: json['storeCode'],
+      refNo: json['refNo'],
+      tranDate: json['tranDate'].toString() != "0001-01-01T00:00:00" ? DateTime.parse(json["tranDate"]) : null,
+      nextpaymentDate: json['nextpaymentDate'].toString() != "0001-01-01T00:00:00" ? DateTime.parse(json["nextpaymentDate"]) : null,
+      collectionDate: json['collectionDate'].toString() != "0001-01-01T00:00:00" ? DateTime.parse(json["collectionDate"]) : null,
+      vipNo: json['vipNo'],
+      totalAmount: json['totalAmount'],
+      receivedAmount: json['receivedAmount'],
+      name: json['name'],
+    );
+  }
+
+}
+class OrderUpdateParam{
+  String storeCode;
+  String refNo;
+  String docType;
+  String payMode;
+  double amount;
+  String reff;
+
+  Map<String, dynamic> toParam() =>{
+    'storeCode':storeCode,
+    'refNo':refNo,
+    'docType': docType,
+    'payMode': payMode,
+    'amount': amount,
+    'reff': reff
+  };
+}
 class Cart{
   String eMail;
   int recordNo;
@@ -166,8 +250,10 @@ class Setting {
   bool isERPandEShopOnSameServer;
   String isBackendJEMiSys;
   String paymentGateway;
+  String aboutusUrl;
 
-  Setting({ this.appName, this.currCode, this.startupImageName, this.imageFolderName, this.fontName, this.message, this.isERPandEShopOnSameServer, this.isBackendJEMiSys, this.paymentGateway});
+  Setting({ this.appName, this.currCode, this.startupImageName, this.imageFolderName, this.fontName, this.message, this.isERPandEShopOnSameServer, this.isBackendJEMiSys, this.paymentGateway,
+  this.aboutusUrl});
 
   factory Setting.fromJson(Map<String, dynamic> json) {
     imgFolderName = json['imageFolderName'];
@@ -183,7 +269,8 @@ class Setting {
       fontName: json['fontName'],
       isERPandEShopOnSameServer: json['isERPandEShopOnSameServer'] == 0 ? false : true,
       isBackendJEMiSys: json['isBackendJEMiSys'],
-        paymentGateway: json['paymentGateway']
+        paymentGateway: json['paymentGateway'],
+      aboutusUrl: json['aboutusUrl']
     );
   }
 }
@@ -393,7 +480,6 @@ class Customer{
     this.dOB, this.mobileNumber, this.pointsAvailable, this.pointsDollor, this.mode,  this.returnStatus, this.address});
 
   factory Customer.fromJson(Map<String, dynamic> json){
-    print(json);
     return Customer(
       eMail: json['eMail'],
       referralEmail: json['referralEmail'],
@@ -422,6 +508,21 @@ class Customer{
     'mobileNumber':mobileNumber,
     'mode':mode,
   };
+}
+class Points{
+  String memberType;
+  String vipNo;
+  double pointsAvailable;
+  double dollortoRedeem;
+  Points({this.memberType, this.vipNo, this.pointsAvailable, this.dollortoRedeem});
+  factory Points.fromJson(Map<String, dynamic> json){
+    return Points(
+      memberType: json['memberType'],
+      vipNo: json['vipNo'],
+      pointsAvailable: double.parse(json['pointsAvailable'].toString()),
+      dollortoRedeem: double.parse(json['dollortoRedeem'].toString())
+    );
+  }
 }
 class ReturnResponse{
   String returnStatus;
@@ -537,19 +638,6 @@ class City{
   }
 }
 
-class ItemMasterList{
-  String inventoryCode;
-  String description;
-  String categoryCode;
-  String imageUrl;
-  ItemMasterList(this.inventoryCode, this.description, this.categoryCode, this.imageUrl);
-  Map<String, dynamic> toJson() =>{
-    'inventoryCode': inventoryCode,
-    'description': description,
-    'categoryCode': categoryCode,
-    'imageUrl': imageUrl
-  };
-}
 class SendEmail {
   String source;
   String storeCode;
@@ -597,6 +685,19 @@ class RadioButtonListValue {
   RadioButtonListValue({this.name, this.index});
 }
 
+class ItemMasterList{
+  String inventoryCode;
+  String description;
+  String categoryCode;
+  String imageUrl;
+  ItemMasterList(this.inventoryCode, this.description, this.categoryCode, this.imageUrl);
+  Map<String, dynamic> toJson() =>{
+    'inventoryCode': inventoryCode,
+    'description': description,
+    'categoryCode': categoryCode,
+    'imageUrl': imageUrl
+  };
+}
 
 class Country2{
   String name;

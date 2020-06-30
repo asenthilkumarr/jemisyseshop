@@ -130,6 +130,7 @@ class splashScreen extends State<SplashScreen>{
       fontName = dt[0].fontName;
       isBackendJEMiSys = dt[0].isBackendJEMiSys;
       paymentGateway = dt[0].paymentGateway;
+      aboutusUrl = dt[0].aboutusUrl;
     }
 
     setState(() {

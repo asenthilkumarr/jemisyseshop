@@ -73,7 +73,14 @@ class _addressPage extends State<AddressPage> {
 
     });
   }
-
+  void getBillingAddress() async {
+    if(sameval){
+      billingAddress = selectedAddress;
+    }
+    else{
+      billingAddress = null;
+    }
+  }
   void AddnewAddress(String mode, Address data) {
     if (mode == "S") {
       dAddress.add(data);
@@ -125,7 +132,7 @@ class _addressPage extends State<AddressPage> {
     param.payMode3_Amt = 0;
     param.payMode3_Ref = null;
     param.mode = "I";
-    objcf.updatePayment(param, widget.itemList, context);
+    objcf.updateOrder(param, widget.itemList, null, context);
   }
 
   @override
@@ -364,6 +371,9 @@ class _addressPage extends State<AddressPage> {
                                               value: selectedAddress,
                                               onChanged: (Address newValue) {
                                                 selectedAddress = newValue;
+                                                if(sameval){
+                                                  billingAddress = selectedAddress;
+                                                }
                                                 setState(() {});
                                               },
                                               underline: Container(),
@@ -572,6 +582,7 @@ class _addressPage extends State<AddressPage> {
                                 child: Column(
 //                                crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+
                                     Container(
                                       decoration: BoxDecoration(
                                         color: listbgColor,
@@ -606,12 +617,11 @@ class _addressPage extends State<AddressPage> {
                                             setState(() {
                                               if (sameval) {
                                                 sameval = false;
-                                                billingAddress = null;
+                                                getBillingAddress();
                                               }
                                               else {
                                                 sameval = true;
-                                                billingAddress =
-                                                    selectedAddress;
+                                                getBillingAddress();
                                               }
                                             });
                                           },
@@ -624,12 +634,11 @@ class _addressPage extends State<AddressPage> {
                                                     setState(() {
                                                       if (sameval) {
                                                         sameval = false;
-                                                        billingAddress = null;
+                                                        getBillingAddress();
                                                       }
                                                       else {
                                                         sameval = true;
-                                                        billingAddress =
-                                                            selectedAddress;
+                                                        getBillingAddress();
                                                       }
                                                     });
                                                   }
@@ -639,6 +648,55 @@ class _addressPage extends State<AddressPage> {
                                           )
                                       ),
                                     ),
+//Senthil
+                                    !sameval && dAddress.length > 0 ? Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 0.0, right: 0.0),
+                                        child: Container(
+                                          height: 35,
+                                          decoration: BoxDecoration(
+                                              border: Border(
+                                                top: BorderSide(
+                                                  width: 1,
+                                                  color: listLabelbgColor,
+                                                ),
+                                              )
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 8.0, right: 8.0),
+                                            child: DropdownButton<Address>(
+                                              isExpanded: true,
+                                              value: billingAddress,
+                                              onChanged: (Address newValue) {
+                                                billingAddress = newValue;
+                                                setState(() {});
+                                              },
+                                              underline: Container(),
+                                              items: dAddress.map((
+                                                  Address taddress) {
+                                                return new DropdownMenuItem<
+                                                    Address>(
+                                                  value: taddress,
+                                                  child: new Text("${taddress
+                                                      .title} ${taddress
+                                                      .fullName} ${taddress
+                                                      .address1}",
+                                                    style: new TextStyle(
+                                                      color: Colors.black,),
+                                                    overflow: TextOverflow
+                                                        .ellipsis,
+                                                  ),
+                                                );
+                                              }).toList(),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                        : Container(),
                                     billingAddress != null ? Stack(
                                       children: [
                                         Padding(

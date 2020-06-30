@@ -24,7 +24,6 @@ import 'package:jemisyseshop/view/login.dart';
 import 'package:jemisyseshop/view/productDetails.dart';
 import 'package:jemisyseshop/view/productList.dart';
 import 'package:jemisyseshop/view/profile.dart';
-import 'package:jemisyseshop/view/registration.dart';
 import 'package:jemisyseshop/widget/cartNotification.dart';
 import 'package:jemisyseshop/widget/goldRate.dart';
 import 'package:jemisyseshop/widget/productGridWidget.dart';
@@ -190,7 +189,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                     },
                     child: Container(
                       //width: MediaQuery.of(context).size.width - 10,
-                      height: 300,
+                      height: 310,
                       padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
                       color: Colors.white,
                       child: Stack(
@@ -255,7 +254,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                                                   Spacer(),
                                                   Container(
                                                     width: (screenSize.width /
-                                                        2) - 50,
+                                                        1) - 50,
 //                                            color: listLabelbgColor,
                                                     child: Column(
                                                       mainAxisAlignment: MainAxisAlignment
@@ -1625,280 +1624,286 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     int itemCount = GridItemCount(screenSize.width);
     double itemheight = GridItemHeight(screenSize.height, screenSize.width);
 
-    return Scaffold(
-      key: scaffoldKey,
-      drawer: MenuItemWedget(scaffoldKey: scaffoldKey, isLogin: isLogin, masterScreenFormKey: _formKeyReset,),
-      body: SafeArea(
-        child: WillPopScope(
-            onWillPop: () => onWillPop(),
-            child: Container(
-                color: Colors.white,
-                child: Column(
-                  children: [
-                    titMessage != "" ? titleMessage() : Container(),
-                    titleBar(context, scaffoldKey, _keyGoldRate, _formKeyReset),
+    return MaterialApp(
+      title: "Home",
+      theme: MasterScreen.themeData(context),
+      home: Scaffold(
+        key: scaffoldKey,
+        drawer: Container(
+          width: 220,
+            child: MenuItemWedget(scaffoldKey: scaffoldKey, isLogin: isLogin, masterScreenFormKey: _formKeyReset,)),
+        body: SafeArea(
+          child: WillPopScope(
+              onWillPop: () => onWillPop(),
+              child: Container(
+                  color: Colors.white,
+                  child: Column(
+                    children: [
+                      titMessage != "" ? titleMessage() : Container(),
+                      titleBar(context, scaffoldKey, _keyGoldRate, _formKeyReset),
 
-                    mainContainer(itemCount, itemheight, screenSize.width),
-                  ],
-                )
+                      mainContainer(itemCount, itemheight, screenSize.width),
+                    ],
+                  )
 
-            )
+              )
+          ),
         ),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        child: new Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        bottomNavigationBar: BottomAppBar(
+          child: new Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
 
-          children: <Widget>[
-            SizedBox(
-              width: 50.0,
-              child: FlatButton(
-                color: Colors.white,
-                padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(2.0, 0.0, 2.0, 0.0),
-                      child: Icon(
-                        Icons.home,
-                        color: Colors.grey,
-                        size: 24.0,
-                      ),
-                    ),
-                    SizedBox(height: 0,),
-                    Padding(
-                      padding: const EdgeInsets.all(0.0),
-                      child: Text(
-                        "Home",
-                        style: TextStyle(
-                            color: Color(0xFF656665),
-                            fontSize: 9
-                          //fontWeight: FontWeight.bold,
+            children: <Widget>[
+              SizedBox(
+                width: 50.0,
+                child: FlatButton(
+                  color: Colors.white,
+                  padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(2.0, 0.0, 2.0, 0.0),
+                        child: Icon(
+                          Icons.home,
+                          color: Colors.grey,
+                          size: 24.0,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                onPressed: () async {
-                  menuSelected = 0;
-                  _tabControllerFilter.index = 0;
-                  _tabController.index = 0;
-                  _filter = "ALL";
-                  await getProduct();
-                  _scrollController.animateTo(
-                    0.0,
-                    curve: Curves.easeOut,
-                    duration: const Duration(milliseconds: 300),
-                  );
-                  setState(() {
+                      SizedBox(height: 0,),
+                      Padding(
+                        padding: const EdgeInsets.all(0.0),
+                        child: Text(
+                          "Home",
+                          style: TextStyle(
+                              color: Color(0xFF656665),
+                              fontSize: 9
+                            //fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  onPressed: () async {
+                    menuSelected = 0;
+                    _tabControllerFilter.index = 0;
+                    _tabController.index = 0;
+                    _filter = "ALL";
+                    await getProduct();
+                    _scrollController.animateTo(
+                      0.0,
+                      curve: Curves.easeOut,
+                      duration: const Duration(milliseconds: 300),
+                    );
+                    setState(() {
 
-                  });
-                },
+                    });
+                  },
+                ),
               ),
-            ),
-            SizedBox(
-              width: 65.0,
-              child: FlatButton(
-                color: Colors.white,
-                padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(2.0, 0.0, 2.0, 0.0),
-                      child: Container(
-                        width: 33,
-                        height: 24,
-                        child: Stack(
-                          children: [
-                            Positioned(
-                              bottom: 1,
-                              left: 1,
-                              child: Icon(
-                                Icons.call,
-                                color: Colors.grey,
-                                size: 20.0,
+              SizedBox(
+                width: 65.0,
+                child: FlatButton(
+                  color: Colors.white,
+                  padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(2.0, 0.0, 2.0, 0.0),
+                        child: Container(
+                          width: 33,
+                          height: 24,
+                          child: Stack(
+                            children: [
+                              Positioned(
+                                bottom: 1,
+                                left: 1,
+                                child: Icon(
+                                  Icons.call,
+                                  color: Colors.grey,
+                                  size: 20.0,
+                                ),
                               ),
-                            ),
-                            Positioned(
-                              top: 0,
-                              right: 1,
-                              child: Icon(
-                                Icons.message,
-                                color: Colors.grey,
-                                size: 14.0,
-                              ),
-                            )
-                          ],
+                              Positioned(
+                                top: 0,
+                                right: 1,
+                                child: Icon(
+                                  Icons.message,
+                                  color: Colors.grey,
+                                  size: 14.0,
+                                ),
+                              )
+                            ],
+                          ),
                         ),
-                      ),
 
-                    ),
-                    SizedBox(height: 0,),
-                    Padding(
-                      padding: const EdgeInsets.all(0.0),
-                      child: Text(
-                        "Contact Us",
-                        style: TextStyle(
-                            color: Color(0xFF656665),
-                            fontSize: 9
-                          //fontWeight: FontWeight.bold,
+                      ),
+                      SizedBox(height: 0,),
+                      Padding(
+                        padding: const EdgeInsets.all(0.0),
+                        child: Text(
+                          "Contact Us",
+                          style: TextStyle(
+                              color: Color(0xFF656665),
+                              fontSize: 9
+                            //fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ContactUsPage(),));
-                },
-              ),
-            ),
-            SizedBox(
-              width: 70.0,
-              child: FlatButton(
-                color: Colors.white,
-                padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(2.0, 0.0, 2.0, 0.0),
-                      child: Icon(
-                        Icons.home,
-                        color: Colors.grey,
-                        size: 24.0,
-                      ),
-                    ),
-                    SizedBox(height: 0,),
-                    Padding(
-                      padding: const EdgeInsets.all(0.0),
-                      child: Text(
-                        "Home Try-On",
-                        style: TextStyle(
-                            color: Color(0xFF656665),
-                            fontSize: 9
-                          //fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                onPressed: () {
-                  _group_onTap("Home Try-On", context);
-                },
-              ),
-            ),
-            SizedBox(
-              width: 50.0,
-              child: FlatButton(
-                color: Colors.white,
-                padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(2.0, 0.0, 2.0, 0.0),
-                      child: Icon(
-                        Icons.person,
-                        color: Colors.grey,
-                        size: 24.0,
-                      ),
-                    ),
-                    SizedBox(height: 0,),
-                    Padding(
-                      padding: const EdgeInsets.all(0.0),
-                      child: Text(userID == "" ?
-                      "Login" : "Account",
-                        style: TextStyle(
-                            color: Color(0xFF656665),
-                            fontSize: 9
-                          //fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                onPressed: () async {
-                  if (userID == "") {
-                    var result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              LoginPage(masterScreenFormKey: _formKeyReset,)),);
-                    if (userID != null && userID != "") {
-                      var cartdt = await dataService.getCart(userID, "S");
-                      LoadCart(cartdt);
-                    }
-                  }
-                  else
+                    ],
+                  ),
+                  onPressed: () {
                     Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ProfilePage()),);
-                },
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ContactUsPage(),));
+                  },
+                ),
               ),
-            ),
-            SizedBox(
-              width: 50.0,
-              child: FlatButton(
-                color: Colors.white,
-                padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(2.0, 0.0, 2.0, 0.0),
-                      child: Icon(
-                        Icons.menu,
-                        color: Colors.grey,
-                        size: 24.0,
-                      ),
-                    ),
-                    SizedBox(height: 0,),
-                    Padding(
-                      padding: const EdgeInsets.all(0.0),
-                      child: Text(
-                        "More",
-                        style: TextStyle(
-                            color: Color(0xFF656665),
-                            fontSize: 9
-                          //fontWeight: FontWeight.bold,
+              SizedBox(
+                width: 70.0,
+                child: FlatButton(
+                  color: Colors.white,
+                  padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(2.0, 0.0, 2.0, 0.0),
+                        child: Icon(
+                          Icons.home,
+                          color: Colors.grey,
+                          size: 24.0,
                         ),
                       ),
-                    ),
-                  ],
+                      SizedBox(height: 0,),
+                      Padding(
+                        padding: const EdgeInsets.all(0.0),
+                        child: Text(
+                          "Home Try-On",
+                          style: TextStyle(
+                              color: Color(0xFF656665),
+                              fontSize: 9
+                            //fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  onPressed: () {
+                    _group_onTap("Home Try-On", context);
+                  },
                 ),
-                onPressed: () {
-                  scaffoldKey.currentState.openDrawer();
-                },
               ),
-            ),
-          ],
+              SizedBox(
+                width: 50.0,
+                child: FlatButton(
+                  color: Colors.white,
+                  padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(2.0, 0.0, 2.0, 0.0),
+                        child: Icon(
+                          Icons.person,
+                          color: Colors.grey,
+                          size: 24.0,
+                        ),
+                      ),
+                      SizedBox(height: 0,),
+                      Padding(
+                        padding: const EdgeInsets.all(0.0),
+                        child: Text(userID == "" ?
+                        "Login" : "Account",
+                          style: TextStyle(
+                              color: Color(0xFF656665),
+                              fontSize: 9
+                            //fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  onPressed: () async {
+                    if (userID == "") {
+                      var result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                LoginPage(masterScreenFormKey: _formKeyReset,)),);
+                      if (userID != null && userID != "") {
+                        var cartdt = await dataService.getCart(userID, "S");
+                        LoadCart(cartdt);
+                      }
+                    }
+                    else
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ProfilePage()),);
+                  },
+                ),
+              ),
+              SizedBox(
+                width: 50.0,
+                child: FlatButton(
+                  color: Colors.white,
+                  padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(2.0, 0.0, 2.0, 0.0),
+                        child: Icon(
+                          Icons.menu,
+                          color: Colors.grey,
+                          size: 24.0,
+                        ),
+                      ),
+                      SizedBox(height: 0,),
+                      Padding(
+                        padding: const EdgeInsets.all(0.0),
+                        child: Text(
+                          "More",
+                          style: TextStyle(
+                              color: Color(0xFF656665),
+                              fontSize: 9
+                            //fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  onPressed: () {
+                    scaffoldKey.currentState.openDrawer();
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
 
-      floatingActionButton: new Container(
-          height: 30,
-          child: FloatingActionButton.extended(
-            backgroundColor: listLabelbgColor,
-            icon: Icon(Icons.arrow_drop_up,),
-            onPressed: () {
-              setState(() {
+        floatingActionButton: new Container(
+            height: 30,
+            child: FloatingActionButton.extended(
+              backgroundColor: listLabelbgColor,
+              icon: Icon(Icons.arrow_drop_up,),
+              onPressed: () {
+                setState(() {
 //              _messages.insert(0, new Text("message ${_messages.length}"));
-              });
-              _scrollController.animateTo(
-                0.0,
-                curve: Curves.easeOut,
-                duration: const Duration(milliseconds: 300),
-              );
-            },
-            label: Text('Top'),
-          )),
+                });
+                _scrollController.animateTo(
+                  0.0,
+                  curve: Curves.easeOut,
+                  duration: const Duration(milliseconds: 300),
+                );
+              },
+              label: Text('Top'),
+            )),
+      ),
     );
   }
 }

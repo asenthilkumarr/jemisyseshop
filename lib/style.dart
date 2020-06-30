@@ -52,3 +52,4 @@ const Color defaultActiveTickMarkColor = const Color(0x8a0175c2);
 const Color defaultThumbColor = const Color(0xFF0175c2);
 const Color defaultValueIndicatorColor = const Color(0xFF0175c2);
 const Color defaultOverlayColor = const Color(0x290175c2);
+
