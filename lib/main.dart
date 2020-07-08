@@ -103,9 +103,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
 class SplashScreen extends StatefulWidget{
   @override
-  _splashScreen createState() => _splashScreen();
+  splashScreen createState() => splashScreen();
 }
-class _splashScreen extends State<SplashScreen>{
+class splashScreen extends State<SplashScreen>{
   DataService dataService = DataService();
   List<Setting> sDT = List<Setting>();
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
@@ -121,14 +121,17 @@ class _splashScreen extends State<SplashScreen>{
   }
 
   Future<List<Setting>> getSetting() async {
-    var dt = await dataService.GetSetting();
+    var dt = await dataService.getSetting();
     sDT = dt;
     if(dt.length>0){
       appTitle = dt[0].appName;
-      currencysymbol = dt[0].currCode;
+      currencysymbol = dt[0].currSymbol;
       titMessage = dt[0].message;
       fontName = dt[0].fontName;
       isBackendJEMiSys = dt[0].isBackendJEMiSys;
+      isERPandEShopOnSameServer = dt[0].isERPandEShopOnSameServer;
+      paymentGateway = dt[0].paymentGateway;
+      aboutusUrl = dt[0].aboutusUrl;
     }
 
     setState(() {
@@ -157,9 +160,6 @@ class _splashScreen extends State<SplashScreen>{
       body: Builder(
         builder: (context)
     {
-      final screenSize = MediaQuery
-          .of(context)
-          .size;
       getSetting();
       return Stack(
         fit: StackFit.expand,
@@ -173,64 +173,7 @@ class _splashScreen extends State<SplashScreen>{
               ),
             ),
           ) : Container(
-//            decoration: BoxDecoration(
-//              // Box decoration takes a gradient
-//              gradient: LinearGradient(
-//                // Where the linear gradient begins and ends
-//                begin: Alignment.topLeft,
-//                end: Alignment.bottomRight,
-//                // Add one stop for each color. Stops should increase from 0 to 1
-//                stops: [0, 1],
-//                colors: [
-//                  // Colors are easy thanks to Flutter's Colors class.
-//                  pageColortop,
-//                  pageColorbottom
-//                ],
-//              ),
-//            ),
-//          color: Colors.white,
           ),
-          /*
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Expanded(
-                flex: 2,
-                child: Container(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      CircleAvatar(
-                          backgroundColor: Colors.white,
-                          radius: 50.0,
-                          child: Image(image: AssetImage("assets/logo.png"),
-                          )
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 10.0),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Expanded(
-                flex: 1,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    CircularProgressIndicator(
-                      valueColor: new AlwaysStoppedAnimation<Color>(
-                          Colors.redAccent),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 20),
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
-          */
         ],
       );
     }

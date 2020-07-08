@@ -173,6 +173,7 @@ class ProductGridWidgetHome extends StatelessWidget {
   DataService dataService = DataService();
 
   Future<void> _product_onTap(String productType, Product selItem, BuildContext context) async {
+    Commonfn objcf = new Commonfn();
     Dialogs.showLoadingDialog(context, _keyLoader); //invoking go
     var productdetail = await getProductDetail(productType, selItem.designCode, selItem.version);
     Navigator.of(_keyLoader.currentContext, rootNavigator: true).pop(); //close the dialoge
@@ -192,14 +193,9 @@ class ProductGridWidgetHome extends StatelessWidget {
                 title: productdetail[0].designCode, masterScreenFormKey: masterScreenFormKey,),)
       );
     }
-//    else {
-//      Navigator.push(
-//          context,
-//          MaterialPageRoute(builder: (context) =>
-//              ProductDetailPage(product: item,
-//                title: item.designCode,),)
-//      );
-//    }
+    else {
+      objcf.showInfoFlushbar(context, "No stock available.", "Information");
+    }
   }
   Future<List<Product>> getProductDetail(String productType, String designCode, int version) async {
     ProductParam param = new ProductParam();
@@ -207,17 +203,12 @@ class ProductGridWidgetHome extends StatelessWidget {
     param.designCode = designCode;
     param.version = version;
     param.where = _where;
-    var dt = await dataService.GetProductDetails(param);
+    var dt = await dataService.getProductDetails(param);
     return dt;
   }
 
   @override
   Widget build(BuildContext context) {
-//    print("list price ${item.listingPrice}");
-//    print("onlinePrice ${item.onlinePrice}");
-//    print("discountPercentage ${item.discountPercentage}");
-//    print("goldWeight ${item.goldWeight}");
-
     return Scaffold(
         body: Builder(
           builder: (context) {

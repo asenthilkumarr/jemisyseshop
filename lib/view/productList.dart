@@ -1,14 +1,17 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_widgets/flutter_widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
+import 'package:jemisyseshop/model/dialogs.dart';
 import 'package:jemisyseshop/style.dart';
 import 'package:jemisyseshop/view/filter.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
@@ -18,9 +21,11 @@ import 'package:jemisyseshop/widget/titleBar.dart';
 class ProductListPage extends StatefulWidget{
   final List<Product> productdt;
   final String title;
+  final String fsource;
+  final String filterType;
   final GlobalKey<FormState> masterScreenFormKey;
 
-  ProductListPage({this.productdt, this.title, this.masterScreenFormKey});
+  ProductListPage({this.productdt, this.title, this.masterScreenFormKey, this.fsource, this.filterType});
   @override
   _productListPage createState() => _productListPage();
 }
@@ -28,16 +33,21 @@ class _productListPage extends State<ProductListPage> {
   DataService dataService = DataService();
   var scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
+  final GlobalKey<State> _keyLoader = new GlobalKey<State>();
 
   GlobalKey _keyGoldRate = GlobalKey();
   String designCode = "Design";
   List<Product> productdt = new List<Product>();
   List<Product> fproductdt = new List<Product>();
+  List<Group> groupdt = new List<Group>();
   ScrollController _scrollController = new ScrollController();
   RangeValues values = RangeValues(1,100);
   String filterSelect ="Metal Type";
+  int _selectedGroupIndex = 0;
   int totItem = 0;
   bool totisVisable = true;
+  String _filterType = "", _selgroup = "";
+  ItemScrollController _scrollControllerlist = ItemScrollController();
 
   double GridItemHeight(double screenHeight, double screenWidth) {
     double itemHeight = 0.55;
@@ -346,23 +356,160 @@ class _productListPage extends State<ProductListPage> {
       });
     });
   }
+  Future<List<Product>> getProductDetail(String productType, String filterType) async {
+    ProductParam param = new ProductParam();
+    param.productType = productType;
+    param.filterType = filterType;
+    param.version = 1;
 
-  @override
-  void initState() {
-    productdt = widget.productdt;
-    fproductdt = widget.productdt;
-    //getProductDetail();
+//    Dialogs.showLoadingDialog(context, _keyLoader); //invoking go
+    var dt = await dataService.getProductDetails(param);
+//    Navigator.of(_keyLoader.currentContext, rootNavigator: true)
+//        .pop(); //close the dialoge
+    return dt;
+  }
+  Future<List<Group>> getGroup() async {
+    var dt = await dataService.getGroup();
+    dt.removeWhere((e) => e.groupName == "WATCHES");
+    groupdt = dt;
+    if (dt.length > 0)
+      _selgroup = dt[0].groupName;
+    return dt;
+  }
 
-
-    designCode = widget.productdt[0].designCode;
-    totItem = widget.productdt.length;
-    _scrollController = ScrollController();
-    _scrollController.addListener(_scrollListener);
+  void loadDefault() async{
+    if(widget.fsource == "MENU"){
+      if(widget.filterType == "WATCHONLY"){
+        productdt = await getProductDetail("WATCHES", widget.filterType);
+      }
+      else {
+        await getGroup();
+        productdt = await getProductDetail(_selgroup, widget.filterType);
+      }
+      fproductdt = productdt;
+    }
+    else{
+      productdt = widget.productdt;
+      fproductdt = widget.productdt;
+      designCode = productdt[0].designCode;
+    }
+    totItem = productdt.length;
     _hideNotification();
     setState(() {
 
     });
+
+  }
+  void grouponTap() async{
+    productdt = await getProductDetail(_selgroup, _filterType);
+    fproductdt = productdt;
+    totItem = productdt.length;
+    totisVisable = true;
+    _hideNotification();
+    setState(() {
+
+    });
+  }
+
+  @override
+  void initState() {
+    _scrollController = ScrollController();
+    _scrollController.addListener(_scrollListener);
+    _filterType = widget.filterType;
+    loadDefault();
     super.initState();
+  }
+
+  Widget _sizedContainer(Widget child) {
+    return SizedBox(
+      width: 80.0,
+      height: 80.0,
+      child: Center(child: child),
+    );
+  }
+  Widget groupListView(List<Group> data) {
+    return new ScrollablePositionedList.builder(
+      itemScrollController: _scrollControllerlist,
+      scrollDirection: Axis.horizontal,
+      itemCount: data.length,
+      itemBuilder: (BuildContext context, int index) =>
+          groupListitem(context, data[index], index, data.length),
+    );
+  }
+  Widget groupListitem(BuildContext context, Group dt, int index,
+      int totindex) {
+    int nindex = index;
+
+    if (dt.groupName != null) {
+      return Container(
+        width: 110,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 3.0),
+          child: Column(
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  InkWell(
+                    onTap: () async {
+                      _selgroup = dt.groupName;
+                      if (index < totindex - 1 && index > 1) {
+                        if (_selectedGroupIndex < index)
+                          nindex = index - 1;
+                        else
+                          nindex = index;
+
+                        _scrollControllerlist.scrollTo(
+                            index: nindex, duration: Duration(seconds: 1));
+                      }
+                      _selectedGroupIndex = index;
+                      grouponTap();
+                    },
+                    child: Container(
+//                      height: 80,
+                      decoration: BoxDecoration(
+                        gradient: SweepGradient(
+                          colors: [Colors.blue, Colors.green, Colors.yellow, Colors.red, Colors.blue],
+                          stops: [0.0, 0.25, 0.5, 0.75, 1],
+                        ),
+                        shape: BoxShape.circle
+                      ),
+                      padding: EdgeInsets.all(3),
+                      child: CircleAvatar(
+                        backgroundColor: Colors.white,
+                        child: CircleAvatar(
+                          backgroundImage: CachedNetworkImageProvider(
+                            dt.imageFileName,
+                          ),
+                          radius: 35,
+                        ),
+                        radius: 45,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              Spacer(),
+              Container(
+//                  color: listLabelbgColor,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text('${dt.groupName}',
+//                        style: TextStyle(color: Colors.white),
+                    ),
+                    //Spacer(),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    else {
+      return new Text('ERROR');
+    }
   }
 
   @override
@@ -402,6 +549,11 @@ class _productListPage extends State<ProductListPage> {
                     Column(
                         children: [
                           //Customtitle(context, widget.title),
+                          groupdt != null && groupdt.length > 0 ? Container(
+                            height: 133,
+                              child: groupListView(groupdt))
+                              : Container(),
+                          groupdt != null && groupdt.length > 0 ? SizedBox(height: 5,) : Container(),
                           Container(
                             height: 40,
                             child: Row(
@@ -469,7 +621,8 @@ class _productListPage extends State<ProductListPage> {
                               ],
                             ),
                           ),
-                          homeWidget(screenSize.height, screenSize.width),
+                          productdt.length>0 ? homeWidget(screenSize.height, screenSize.width)
+                          : Container(),
 
                         ]
                     ),
@@ -482,14 +635,10 @@ class _productListPage extends State<ProductListPage> {
                             child: Container(
                               decoration: BoxDecoration(
                                 color: Color(0xFF64645A),
-//                                border: Border.all(
-//                                    width: 0.0
-//                                ),
                                 borderRadius: BorderRadius.all(
                                     Radius.circular(15.0) //         <--- border radius here
                                 ),
                               ),
-//                            color: Colors.grey,
                               height: 40,
                                 width: 110,
                                 child: Center(child: Text("${totItem} items",style: TextStyle(color: Colors.white),)))),

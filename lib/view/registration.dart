@@ -23,7 +23,6 @@ class _Registration extends State<Registration>{
   String strPassword = "";
   DataService dataService = DataService();
 
-
   TextEditingController txtEmail = TextEditingController();
   TextEditingController txtPassword = TextEditingController();
   TextEditingController txtFirstName = TextEditingController();
@@ -39,6 +38,12 @@ class _Registration extends State<Registration>{
     }
     if  (txtEmail.text == null || txtEmail.text == '') {
       return 'Email cannot be blank. Please check.';
+    }
+    else{
+      bool emailValid = RegExp(r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$').hasMatch(txtEmail.text.trim());
+      if(!emailValid){
+        return "Please check your email";
+      }
     }
     if  (txtPassword.text == null || txtPassword.text == '') {
       return 'Password cannot be blank. Please check.';
@@ -56,55 +61,48 @@ class _Registration extends State<Registration>{
 
   Future<String> _UpdateCustomer() async {
     String res = "Faild";
+    FocusScope.of(context).requestFocus(FocusNode());
 
-     if(Checknull()!=null && Checknull()!="")
-    {
-
-      showInfoFlushbar(context,Checknull());
-      userID="";
-      isLogin=false;
-
+    if (Checknull() != null && Checknull() != "") {
+      showInfoFlushbar(context, Checknull());
+      userID = "";
+      isLogin = false;
     }
-    else {
-       if (txtEmail.text != null && txtEmail.text != '' &&
-           txtPassword.text != null && txtPassword.text != '') {
-         {
-           Customer param = Customer();
-           param.eMail = txtEmail.text.trim();
-           param.referralEmail = txtRefferdEmail.text.trim();
-           param.password = txtPassword.text.trim();
-           param.firstName = txtFirstName.text.trim().toUpperCase();
-           param.lastName = txtLastName.text.trim().toUpperCase();
-           param.gender = _isRow == true ? "M" : "F";
-           param.dOB = "";
-           param.mobileNumber = txtMobileNumber.text.trim();
-           param.mode = "I";
+    else if (txtEmail.text != null && txtEmail.text != '' &&
+        txtPassword.text != null && txtPassword.text != '') {
+      Customer param = Customer();
+      param.eMail = txtEmail.text.trim();
+      param.referralEmail = txtRefferdEmail.text.trim();
+      param.password = txtPassword.text.trim();
+      param.firstName = txtFirstName.text.trim().toUpperCase();
+      param.lastName = txtLastName.text.trim().toUpperCase();
+      param.gender = _isRow == true ? "M" : "F";
+      param.dOB = "";
+      param.mobileNumber = txtMobileNumber.text.trim();
+      param.mode = "I";
 
-           var dt = await dataService.UpdateCustomer(param);
+      var dt = await dataService.updateCustomer(param);
 
-           if (dt.returnStatus != null && dt.returnStatus == 'OK') {
-             userID = dt.eMail.toString();
-             userName = dt.firstName.toString().toUpperCase();
-             isLogin = true;
-             if(isBackendJEMiSys == "Y"){
-               await dataService.UpdateMember("I", param);
-             }
+      if (dt.returnStatus != null && dt.returnStatus == 'OK') {
+        userID = dt.eMail.toString();
+        userName = dt.firstName.toString().toUpperCase();
+        isLogin = true;
 
-             Navigator.pop(context, false);
-             res = 'OK';
-           }
-           else {
-             //close the dialoge
-//          Dialogs.AlertMessage(context,
-//              dt.returnStatus);
-             showInfoFlushbar(context, dt.returnStatus);
-             userID = "";
-             isLogin = false;
-           }
-         }
-       }
-       //SharedPreferences prefs =  await SharedPreferences.getInstance();
-     }
+        if (isBackendJEMiSys == "Y") {
+          await dataService.updateMember("I", param);
+        }
+        customerdata = param;
+        Navigator.pop(context, false);
+        res = 'OK';
+      }
+      else {
+        showInfoFlushbar(context, dt.returnStatus);
+        userID = "";
+        isLogin = false;
+      }
+    }
+    //SharedPreferences prefs =  await SharedPreferences.getInstance();
+
     return res;
   }
 

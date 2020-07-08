@@ -36,7 +36,7 @@ class _cartPage extends State<CartPage> {
 
   Future<List<Cart>> getDefaultData(String _source) async {
     cartlist = new List<Cart>();
-    var dt = await dataService.GetCart(userID, _source);
+    var dt = await dataService.getCart(userID, _source);
     cartlist = dt;
     if (widget.pSource == "S") {
       cartCount = dt.length;
@@ -72,7 +72,7 @@ class _cartPage extends State<CartPage> {
     param.isSizeCanChange = dt2.isSizeCanChange;
     param.orderType = dt2.orderType;
     lparam.add(param);
-    var dt = await dataService.UpdateCart("U", lparam);
+    var dt = await dataService.updateCart("U", lparam);
     await getDefaultData(source);
   }
 
@@ -97,7 +97,7 @@ class _cartPage extends State<CartPage> {
       param.orderType = oType;
       lparam.add(param);
 
-      var dt = await dataService.UpdateCart(mode, lparam);
+      var dt = await dataService.updateCart(mode, lparam);
       await getDefaultData(source);
     }
     else {
@@ -133,7 +133,7 @@ class _cartPage extends State<CartPage> {
     param.designCode = designCode;
     param.version = version;
     param.where = "";
-    var dt = await dataService.GetProductDetails(param);
+    var dt = await dataService.getProductDetails(param);
     return dt;
   }
 
@@ -199,6 +199,7 @@ class _cartPage extends State<CartPage> {
                       SizedBox(height: 10,),
                       Row(
                         children: [
+                          /*
                           Row(
                             children: [
                               Text("Qty :"),
@@ -238,7 +239,8 @@ class _cartPage extends State<CartPage> {
                             ],
                           ),
                           SizedBox(width: 20,),
-                          dt.isSizeCanChange == true ? Row(
+                          */
+                          dt.isSizeCanChange == true && dt.itemCode == "" ? Row(
                             children: [
                               Text("Size :"),
                               SizedBox(height: 20,
@@ -275,8 +277,13 @@ class _cartPage extends State<CartPage> {
 
                             ],
                           )
-                              : Container(),
-//                      DropdownButton(),
+                              : dt.isSizeCanChange == true && dt.itemCode != "" ? Row(
+                            children: [
+                              Text("Size :"),
+                              Text(dt.jewelSize)
+                            ],
+                          )
+                          : Container(),
                         ],
                       ),
                       SizedBox(height: 10,),
@@ -401,8 +408,8 @@ class _cartPage extends State<CartPage> {
     );
   }
   void proceedToOrder() async{
-    if (source == "S") {
-      var status = await dataService.GetCheckStockOnline(customerdata.eMail);
+    if (source == "S" && itemCount>0) {
+      var status = await dataService.getCheckStockOnline(customerdata.eMail);
       if(status.status == 1 && status.returnStatus == "OK"){
         Navigator.push(context, MaterialPageRoute(
             builder: (context) =>
@@ -413,11 +420,10 @@ class _cartPage extends State<CartPage> {
         await Dialogs.AlertMessage(context, status.returnStatus);
       }
     }
-    else {
-
+    else if(itemCount==0) {
+      await Dialogs.AlertMessage(context, "Cart cannot be blank, please check.");
     }
   }
-
   @override
   void initState() {
     super.initState();

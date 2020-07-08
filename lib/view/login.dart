@@ -49,48 +49,50 @@ class _LoginPage extends State<LoginPage>{
   }
 
   Future<String> checkLogin() async {
+    Commonfn objcf = new Commonfn();
     String res = "Failed";
+    FocusScope.of(context).requestFocus(FocusNode());
     //SharedPreferences prefs =  await SharedPreferences.getInstance();
-    if(Checknull()!="")
-    {
-      showInfoFlushbar(context, Checknull());
-      userID="";
-      isLogin=false;
+    if (Checknull() != "") {
+      objcf.showInfoFlushbar(context, Checknull(), 'Failed to login!');
+      userID = "";
+      isLogin = false;
     }
-    else
-    if (txtuserid.text != null && txtuserid.text != '' &&
+    else if (txtuserid.text != null && txtuserid.text != '' &&
         txtpassword.text != null && txtpassword.text != '') {
-      Dialogs.showLoadingDialog(context, _keyLoaderLogin); //invoking go
-
       Customer param = Customer();
       param.eMail = txtuserid.text.trim();
       param.password = txtpassword.text.trim();
 
-      var dt = await dataService.GetCustomer(param);
-
-      if (dt.returnStatus != null && dt.returnStatus == 'OK') {
+      Dialogs.showLoadingDialog(context, _keyLoaderLogin); //invoking go
+      var dt = await dataService.getCustomer(param);
+      if (dt != null && dt.returnStatus != null && dt.returnStatus == 'OK') {
         userID = dt.eMail.toString();
+        password = txtpassword.text.trim();
         userName = dt.firstName.toString().toUpperCase();
-        isLogin=true ;
-        var cartdt = await dataService.GetCart(userID, "S");
+        isLogin = true;
+        var cartdt = await dataService.getCart(userID, "S");
         cartCount = cartdt.length;
         widget.masterScreenFormKey?.currentState?.reset();
         Commonfn.saveUser(txtuserid.text, txtpassword.text, true);
-        Navigator.of(_keyLoaderLogin.currentContext, rootNavigator: true).pop(); //close the dialoge
 
+        Navigator.of(_keyLoaderLogin.currentContext, rootNavigator: true)
+            .pop(); //close the dialoge
         Navigator.pop(context, dt.eMail);
         res = 'OK';
       }
+      else if(dt == null){
+        Navigator.of(_keyLoaderLogin.currentContext, rootNavigator: true)
+            .pop(); //close the dialoge
+        objcf.showInfoFlushbar(context, "eMail does not exists. Want to register?", 'Failed to login!');
+      }
       else {
-//        Dialogs.AlertMessage(context,
-//            dt.returnStatus);
-        showInfoFlushbar(context,dt.returnStatus);
-        Navigator.of(_keyLoaderLogin.currentContext, rootNavigator: true).pop(); //close the dialoge
-
+        Navigator.of(_keyLoaderLogin.currentContext, rootNavigator: true)
+            .pop(); //close the dialoge
+        objcf.showInfoFlushbar(context, dt.returnStatus, 'Failed to login!');
       }
     }
     return res;
-
   }
   void loadDefault() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -413,23 +415,5 @@ class _LoginPage extends State<LoginPage>{
             ),
           ),
         ));
-  }
-  void showInfoFlushbar(BuildContext context, String msg) {
-    Flushbar(
-      margin: EdgeInsets.all(8),
-      backgroundGradient: LinearGradient(colors: [Colors.blue, Colors.teal]),
-      backgroundColor: Colors.red,
-      boxShadows: [BoxShadow(color: Colors.blue[800], offset: Offset(0.0, 2.0), blurRadius: 3.0,)],
-      borderRadius: 8,
-      title: 'Failed to login!',
-      message: '$msg',
-      icon: Icon(
-        Icons.info_outline,
-        size: 28,
-        color: Colors.blue.shade300,
-      ),
-     // leftBarIndicatorColor: Colors.blue.shade300,
-      duration: Duration(seconds: 3),
-    )..show(context);
   }
 }
