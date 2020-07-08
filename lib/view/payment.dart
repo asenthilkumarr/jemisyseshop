@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
-import 'package:jemisyseshop/model/dialogs.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
 import 'package:jemisyseshop/style.dart';
 import 'package:jemisyseshop/view/order.dart';
@@ -18,14 +17,16 @@ class PaymentPage extends StatefulWidget{
   final List<Cart> itemList;
   final String source;
   final OrderOutstanding outstandingitem;
-  PaymentPage({this.itemCount, this.totalAmount, this.sAddress, this.dAddress, this.itemList, this.source, this.outstandingitem});
+  final String dstoreCode;
+  PaymentPage({this.itemCount, this.totalAmount, this.sAddress, this.dAddress, this.itemList, this.source, this.outstandingitem, this.dstoreCode});
   @override
   _paymentPage createState() => _paymentPage();
 }
 class _paymentPage extends State<PaymentPage> {
   double sumValue = 0.0;
   int itemCount = 0;
-  double dollortoRedeem = 0;
+  double totaldollortoRedeem = 0;
+  double redeemValue = 0;
   int id = 1;
   String radioItem = 'Master / VISA Card';
   List<RadioButtonListValue> fList = [
@@ -38,30 +39,32 @@ class _paymentPage extends State<PaymentPage> {
       name: "eNETS",
     ),
   ];
+  FocusNode _focusNode;
   TextEditingController txtPointsvalue = TextEditingController();
 
   void _handleRadioValueChange(RadioButtonListValue value) {
     setState(() {
-
     });
   }
   void getCustomer() async{
     DataService dataService = DataService();
     var dt = await dataService.getPoints(userID);
     if(dt.dollortoRedeem != null){
-      dollortoRedeem = dt.dollortoRedeem;
-//      dollortoRedeem=305.4;
+      totaldollortoRedeem = double.parse(formatterint.format(dt.dollortoRedeem).toString());
+//      totaldollortoRedeem=305;
     }
     setState(() {
 
     });
   }
   void checkPointsValue(double iValue){
-    if(dollortoRedeem < iValue){
+    if(totaldollortoRedeem < iValue){
       txtPointsvalue.text = "0";
+      redeemValue = 0;
     }
     else{
       sumValue = widget.totalAmount-iValue;
+      redeemValue = iValue;
     }
   }
   @override
@@ -69,6 +72,10 @@ class _paymentPage extends State<PaymentPage> {
     super.initState();
     sumValue = widget.totalAmount;
     itemCount = widget.itemCount;
+    _focusNode = FocusNode();
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) txtPointsvalue.clear();
+    });
     getCustomer();
   }
 
@@ -240,7 +247,7 @@ class _paymentPage extends State<PaymentPage> {
                                     ),
                                   ),
                                   SizedBox(height: 8,),
-                                  Padding(
+                                  widget.source != "IP" ? Padding(
                                     padding: const EdgeInsets.only(left: 8.0, bottom: 3.0, right: 8.0),
                                     child: Container(
                                       color: Colors.white,
@@ -255,7 +262,7 @@ class _paymentPage extends State<PaymentPage> {
                                               children: [
                                                 Text("Available points \$ value"),
                                                 Spacer(),
-                                                Text(formatterint.format(dollortoRedeem).toString())
+                                                Text(formatterint.format(totaldollortoRedeem).toString())
                                               ],
                                             ),
                                             SizedBox(height: 5,),
@@ -267,6 +274,7 @@ class _paymentPage extends State<PaymentPage> {
                                                   width: 100,
                                                   height: 40,
                                                   child: TextField(
+                                                    focusNode: _focusNode,
                                                     controller: txtPointsvalue,
                                                     keyboardType: TextInputType.number,
                                                     decoration: InputDecoration(
@@ -289,7 +297,8 @@ class _paymentPage extends State<PaymentPage> {
                                         ),
                                       ),
                                     ),
-                                  ),
+                                  )
+                                  : Container(),
                                   SizedBox(height: 8,),
                                 ]
                             ),
@@ -331,12 +340,12 @@ class _paymentPage extends State<PaymentPage> {
                               if(radioItem == 'Master / VISA Card'){
                                 Navigator.push(context, MaterialPageRoute(
                                     builder: (context) =>
-                                        PaymentDetailPage(itemCount: itemCount,totalAmount: sumValue,payMode: "VISA / MASTER",sAddress: widget.sAddress, dAddress: widget.dAddress,itemList: widget.itemList, source: widget.source, outstandingitem: widget.outstandingitem,)));
+                                        PaymentDetailPage(itemCount: itemCount,totalAmount: sumValue, redeemAmount: redeemValue, payMode: "VISA / MASTER",sAddress: widget.sAddress, dAddress: widget.dAddress,itemList: widget.itemList, source: widget.source, outstandingitem: widget.outstandingitem,dstoreCode: widget.dstoreCode,)));
                               }
                               else{
                                 Navigator.push(context, MaterialPageRoute(
                                     builder: (context) =>
-                                        PaymentDetailPage(itemCount: itemCount,totalAmount: sumValue,payMode: "NETS",sAddress: widget.sAddress, dAddress: widget.dAddress, itemList: widget.itemList, source: widget.source, outstandingitem: widget.outstandingitem,)));
+                                        PaymentDetailPage(itemCount: itemCount,totalAmount: sumValue, redeemAmount: redeemValue, payMode: "NETS",sAddress: widget.sAddress, dAddress: widget.dAddress, itemList: widget.itemList, source: widget.source, outstandingitem: widget.outstandingitem,dstoreCode: widget.dstoreCode,)));
                               }
                             },
                           ),
@@ -355,13 +364,15 @@ class _paymentPage extends State<PaymentPage> {
 class PaymentDetailPage extends StatefulWidget{
   final int itemCount;
   final double totalAmount;
+  final double redeemAmount;
   final String payMode;
   final Address sAddress;
   final Address dAddress;
   final List<Cart> itemList;
   final String source;
   final OrderOutstanding outstandingitem;
-  PaymentDetailPage({this.itemCount, this.totalAmount, this.payMode, this.sAddress, this.dAddress, this.itemList, this.source, this.outstandingitem});
+  final String dstoreCode;
+  PaymentDetailPage({this.itemCount, this.totalAmount, this.redeemAmount, this.payMode, this.sAddress, this.dAddress, this.itemList, this.source, this.outstandingitem, this.dstoreCode});
 
   @override
   _paymentDetailPage createState() => _paymentDetailPage();
@@ -369,32 +380,40 @@ class PaymentDetailPage extends StatefulWidget{
 class _paymentDetailPage extends State<PaymentDetailPage> {
   DataService dataService = DataService();
   OrderData param=new OrderData();
-  final _keyLoader = new GlobalKey<FormState>();
+//  final _keyLoader = new GlobalKey<FormState>();
 
   var sX = 0.0;
   var sY = 0.0;
   var textVar = "";
+  double totalAmount = 0;
   TextEditingController txtCardNo = TextEditingController();
   TextEditingController txtExpiry = TextEditingController();
   TextEditingController txtCVV = TextEditingController();
   TextEditingController txtNameoncard = TextEditingController();
-
+  void loadDefault(){
+    totalAmount = 0;
+    if(widget.itemList != null){
+      for(var i = 0; i<widget.itemList.length; i++){
+        totalAmount += widget.itemList[i].totalPrice;
+      }
+    }
+  }
   void UpdatePayment() async{
     if(widget.source==null){
       Paymentfn objcf = new Paymentfn();
       param.eMail = userID;
-      param.totalAmount = widget.totalAmount;
+      param.totalAmount = totalAmount;
       param.discount = 0;
-      param.netAmount = widget.totalAmount;
-      param.deliveryMode = "H";
+      param.netAmount = totalAmount;
+      param.deliveryMode = "S";
       param.shippingAddress = widget.sAddress;
       param.billingAddress = widget.dAddress;
-      param.dstoreCode = null;
+      param.dstoreCode = widget.dstoreCode;
       param.payMode1 = widget.payMode;
       param.payMode1_Amt = widget.totalAmount;
       param.payMode1_Ref = "435435676756765";
-      param.payMode2 = null;
-      param.payMode2_Amt = 0;
+      param.payMode2 = widget.redeemAmount != 0 ? 'REDEEM POINTS' : null;
+      param.payMode2_Amt = widget.redeemAmount;
       param.payMode2_Ref = null;
       param.payMode3 = null;
       param.payMode3_Amt = 0;
@@ -402,22 +421,27 @@ class _paymentDetailPage extends State<PaymentDetailPage> {
       param.mode = "I";
       objcf.updateOrder(param, widget.itemList, null, context);
     }
-    else if(widget.source == "OP"){
+    else if(widget.source == "IP"){
+      Paymentfn objpf = new Paymentfn();
       OrderUpdateParam param = new OrderUpdateParam();
       param.storeCode = widget.outstandingitem.storeCode;
       param.refNo = widget.outstandingitem.refNo;
-      param.docType = "CM";// widget.outstandingitem.docType;
+      param.docType = widget.outstandingitem.docType;
       param.amount = widget.totalAmount;
-//      param.reff = "";
+      param.payMode = widget.payMode;
+      param.reff = "435435676756765";
       var result = await dataService.updateOrderOutstanding(param);
-
-      await Dialogs.AlertMessage(context, "Payment successfully");
-      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-          MasterScreen(currentIndex: 0, key: null,)), (Route<dynamic> route) => false);
-
+      if(result.status == 1){
+        await objpf.sendmail(widget.outstandingitem.storeCode, widget.outstandingitem.refNo, widget.outstandingitem.docType, context);
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+            OrderPage(source: "IP",)), (Route<dynamic> route) => false);
+      }
     }
   }
-
+  void initState(){
+    super.initState();
+    loadDefault();
+  }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

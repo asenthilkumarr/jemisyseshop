@@ -359,6 +359,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
 
   Future<void> getDefault() async {
     await getDefaultData();
+    setState(() {});
 
     if (titMessage == "") hideTitleMessage = true;
     if (hideGoldRate == false) {
@@ -368,13 +369,16 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     }
 
     await getGroup();
-    await getProduct();
-    await getMostPopular();
-    if (!kIsWeb) {
-      await checkLogin();
-      await initPlatformState();
-    }
     setState(() {});
+    await getProduct();
+    setState(() {});
+    await getMostPopular();
+    setState(() {});
+    await checkLogin();
+    if (!kIsWeb) {
+      await initPlatformState();
+      setState(() {});
+    }
   }
 
   Future<List<DefaultData>> getDefaultData() async {

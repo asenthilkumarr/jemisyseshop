@@ -408,7 +408,7 @@ class _cartPage extends State<CartPage> {
     );
   }
   void proceedToOrder() async{
-    if (source == "S") {
+    if (source == "S" && itemCount>0) {
       var status = await dataService.getCheckStockOnline(customerdata.eMail);
       if(status.status == 1 && status.returnStatus == "OK"){
         Navigator.push(context, MaterialPageRoute(
@@ -420,8 +420,8 @@ class _cartPage extends State<CartPage> {
         await Dialogs.AlertMessage(context, status.returnStatus);
       }
     }
-    else {
-
+    else if(itemCount==0) {
+      await Dialogs.AlertMessage(context, "Cart cannot be blank, please check.");
     }
   }
   @override

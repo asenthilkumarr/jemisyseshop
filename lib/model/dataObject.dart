@@ -1,4 +1,3 @@
-import 'package:intl/intl.dart';
 import 'package:jemisyseshop/model/common.dart';
 
 class Store{
@@ -27,11 +26,91 @@ class Store{
       address4: json['address4'],
       state: json['state'],
       pinCode: json['pinCode'],
-      telePhone: json['telePhone'],
+      telePhone: json['telephone'],
       openingTime: json['openingTime'].toString() != "0001-01-01T00:00:00" ? DateTime.parse(json["openingTime"]) : null,
       closingTime: json['closingTime'].toString() != "0001-01-01T00:00:00" ? DateTime.parse(json["closingTime"]) : null,
     );
   }
+}
+class OrderH {
+  String orderNo;
+  DateTime orderDate;
+  double netAmount;
+  String dcustomerTitle;
+  String dcustomerName;
+  String dAddress1;
+  String dAddress2;
+  String invoiceNo;
+  DateTime invoiceDate;
+  DateTime shipDate;
+  String shipRefNo;
+  String shipBy;
+  String orderType;
+
+  OrderH({this.orderNo, this.orderDate, this.netAmount, this.dcustomerTitle, this.dcustomerName,
+        this.dAddress1, this.dAddress2, this.invoiceNo, this.invoiceDate, this.shipDate, this.shipBy, this.shipRefNo, this.orderType});
+
+  factory OrderH.fromData(Map<String, dynamic> json){
+    return OrderH(
+        orderNo: json['orderNo'],
+        orderDate: json['orderDate'].toString() != "0001-01-01T00:00:00" ? DateTime.parse(json["orderDate"]) : null,
+        netAmount: double.parse(json['netAmount'].toString()),
+        dcustomerTitle: json['dcustomerTitle'],
+        dcustomerName: json['dcustomerName'],
+        dAddress1: json['dAddress1'],
+        dAddress2: json['dAddress2'],
+        invoiceNo: json['invoiceNo'],
+        invoiceDate: json['invoiceDate'].toString() != "0001-01-01T00:00:00" ? DateTime.parse(json["invoiceDate"]) : null,
+        shipDate: json['shipDate'].toString() != "0001-01-01T00:00:00" ? DateTime.parse(json["shipDate"]) : null,
+        shipBy: json['shipBy'],
+        shipRefNo: json['shipRefNo'],
+        orderType: json['orderType']
+    );
+  }
+}
+class OrderD{
+  String orderNo;
+  String designCode;
+  int version;
+  String inventoryCode;
+  String onlineName;
+  String description;
+  String jewelsize;
+  int shippingDays;
+  double unitPrice;
+  double totalPrice;
+  String imagefileName;
+
+  OrderD({this.orderNo, this.designCode, this.version, this.inventoryCode, this.onlineName, this.description,
+  this.jewelsize, this.shippingDays, this.unitPrice, this.totalPrice, this.imagefileName});
+
+  factory OrderD.fromData(Map<String, dynamic> json){
+    return OrderD(
+      orderNo: json['orderNo'],
+      designCode: json['designCode'],
+      version: int.parse(json['version'].toString()),
+      inventoryCode: json['inventoryCode'],
+      onlineName: json['onlineName'],
+      description: json['description'],
+      jewelsize: json['jewelsize'],
+      shippingDays: int.parse(json['shippingDays'].toString()),
+      unitPrice: double.parse(json['unitPrice'].toString()),
+      totalPrice: double.parse(json['totalPrice'].toString()),
+      imagefileName: json['imagefileName'] != "" ? imageUrl + json['imagefileName'] : json['imagefileName'],
+    );
+  }
+}
+class OrderGetParam{
+  String eMail;
+  String mode;
+  String orderType;
+
+  Map<String, dynamic> toParam() =>
+      {
+        'eMail': eMail,
+        'mode': mode,
+        'orderType': orderType
+      };
 }
 class OrderData {
   String eMail;
@@ -94,17 +173,18 @@ class OrderOutstanding{
   DateTime nextpaymentDate;
   String email;
   int filesCount;
+  String orderBy;
 
   OrderOutstanding({
     this.storeCode, this.refNo, this.docType, this.tranDate, this.vipNo, this.name, this.totalAmount, this.receivedAmount,
-    this.collectionDate, this.nextpaymentDate, this.filesCount,this.email
+    this.collectionDate, this.nextpaymentDate, this.filesCount,this.email, this.orderBy
   });
 
   factory OrderOutstanding.fromData(Map<String, dynamic> json){
-    print(json);
     return OrderOutstanding(
       storeCode: json['storeCode'],
       refNo: json['refNo'],
+      docType: json['docType'],
       tranDate: json['tranDate'].toString() != "0001-01-01T00:00:00" ? DateTime.parse(json["tranDate"]) : null,
       nextpaymentDate: json['nextpaymentDate'].toString() != "0001-01-01T00:00:00" ? DateTime.parse(json["nextpaymentDate"]) : null,
       collectionDate: json['collectionDate'].toString() != "0001-01-01T00:00:00" ? DateTime.parse(json["collectionDate"]) : null,
@@ -112,6 +192,7 @@ class OrderOutstanding{
       totalAmount: json['totalAmount'],
       receivedAmount: json['receivedAmount'],
       name: json['name'],
+      orderBy: json['orderBy'],
     );
   }
 
@@ -243,6 +324,7 @@ class DefaultDataParam {
 class Setting {
   String appName;
   String currCode;
+  String currSymbol;
   String message;
   String startupImageName;
   String imageFolderName;
@@ -251,9 +333,18 @@ class Setting {
   String isBackendJEMiSys;
   String paymentGateway;
   String aboutusUrl;
+  String contactCompanyName;
+  String contactName;
+  String contactNumber;
+  String contactEmail;
+  String contactAddress;
+  String contactInstagram;
+  String contactFacebook;
+  String contactTwitter;
 
-  Setting({ this.appName, this.currCode, this.startupImageName, this.imageFolderName, this.fontName, this.message, this.isERPandEShopOnSameServer, this.isBackendJEMiSys, this.paymentGateway,
-  this.aboutusUrl});
+  Setting({ this.appName, this.currCode, this.currSymbol, this.startupImageName, this.imageFolderName, this.fontName, this.message, this.isERPandEShopOnSameServer, this.isBackendJEMiSys, this.paymentGateway,
+  this.aboutusUrl, this.contactCompanyName, this.contactName, this.contactNumber, this.contactEmail, this.contactAddress,
+  this.contactInstagram, this.contactFacebook, this.contactTwitter});
 
   factory Setting.fromJson(Map<String, dynamic> json) {
     imgFolderName = json['imageFolderName'];
@@ -263,14 +354,23 @@ class Setting {
     return Setting(
       appName: json['appName'],
       currCode: json['currCode'],
+      currSymbol: json['currSymbol'],
       message: json['message'],
       startupImageName: startupimageUrl+json['startupImageName'],
       imageFolderName: json['imageFolderName'],
       fontName: json['fontName'],
-      isERPandEShopOnSameServer: json['isERPandEShopOnSameServer'] == 0 ? false : true,
+      isERPandEShopOnSameServer: json['isERPandEShopOnSameServer'] == "0" ? false : true,
       isBackendJEMiSys: json['isBackendJEMiSys'],
-        paymentGateway: json['paymentGateway'],
-      aboutusUrl: json['aboutusUrl']
+      paymentGateway: json['paymentGateway'],
+      aboutusUrl: json['aboutusUrl'],
+      contactCompanyName: json['contactCompanyName'],
+      contactName: json['contactName'],
+      contactNumber: json['contactNumber'],
+      contactEmail: json['contactEmail'],
+      contactAddress: json['contactAddress'],
+      contactInstagram: json['contactInstagram'],
+      contactFacebook: json['contactFacebook'],
+      contactTwitter: json['contactTwitter'],
     );
   }
 }
@@ -488,7 +588,7 @@ class Customer{
       firstName: json['firstName'],
       lastName: json['lastName'],
       gender: json['gender'],
-      dOB: json['dOB'],
+      dOB: json['dOB'] != "" ? json['dOB'] : null,
       mobileNumber: json['mobileNumber'],
       pointsAvailable: double.parse(json['pointsAvailable'].toString()),
       pointsDollor: double.parse(json['pointsDollor'].toString()),

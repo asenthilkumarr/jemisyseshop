@@ -51,6 +51,7 @@ class _LoginPage extends State<LoginPage>{
   Future<String> checkLogin() async {
     Commonfn objcf = new Commonfn();
     String res = "Failed";
+    FocusScope.of(context).requestFocus(FocusNode());
     //SharedPreferences prefs =  await SharedPreferences.getInstance();
     if (Checknull() != "") {
       objcf.showInfoFlushbar(context, Checknull(), 'Failed to login!');
@@ -65,8 +66,7 @@ class _LoginPage extends State<LoginPage>{
 
       Dialogs.showLoadingDialog(context, _keyLoaderLogin); //invoking go
       var dt = await dataService.getCustomer(param);
-
-      if (dt.returnStatus != null && dt.returnStatus == 'OK') {
+      if (dt != null && dt.returnStatus != null && dt.returnStatus == 'OK') {
         userID = dt.eMail.toString();
         password = txtpassword.text.trim();
         userName = dt.firstName.toString().toUpperCase();
@@ -76,14 +76,21 @@ class _LoginPage extends State<LoginPage>{
         widget.masterScreenFormKey?.currentState?.reset();
         Commonfn.saveUser(txtuserid.text, txtpassword.text, true);
 
+        Navigator.of(_keyLoaderLogin.currentContext, rootNavigator: true)
+            .pop(); //close the dialoge
         Navigator.pop(context, dt.eMail);
         res = 'OK';
       }
+      else if(dt == null){
+        Navigator.of(_keyLoaderLogin.currentContext, rootNavigator: true)
+            .pop(); //close the dialoge
+        objcf.showInfoFlushbar(context, "eMail does not exists. Want to register?", 'Failed to login!');
+      }
       else {
+        Navigator.of(_keyLoaderLogin.currentContext, rootNavigator: true)
+            .pop(); //close the dialoge
         objcf.showInfoFlushbar(context, dt.returnStatus, 'Failed to login!');
       }
-      Navigator.of(_keyLoaderLogin.currentContext, rootNavigator: true)
-          .pop(); //close the dialoge
     }
     return res;
   }

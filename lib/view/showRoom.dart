@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:jemisyseshop/data/dataService.dart';
-import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/style.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
@@ -74,7 +73,6 @@ class _showRoomPage extends State<ShowRoomPage> {
                           dt.closingTime != null ? Text(" - ${formatter.format(dt.closingTime)}") : Container(),
                         ],
                       ) : Container(),
-
                     ],
                   )
                 ],

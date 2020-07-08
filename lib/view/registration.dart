@@ -40,7 +40,7 @@ class _Registration extends State<Registration>{
       return 'Email cannot be blank. Please check.';
     }
     else{
-      bool emailValid = RegExp(r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$').hasMatch(txtEmail.text);
+      bool emailValid = RegExp(r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$').hasMatch(txtEmail.text.trim());
       if(!emailValid){
         return "Please check your email";
       }
@@ -61,6 +61,7 @@ class _Registration extends State<Registration>{
 
   Future<String> _UpdateCustomer() async {
     String res = "Faild";
+    FocusScope.of(context).requestFocus(FocusNode());
 
     if (Checknull() != null && Checknull() != "") {
       showInfoFlushbar(context, Checknull());
@@ -90,6 +91,7 @@ class _Registration extends State<Registration>{
         if (isBackendJEMiSys == "Y") {
           await dataService.updateMember("I", param);
         }
+        customerdata = param;
         Navigator.pop(context, false);
         res = 'OK';
       }

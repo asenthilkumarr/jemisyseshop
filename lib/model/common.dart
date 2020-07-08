@@ -8,6 +8,7 @@ import 'package:jemisyseshop/view/order.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final String apiurl = 'http://51.79.160.233/JEMiSyseShopAPI/api/';
+final String apiurlERP = 'http://51.79.160.233/JEMiSyseShopAPI/api/';
 final String imageDefaultUrl = 'http://51.79.160.233/JEMiSyseShopImage/';
 final String emailapiurl = "http://51.79.160.233/SMSeMailAppsToolAPI/";
 String imgFolderName = "";
@@ -127,19 +128,20 @@ class Commonfn{
     return isLogin;
   }
 }
+
 class Paymentfn{
   Future<String> updateOrder(OrderData param, List<Cart> itemList, GlobalKey<FormState> _masterScreenFormKey, BuildContext context) async{
     DataService dataService = DataService();
     String returnmag = "ERROR";
     var status = await dataService.getCheckStockOnline(customerdata.eMail);
-    returnmag = "OK";
+
     if(status.status == 1 && status.returnStatus == "OK"){
       var result = await dataService.updateOrder(param);
       if(result.status == 1){
         if(isERPandEShopOnSameServer == false && isBackendJEMiSys == "Y"){
-
+          await dataService.updateOrderSync(result.value);
         }
-        await sendmail(result.value, context);
+        await sendmail("", result.value, "eCORDER", context);
         returnmag = "OK";
 
         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
@@ -149,6 +151,9 @@ class Paymentfn{
 //        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
 //            MasterScreen(currentIndex: 0, key: null,)), (Route<dynamic> route) => false);
       }
+      else{
+        await Dialogs.AlertMessage(context, result.errorMessage);
+      }
     }
     else{
       await Dialogs.AlertMessage(context, status.returnStatus);
@@ -156,21 +161,18 @@ class Paymentfn{
     return returnmag;
   }
 
-  Future<String> sendmail(String docNo, BuildContext context) async {
+  Future<String> sendmail(String storeCode, String docNo, String docType, BuildContext context) async {
     DataService dataService = DataService();
     final _keyLoader = new GlobalKey<FormState>();
     String res = "Faild";
     //SharedPreferences prefs =  await SharedPreferences.getInstance();
     Dialogs.showLoadingDialog(context, _keyLoader); //invoking go
     SendEmail param = SendEmail();
-//    param.storeCode  = gStoreCode;
     param.docno = docNo;
-//      param.macid = gMaciD;
     param.mailTo=  userID;
-    param.doctype= "eCORDER";
+    param.doctype= docType;
     param.vipname = userName;
-//      param.userid=userID;
-
+    param.storeCode = storeCode;
     var dt2 = await dataService.sendEmailtoCustomer(param);
     await Navigator.of(
         _keyLoader.currentContext, rootNavigator: true)

@@ -20,12 +20,15 @@ class AddressPage extends StatefulWidget{
 class _addressPage extends State<AddressPage> {
   DataService dataService = DataService();
   final _keyLoader = new GlobalKey<FormState>();
+  List<Store> storeList = new List<Store>();
   List<Address> dAddress = [];
+  List<Address> bAddress = [];
   Address selectedAddress;
   Address billingAddress;
+  Store selectedStore;
   double sumValue = 0;
   int itemCount = 0;
-
+  String dstoreCode;
   //f Default Radio Button Item
   String radioItem = 'Deliver at the Shipping Address';
 
@@ -52,10 +55,22 @@ class _addressPage extends State<AddressPage> {
   final textController = new TextEditingController();
 
   void _handleRadioValueChange(RadioButtonListValue value) {
-    if (value.index == 1)
+    if (value.index == 1){
       enableNewAddress = "A";
-    else
+      if(dAddress.length>0)
+        selectedAddress = dAddress[0];
+      else
+        selectedAddress = null;
+    }
+    else{
       enableNewAddress = "S";
+      selectedAddress = null;
+      if(bAddress.length>0)
+        billingAddress = bAddress[0];
+      else
+        billingAddress = null;
+    }
+
     setState(() {
 
     });
@@ -63,6 +78,7 @@ class _addressPage extends State<AddressPage> {
 
   void getDeliveryAddress() async {
     dAddress = await dataService.getDeliveryAddress(userID);
+    bAddress = await dataService.getBillingAddress(userID);
     if (dAddress.length > 0) {
       selectedAddress = dAddress[0];
       if (sameval)
@@ -95,12 +111,28 @@ class _addressPage extends State<AddressPage> {
 
     });
   }
-
   Future<bool> CheckNull() async {
     bool isNull = false;
+    dstoreCode =null;
+    if(selectedStore != null){
+      selectedAddress = new Address();
+      selectedAddress.fullName = userName;
+      selectedAddress.address1 = selectedStore.address1;
+      selectedAddress.address2 = selectedStore.address2;
+      selectedAddress.address3 = selectedStore.address3;
+      selectedAddress.address4 = selectedStore.address4;
+      selectedAddress.country = selectedStore.state;
+      selectedAddress.pinCode = selectedStore.pinCode;
+      selectedAddress.mobileNo = selectedStore.telePhone;;
+      dstoreCode = selectedStore.storeCode;
+    }
     if (selectedAddress == null) {
-      await Dialogs.AlertMessage(
-          context, "Shipping address cannot be blank, please check");
+      if(radioItem == "Pickup from a Store Nearby")
+        await Dialogs.AlertMessage(
+            context, "Pickup store cannot be blank, please check");
+      else
+        await Dialogs.AlertMessage(
+            context, "Shipping address cannot be blank, please check");
       isNull = true;
     }
     else if (billingAddress == null) {
@@ -110,18 +142,24 @@ class _addressPage extends State<AddressPage> {
     }
     return isNull;
   }
-
   void UpdatePayment() async{
     Paymentfn objcf = new Paymentfn();
     OrderData param = new OrderData();
+    FocusScope.of(context).requestFocus(FocusNode());
     param.eMail = userID;
     param.totalAmount = widget.totalAmount;
     param.discount = 0;
     param.netAmount = widget.totalAmount;
-    param.deliveryMode = "H";
     param.shippingAddress = selectedAddress;
     param.billingAddress = billingAddress;
-    param.dstoreCode = null;
+    if(radioItem=="Pickup from a Store Nearby" && selectedStore != null){
+      param.dstoreCode = selectedStore.storeCode;
+      param.deliveryMode = "S";//Pickup
+    }
+    else{
+      param.dstoreCode = null;
+      param.deliveryMode = "S";//Shipping
+    }
     param.payMode1 = null;
     param.payMode1_Amt = 0;
     param.payMode1_Ref = null;
@@ -134,6 +172,12 @@ class _addressPage extends State<AddressPage> {
     param.mode = "I";
     objcf.updateOrder(param, widget.itemList, null, context);
   }
+  void loadDefault() async{
+    storeList = new List<Store>();
+
+    getDeliveryAddress();
+    storeList = await dataService.getStores();
+  }
 
   @override
   void initState() {
@@ -141,11 +185,12 @@ class _addressPage extends State<AddressPage> {
     sumValue = widget.totalAmount;
     itemCount = widget.itemCount;
 
-    getDeliveryAddress();
+    loadDefault();
   }
 
   @override
   Widget build(BuildContext context) {
+//    print(billingAddress.fullName);
     return MaterialApp(
       title: 'Address',
       theme: MasterScreen.themeData(context),
@@ -563,11 +608,199 @@ class _addressPage extends State<AddressPage> {
                                 ),
                               ),
                             )
-                                : Container(),
+                                : Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                  15.0, 10, 15, 0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        width: 1.0,
+                                        color: listLabelbgColor
+                                    ),
+                                    borderRadius: BorderRadius.circular(10)
+                                ),
+                                child: Column(
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          color: listbgColor,
+                                          borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(10.2),
+                                              topRight: Radius.circular(10.2)
+                                          ),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 5.0, top: 5.0, bottom: 5.0),
+                                          child: Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Text("Chose Your Store",
+                                              style: TextStyle(fontWeight: FontWeight.bold),),
+                                          ),
+                                        ),
+                                      ),
+                                      Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 0.0, right: 0.0),
+                                          child: Container(
+                                            height: 35,
+                                            decoration: BoxDecoration(
+                                                border: Border(
+                                                  top: BorderSide(
+                                                    width: 1,
+                                                    color: listLabelbgColor,
+                                                  ),
+                                                )
+                                            ),
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 8.0, right: 8.0),
+                                              child: DropdownButton<Store>(
+                                                isExpanded: true,
+                                                value: selectedStore,
+                                                onChanged: (Store newValue) {
+                                                  selectedStore = newValue;
 
+                                                  setState(() {});
+                                                },
+                                                underline: Container(),
+                                                items: storeList.map((
+                                                    Store taddress) {
+                                                  return new DropdownMenuItem<
+                                                      Store>(
+                                                    value: taddress,
+                                                    child: new Text("${taddress
+                                                        .storeCode} ${taddress
+                                                        .address1} ${taddress
+                                                        .address1}",
+                                                      style: new TextStyle(
+                                                        color: Colors.black,),
+                                                      overflow: TextOverflow
+                                                          .ellipsis,
+                                                    ),
+                                                  );
+                                                }).toList(),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      selectedStore != null ? Stack(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 0.0, right: 0.0),
+                                            child: Container(
+                                              width: double.infinity,
+                                              decoration: BoxDecoration(
+                                                  border: Border(
+                                                      top: BorderSide(
+                                                        width: 1,
+                                                        color: listLabelbgColor,
+                                                      ),
+                                                      bottom: BorderSide(
+                                                        width: 1,
+                                                        color: listLabelbgColor,
+                                                      )
+                                                  )
+                                              ),
+                                              child: Padding(
+                                                padding: const EdgeInsets
+                                                    .fromLTRB(
+                                                    12.0, 8.0, 8.0, 8.0),
+                                                child: Column(
+                                                  mainAxisAlignment: MainAxisAlignment
+                                                      .start,
+                                                  crossAxisAlignment: CrossAxisAlignment
+                                                      .start,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        selectedStore.storeCode != "" ? Text( "${selectedStore.storeCode}",
+                                                          style: TextStyle(fontWeight: FontWeight.bold),)
+                                                            : Container(),
+                                                        selectedStore.description != "" ? SizedBox(width: 3,)
+                                                            : Container(),
+                                                        selectedStore.description != "" ? Text("${selectedStore.description}",
+                                                          style: TextStyle(fontWeight: FontWeight.bold),)
+                                                            : Container(),
+                                                      ],
+                                                    ),
+                                                    Row(
+                                                      children: [
+                                                        selectedStore.address1 != "" ? Text("${selectedStore.address1}")
+                                                            : Container(),
+                                                      ],
+                                                    ),
+                                                    selectedStore.address2 != "" ? Row(
+                                                      children: [
+                                                        Text("${selectedStore.address2}"),
+                                                      ],
+                                                    )
+                                                        : Container(),
+                                                    selectedStore.address3 != "" ? Row(
+                                                      children: [
+                                                        Text("${selectedStore.address3}"),
+                                                        selectedStore.address3 != "" ? SizedBox(width: 3,)
+                                                            : Container(),
+                                                      ],
+                                                    )
+                                                        : Container(),
+                                                    Row(
+                                                      children: [
+                                                        selectedStore.state != "" ? Text("${selectedStore.state}")
+                                                            : Container(),
+                                                        selectedStore.state != "" ? SizedBox(width: 3,)
+                                                            : Container(),
+                                                        selectedStore.pinCode != "" ? Text("${selectedStore.pinCode}")
+                                                            : Container(),
+                                                      ],
+                                                    ),
+                                                    selectedStore.telePhone != "" ? Row(
+                                                      children: [
+                                                        Text("Tel. : "),
+                                                        Text(selectedStore.telePhone),
+                                                      ],
+                                                    )
+                                                        : Container(),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Positioned(
+                                              right: 15.0,
+                                              bottom: 0.0,
+                                              child: GestureDetector(
+                                                onTap: () async {},
+                                                child: Align(
+                                                  alignment: Alignment.topCenter,
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.all(
+                                                        8.0),
+                                                    child: CircleAvatar(
+                                                      radius: 10.0,
+                                                      backgroundColor: Colors
+                                                          .green,
+                                                      child: Icon(
+                                                        Icons.check,
+                                                        color: Colors.white,
+                                                        size: 17,),
+                                                    ),
+                                                  ),
+                                                ),
+                                              )),
+                                        ],
+                                      )
+                                          : Container(),
+                                    ]
+                                )
+                              ),
+                            ),
                             SizedBox(height: 5,),
-                            dAddress.length > 0 &&
-                                radioItem == "Deliver at the Shipping Address"
+                            dAddress.length > 0 || radioItem == "Pickup from a Store Nearby"
                                 ? Padding(
                               padding: const EdgeInsets.fromLTRB(
                                   15.0, 10, 15.0, 0),
@@ -582,7 +815,6 @@ class _addressPage extends State<AddressPage> {
                                 child: Column(
 //                                crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-
                                     Container(
                                       decoration: BoxDecoration(
                                         color: listbgColor,
@@ -602,6 +834,7 @@ class _addressPage extends State<AddressPage> {
                                         ),
                                       ),
                                     ),
+                                    radioItem == "Deliver at the Shipping Address" ?
                                     Container(
                                       height: 35,
                                       decoration: BoxDecoration(
@@ -647,9 +880,10 @@ class _addressPage extends State<AddressPage> {
                                             ],
                                           )
                                       ),
-                                    ),
-//Senthil
-                                    !sameval && dAddress.length > 0 ? Align(
+                                    )
+                                        : Container(),
+
+                                    (!sameval ||radioItem == "Pickup from a Store Nearby") && bAddress.length > 0 ? Align(
                                       alignment: Alignment.centerLeft,
                                       child: Padding(
                                         padding: const EdgeInsets.only(
@@ -675,10 +909,9 @@ class _addressPage extends State<AddressPage> {
                                                 setState(() {});
                                               },
                                               underline: Container(),
-                                              items: dAddress.map((
+                                              items: bAddress.map((
                                                   Address taddress) {
-                                                return new DropdownMenuItem<
-                                                    Address>(
+                                                return new DropdownMenuItem<Address>(
                                                   value: taddress,
                                                   child: new Text("${taddress
                                                       .title} ${taddress
@@ -843,7 +1076,8 @@ class _addressPage extends State<AddressPage> {
                                       ],
                                     )
                                         : Container(),
-                                    sameval == false ? Container(
+
+                                    sameval == false || radioItem == "Pickup from a Store Nearby" ? Container(
                                         child: Padding(
                                           padding: const EdgeInsets.fromLTRB(
                                               8.0, 3.0, 8.0, 3.0),
@@ -884,6 +1118,7 @@ class _addressPage extends State<AddressPage> {
                                         )
                                     )
                                         : Container(),
+
                                   ],
                                 ),
                               ),
@@ -934,7 +1169,7 @@ class _addressPage extends State<AddressPage> {
                                           PaymentPage(itemCount: itemCount,
                                             totalAmount: sumValue,
                                             sAddress: selectedAddress,
-                                            dAddress: billingAddress, itemList: widget.itemList,)));
+                                            dAddress: billingAddress, itemList: widget.itemList,dstoreCode: dstoreCode,)));
                                 }
                                 else{
                                   UpdatePayment();
@@ -958,7 +1193,6 @@ class _addressPage extends State<AddressPage> {
       selectedDropdown = val;
     });
   }
-
 }
 
 class AddressEntryPage extends StatefulWidget{
@@ -1029,6 +1263,7 @@ class _addressEntryPage extends State<AddressEntryPage>{
     });
   }
   void updateAddress() async{
+    FocusScope.of(context).requestFocus(FocusNode());
     var checknull = await CheckNull();
     if(!checknull){
       param.eMail = userID;

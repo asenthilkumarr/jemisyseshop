@@ -70,7 +70,7 @@ void signOut() async{
   userName ="";
   isLogin=false;
   cartCount = 0;
-
+  customerdata = new Customer();
   Navigator.pop(context,false);
 }
 

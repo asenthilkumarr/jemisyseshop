@@ -39,16 +39,16 @@ class _OutstandingPayment extends State<OutstandingPayment>{
   }
 
   void checkAmount(double amount){
-    if(dt.totalAmount - dt.receivedAmount > amount){
+    FocusScope.of(context).requestFocus(FocusNode());
+    if(dt.totalAmount - dt.receivedAmount >= amount){
       Navigator.push(context, MaterialPageRoute(
           builder: (context) =>
-              PaymentPage(totalAmount: amount, source: "OP",outstandingitem: widget.outstanding,)));
+              PaymentPage(totalAmount: amount, source: "IP",outstandingitem: widget.outstanding,)));
     }
   }
 
   @override
   void initState() {
-
     super.initState();
     dt = widget.outstanding;
   }
@@ -75,12 +75,10 @@ class _OutstandingPayment extends State<OutstandingPayment>{
             backgroundColor: Color(0xFFFF8752),
             centerTitle: true,
           ),
-          body:
-          SingleChildScrollView(
+          body: SingleChildScrollView(
               child:Container(
                 color: Colors.transparent,
                 padding: const EdgeInsets.fromLTRB(12.0,5,12,10),//I used some padding without fixed width and height
-                // Image(image: AssetImage("assets/logo3.png"),
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: Column(

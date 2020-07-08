@@ -6,7 +6,9 @@ import 'package:jemisyseshop/style.dart';
 import 'package:jemisyseshop/test.dart';
 import 'package:jemisyseshop/view/aboutUs.dart';
 import 'package:jemisyseshop/view/contactUs.dart';
+import 'package:jemisyseshop/view/login.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
+import 'package:jemisyseshop/view/myTransaction.dart';
 import 'package:jemisyseshop/view/orderOutstandingList.dart';
 import 'package:jemisyseshop/view/productList.dart';
 import 'package:jemisyseshop/view/profile.dart';
@@ -26,7 +28,7 @@ final List<menuList> menuitem =[
   menuList('Diamond Jewellery', "", "DIAMONDONLY", 2),
   menuList('Silver Jewellery', "", "SILVERONLY", 3),
   menuList('Watches', "WATCHES", "WATCHONLY", 4),
-  menuList('My Transactions', "", "", 5),
+//  menuList('My Transactions', "", "", 5),
 ];
 
 final List<String> menuitem2 = [
@@ -273,10 +275,70 @@ class menuItemWedget extends State<MenuItemWedget> {
                             SizedBox(height: 20,),
                             GestureDetector(
                               onTap: () async {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => OrderOutstandingList()),);
+                                if (userID == "") {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            LoginPage(masterScreenFormKey: widget.masterScreenFormKey,)),);
+                                }
+                                else{
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => MyTransactionPage()),);
+                                }
+
+                                widget.scaffoldKey.currentState.openEndDrawer();
+                              },
+                              child: Container(
+                                color: currentColor,//Color(0xFF170904),
+                                child: Row(
+                                  children: [
+                                    SizedBox(width: 15,),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        SizedBox(height: 12,),
+                                        Text("My Transactions", style: TextStyle(color: Colors.white, fontSize: 16),),
+                                        SizedBox(height: 12,),
+                                      ],
+                                    ),
+                                    Spacer(),
+                                    Icon(Icons.chevron_right, color: Colors.white,size: 30,),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 20,),
+//                    ListTile(
+//                        title: Text(item),
+//                        onTap: () {
+//                          scaffoldKey.currentState.openEndDrawer();
+//                          _openPage(item, context);
+//                        }
+//                    ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            SizedBox(height: 20,),
+                            GestureDetector(
+                              onTap: () async {
+                                if (userID == "") {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            LoginPage(masterScreenFormKey: widget.masterScreenFormKey,)),);
+                                }
+                                else{
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => OrderOutstandingList()),);
+                                }
+
                                 widget.scaffoldKey.currentState.openEndDrawer();
                               },
                               child: Container(

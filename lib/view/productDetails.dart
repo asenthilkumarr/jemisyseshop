@@ -1336,11 +1336,12 @@ class _productDetailPage extends State<ProductDetailPage> {
 //                      border: Border.all(color: Colors.blueAccent)
 //                  ),
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       //Customtitle(context, widget.title),
-                      productDetailWidget(widget.product),
+                      Center(child: productDetailWidget(widget.product)),
                       SizedBox(height: 3,)
                     ],
                   ),

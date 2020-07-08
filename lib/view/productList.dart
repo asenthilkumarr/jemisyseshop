@@ -476,7 +476,6 @@ class _productListPage extends State<ProductListPage> {
                       ),
                       padding: EdgeInsets.all(3),
                       child: CircleAvatar(
-
                         backgroundColor: Colors.white,
                         child: CircleAvatar(
                           backgroundImage: CachedNetworkImageProvider(
@@ -487,30 +486,6 @@ class _productListPage extends State<ProductListPage> {
                         radius: 45,
                       ),
                     ),
-                      /*
-                    child: Container(
-                        decoration: new BoxDecoration(
-                          color: buttonColor, // border color
-                          shape: BoxShape.circle,
-                        ),
-                        padding: const EdgeInsets.all(2.0), // borde width
-                        child: Container(
-                          decoration: new BoxDecoration(
-                            color: const Color(0xFFFFFFFF), // border color
-                            shape: BoxShape.circle,
-                          ),
-                          padding: const EdgeInsets.all(13.0), // borde width
-                          child: Image(
-                            height: 65,
-                            width: 65,
-                            image: CachedNetworkImageProvider(
-                              dt.imageFileName,
-                            ),
-                            fit: BoxFit.fitHeight,
-                          ),
-                        ),
-                      ),
-*/
                   )
                 ],
               ),
@@ -660,14 +635,10 @@ class _productListPage extends State<ProductListPage> {
                             child: Container(
                               decoration: BoxDecoration(
                                 color: Color(0xFF64645A),
-//                                border: Border.all(
-//                                    width: 0.0
-//                                ),
                                 borderRadius: BorderRadius.all(
                                     Radius.circular(15.0) //         <--- border radius here
                                 ),
                               ),
-//                            color: Colors.grey,
                               height: 40,
                                 width: 110,
                                 child: Center(child: Text("${totItem} items",style: TextStyle(color: Colors.white),)))),
