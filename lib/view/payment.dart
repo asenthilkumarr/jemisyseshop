@@ -1,13 +1,20 @@
+import 'dart:async';
+//import 'dart:html';
 import 'dart:ui';
 
+//import 'package:easy_web_view/easy_web_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+//import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
+import 'package:jemisyseshop/model/dialogs.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
 import 'package:jemisyseshop/style.dart';
 import 'package:jemisyseshop/view/order.dart';
+import 'package:jemisyseshop/view/voucherList.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class PaymentPage extends StatefulWidget{
   final int itemCount;
@@ -23,12 +30,17 @@ class PaymentPage extends StatefulWidget{
   _paymentPage createState() => _paymentPage();
 }
 class _paymentPage extends State<PaymentPage> {
+  DataService dataService = DataService();
+
   double sumValue = 0.0;
+  double voucherRedeemamount = 0;
   int itemCount = 0;
   double totaldollortoRedeem = 0;
   double redeemValue = 0;
-  int id = 1;
+  int id = 1, vouchercnt = 0;
   String radioItem = 'Master / VISA Card';
+
+  List<Voucher> redeemVouchers = [];
   List<RadioButtonListValue> fList = [
     RadioButtonListValue(
       index: 1,
@@ -46,8 +58,29 @@ class _paymentPage extends State<PaymentPage> {
     setState(() {
     });
   }
+  void loadDefault() async{
+    sumValue = widget.totalAmount;
+    itemCount = widget.itemCount;
+    _focusNode = FocusNode();
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        txtPointsvalue.clear();
+        sumValue = widget.totalAmount - voucherRedeemamount;
+        setState(() {
+
+        });
+      }
+
+    });
+
+    await getCustomer();
+    var voucherlist = await _fetchVoucherList();
+    vouchercnt = voucherlist.length;
+    setState(() {
+
+    });
+  }
   void getCustomer() async{
-    DataService dataService = DataService();
     var dt = await dataService.getPoints(userID);
     if(dt.dollortoRedeem != null){
       totaldollortoRedeem = double.parse(formatterint.format(dt.dollortoRedeem).toString());
@@ -63,20 +96,32 @@ class _paymentPage extends State<PaymentPage> {
       redeemValue = 0;
     }
     else{
-      sumValue = widget.totalAmount-iValue;
+      sumValue = widget.totalAmount-iValue - voucherRedeemamount;
       redeemValue = iValue;
     }
+  }
+  void applyVoucher(List<Voucher> getV){
+    voucherRedeemamount = 0;
+    if(getV != null && getV.length>0){
+      redeemVouchers = getV;
+      for(int i=0;i<getV.length;i++){
+        voucherRedeemamount += getV[i].voucherValue;
+      }
+    }
+    sumValue = widget.totalAmount - redeemValue - voucherRedeemamount;
+    setState(() {
+
+    });
+  }
+  Future<List<Voucher>> _fetchVoucherList() async {
+    var dt = await dataService.getVouchers(userID);
+    return dt;
   }
   @override
   void initState() {
     super.initState();
-    sumValue = widget.totalAmount;
-    itemCount = widget.itemCount;
-    _focusNode = FocusNode();
-    _focusNode.addListener(() {
-      if (_focusNode.hasFocus) txtPointsvalue.clear();
-    });
-    getCustomer();
+
+    loadDefault();
   }
 
   @override
@@ -166,10 +211,10 @@ class _paymentPage extends State<PaymentPage> {
                                       color: buttonTextColor,
                                       child: Padding(
                                         padding: const EdgeInsets.all(8.0),
-                                        child: Column(
+                                        child: vouchercnt == 0 ? Column(
                                           crossAxisAlignment: CrossAxisAlignment.stretch,
                                           children: [
-                                            Text("xCLusive Vouchers", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                                            Text("$appTitle Vouchers", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
                                             SizedBox(height: 5,),
                                             Container(
 //                                            color: Color(0xFFFAFAFA),
@@ -179,43 +224,88 @@ class _paymentPage extends State<PaymentPage> {
                                               ),
                                             ),
                                           ],
+                                        )
+                                        : InkWell(
+                                          onTap: () async{
+                                            List<Voucher> getV = await Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) => VoucherList()),);
+                                            applyVoucher(getV);
+                                          },
+                                          child: Row(
+                                            children: [
+                                              Flexible(
+                                              flex: 5,
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                                  children: [
+                                                    Text("$appTitle Vouchers", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                                                    SizedBox(height: 5,),
+                                                    Container(
+                                                      child: Padding(
+                                                        padding: const EdgeInsets.all(8.0),
+                                                        child: Text("You currently have xCLusive Vouchers", style: TextStyle(color: lightTextColor),),
+                                                      ),
+                                                    ),
+                                                    voucherRedeemamount > 0 ? SizedBox(height: 5,)  : Container(),
+                                                    voucherRedeemamount > 0 ? Row(
+                                                      mainAxisSize: MainAxisSize.max,
+                                                      mainAxisAlignment: MainAxisAlignment.end,
+                                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                                      children: [
+                                                        Text("Voucher Amount: ", style: TextStyle(fontWeight: FontWeight.bold),),
+                                                        Text('$currencysymbol${formatterint.format(voucherRedeemamount)}'),
+                                                      ],
+                                                    ) : Container(),
+                                                  ],
+                                                ),
+                                              ),
+                                              Flexible(
+                                                flex: 1,
+                                                child: Icon(Icons.keyboard_arrow_right, size: 45, color: Color(0xFF7DB553),),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
                                   SizedBox(height: 8,),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 8.0, bottom: 3.0, right: 8.0),
-                                    child: Container(
-                                      color: Colors.white,
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Text("Payment Method", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
-                                          ),
-                                          Container(
-                                            child: Column(
-                                              children:
-                                              fList.map((data) => Padding(
-                                                padding: const EdgeInsets.only(left: 8.0, bottom: 3.0, right: 8.0),
-                                                child: GestureDetector(
-                                                  onTap: (){
+                                  Visibility(
+                                    visible: false,
+                                    child:Padding(
+                                      padding: const EdgeInsets.only(left: 8.0, bottom: 3.0, right: 8.0),
+                                      child: Container(
+                                        color: Colors.white,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Text("Payment Method", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
+                                            ),
+                                            Container(
+                                              child: Column(
+                                                children:
+                                                fList.map((data) => Padding(
+                                                  padding: const EdgeInsets.only(left: 8.0, bottom: 3.0, right: 8.0),
+                                                  child: GestureDetector(
+                                                    onTap: (){
                                                       setState(() {
                                                         radioItem = data.name;
                                                         id = data.index;
                                                         _handleRadioValueChange(data);
                                                       });
                                                     },
-                                                  child: Container(
-                                                    decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                        width: 1,
-                                                        color: titleContainerBgColor,
-                                                      )
-                                                    ),
-                                                    child: Padding(
+                                                    child: Container(
+                                                      decoration: BoxDecoration(
+                                                          border: Border.all(
+                                                            width: 1,
+                                                            color: titleContainerBgColor,
+                                                          )
+                                                      ),
+                                                      child: Padding(
                                                         padding: const EdgeInsets.only(top: 3.0, bottom: 3.0),
                                                         child: Row(
                                                           mainAxisSize: MainAxisSize.max,
@@ -235,18 +325,20 @@ class _paymentPage extends State<PaymentPage> {
                                                           ],
                                                         ),
                                                       ),
+                                                    ),
                                                   ),
-                                                ),
-                                              )
-                                              ).toList(),
+                                                )
+                                                ).toList(),
+                                              ),
                                             ),
-                                          ),
-                                          SizedBox(height: 8,),
-                                        ],
+                                            SizedBox(height: 8,),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
-                                  SizedBox(height: 8,),
+
+                                  //SizedBox(height: 8,),
                                   widget.source != "IP" ? Padding(
                                     padding: const EdgeInsets.only(left: 8.0, bottom: 3.0, right: 8.0),
                                     child: Container(
@@ -284,6 +376,7 @@ class _paymentPage extends State<PaymentPage> {
                                                     ),
                                                     textAlign: TextAlign.end,
                                                     onChanged: (text){
+                                                      if(text == null || text == "") text = "0";
                                                       checkPointsValue(double.parse(text));
                                                       setState(() {
 
@@ -340,12 +433,12 @@ class _paymentPage extends State<PaymentPage> {
                               if(radioItem == 'Master / VISA Card'){
                                 Navigator.push(context, MaterialPageRoute(
                                     builder: (context) =>
-                                        PaymentDetailPage(itemCount: itemCount,totalAmount: sumValue, redeemAmount: redeemValue, payMode: "VISA / MASTER",sAddress: widget.sAddress, dAddress: widget.dAddress,itemList: widget.itemList, source: widget.source, outstandingitem: widget.outstandingitem,dstoreCode: widget.dstoreCode,)));
+                                        PaymentDetailPage(redeemVoucher: redeemVouchers, itemCount: itemCount,totalAmount: sumValue, redeemAmount: redeemValue, payMode: "VISA / MASTER",sAddress: widget.sAddress, dAddress: widget.dAddress,itemList: widget.itemList, source: widget.source, outstandingitem: widget.outstandingitem,dstoreCode: widget.dstoreCode,)));
                               }
                               else{
                                 Navigator.push(context, MaterialPageRoute(
                                     builder: (context) =>
-                                        PaymentDetailPage(itemCount: itemCount,totalAmount: sumValue, redeemAmount: redeemValue, payMode: "NETS",sAddress: widget.sAddress, dAddress: widget.dAddress, itemList: widget.itemList, source: widget.source, outstandingitem: widget.outstandingitem,dstoreCode: widget.dstoreCode,)));
+                                        PaymentDetailPage(redeemVoucher: redeemVouchers, itemCount: itemCount,totalAmount: sumValue, redeemAmount: redeemValue, payMode: "NETS",sAddress: widget.sAddress, dAddress: widget.dAddress, itemList: widget.itemList, source: widget.source, outstandingitem: widget.outstandingitem,dstoreCode: widget.dstoreCode,)));
                               }
                             },
                           ),
@@ -360,8 +453,245 @@ class _paymentPage extends State<PaymentPage> {
     );
   }
 }
-
 class PaymentDetailPage extends StatefulWidget{
+  final int itemCount;
+  final double totalAmount;
+  final double redeemAmount;
+  final String payMode;
+  final Address sAddress;
+  final Address dAddress;
+  final List<Cart> itemList;
+  final String source;
+  final List<Voucher> redeemVoucher;
+  final OrderOutstanding outstandingitem;
+  final String dstoreCode;
+  PaymentDetailPage({this.itemCount, this.totalAmount, this.redeemAmount, this.payMode, this.sAddress, this.dAddress, this.itemList, this.source, this.outstandingitem, this.dstoreCode,
+  this.redeemVoucher});
+  @override
+  _paymentDetailPage createState() => _paymentDetailPage();
+}
+class _paymentDetailPage extends State<PaymentDetailPage> {
+  DataService dataService = DataService();
+
+  final Completer<WebViewController> _controller =
+  Completer<WebViewController>();
+
+  final GlobalKey<State> _keyLoader = new GlobalKey<State>();
+  final GlobalKey<State> keyview = new GlobalKey<State>();
+  double totalAmount = 0;
+  OrderData param=new OrderData();
+  PaymentLog pLog = new PaymentLog();
+  String srcUrl = "", pNo = "", paymode_CC = "", paymode_Nets = "", paymode_Points="", paymode_Voucher="";
+
+  bool isOrderCreated = false, _isLoadingPage;
+
+  Future<void> loadDefault() async {
+    if(widget.itemList != null){
+      for(var i = 0; i<widget.itemList.length; i++){
+        totalAmount += widget.itemList[i].totalPrice;
+      }
+    }
+    var dt = await dataService.getSetting();
+    if(dt.length>0){
+      paymode_CC = dt[0].paymode_CC;
+      paymode_Nets = dt[0].paymode_Nets;
+      paymode_Points = dt[0].paymode_Points;
+      paymode_Voucher = dt[0].paymode_Voucher;
+    }
+    pNo = await dataService. getPaymentNextNo();
+    srcUrl = paymenturl + "?paymentMode=VM&orderID="+pNo+"&payType=S&amount="+widget.totalAmount.toString()+"&currency="+currencyCode;
+    setState(() {
+
+    });
+  }
+  void UpdatePayment(String payMode) async{
+    isOrderCreated = true;
+    String voucherNo = "";
+    double voucherAmount = 0;
+    if(widget.redeemVoucher.length>0){
+      for(int i=0;i<widget.redeemVoucher.length;i++){
+        if(voucherNo!= "") voucherNo += ";";
+        voucherAmount += widget.redeemVoucher[i].voucherValue;
+        voucherNo += widget.redeemVoucher[i].refNo;
+      }
+    }
+    if(widget.source==null){
+      Paymentfn objcf = new Paymentfn();
+      param.eMail = userID;
+      param.totalAmount = totalAmount;
+      param.discount = 0;
+      param.netAmount = totalAmount;
+      param.deliveryMode = "S";
+      param.shippingAddress = widget.sAddress;
+      param.billingAddress = widget.dAddress;
+      param.dstoreCode = widget.dstoreCode;
+      param.payMode1 = paymode_CC;
+      param.payMode1_Amt = widget.totalAmount;
+      param.payMode1_Ref = pNo;
+      param.payMode2 = widget.redeemAmount != 0 ? paymode_Points : null;
+      param.payMode2_Amt = widget.redeemAmount;
+      param.payMode2_Ref = null;
+      param.payMode3 = voucherAmount> 0 ? paymode_Voucher : null;
+      param.payMode3_Amt = voucherAmount;
+      param.payMode3_Ref = voucherNo;
+      param.mode = "I";
+      objcf.updateOrder(param, widget.itemList, null, context);
+    }
+    else if(widget.source == "IP"){
+      Paymentfn objpf = new Paymentfn();
+      OrderUpdateParam param = new OrderUpdateParam();
+      param.storeCode = widget.outstandingitem.storeCode;
+      param.refNo = widget.outstandingitem.refNo;
+      param.docType = widget.outstandingitem.docType;
+      param.amount = widget.totalAmount;
+      param.payMode = paymode_CC;
+      param.reff = pNo;
+      var result = await dataService.updateOrderOutstanding(param);
+      if(result.status == 1){
+        await objpf.sendmail(widget.outstandingitem.storeCode, widget.outstandingitem.refNo, widget.outstandingitem.docType, context);
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+            OrderPage(source: "IP",)), (Route<dynamic> route) => false);
+      }
+    }
+  }
+
+  @override
+  void initState(){
+    super.initState();
+    srcUrl = paymenturl;
+    _isLoadingPage = true;
+    setState(() {
+
+    });
+    loadDefault();
+  }
+  /*
+Widget getPage(){
+    _webViewPlugin = new EasyWebView(
+        src: srcUrl,
+
+        onLoaded: (){
+          turl = _webViewPlugin.src;
+          print("-----------------------------------------------------------------------------------------");
+          print(turl);
+          print("====================AAAAAAA================================================================");
+        });
+    return _webViewPlugin;
+}
+   */
+  @override
+  Widget build(BuildContext context) {
+//    return getPage();
+
+    return WillPopScope(
+        onWillPop: () async => false,
+        child: MaterialApp(
+          title: 'Payment',
+          theme: MasterScreen.themeData(context),
+          home: Scaffold(
+            appBar: AppBar(
+              title: Text("Payment", style: TextStyle(color: title1Color),),
+              backgroundColor: primary1Color,
+              centerTitle: true,
+            ),
+/*
+               body: EasyWebView(
+                 key: keyview,
+              src: srcUrl,
+              isHtml: false, // Use Html syntax
+              isMarkdown: false, // Use markdown syntax
+              // width: 100,
+              // height: 100,
+              onLoaded: () {
+                //print(keyview.currentContext.widget);
+                final EasyWebView box = keyview.currentWidget;
+                print("==========AAAAAAAAA----------------BBBBBBBBB-------------------");
+                print(box.src);
+                print("-------------------------------------------------------------------------------------");
+              },
+            ),
+*/
+            body: srcUrl != "" && srcUrl != paymenturl ? WebView(
+              initialUrl: srcUrl,
+
+              javascriptMode: JavascriptMode.unrestricted,
+              onWebViewCreated: (WebViewController webViewController) {
+                _controller.complete(webViewController);
+              },
+              javascriptChannels: <JavascriptChannel>[
+                _toasterJavascriptChannel(context),
+              ].toSet(),
+              navigationDelegate: (NavigationRequest request) {
+                if (request.url.startsWith(paymentBackurl)) {
+                  Navigator.pop(context);
+                }
+                else if (request.url.startsWith(paymentSuccessurl)) {
+                  print(request.url);
+
+                }
+//                print('allowing navigation to $request');
+                return NavigationDecision.navigate;
+              },
+              onPageStarted: (String url) {
+//                print('Page started loading: $url');
+              },
+              onPageFinished: (String url) async {
+//                print('Page finished loading: $url');
+                if(!url.startsWith(paymenturl)){
+                  setState(() {
+                    _isLoadingPage = false;
+                  });
+                }
+                else if(url.startsWith(paymentSuccessurl)){
+                  String qryString = url.split('?')[1];
+                  if(qryString!= null){
+                    String tID = qryString.split('=')[1];
+                    if(tID != null && tID != ""){
+                      pLog = await dataService.getPaymentLog(tID);
+                      if(pLog.response_code == "0" && isOrderCreated == false){
+                        isOrderCreated = true;
+                        UpdatePayment("VISA MASTER");
+                      }
+                    }
+                  }
+
+//                  Navigator.pop(context);
+                }
+              },
+              gestureNavigationEnabled: true,
+            )
+            : Container(),
+//            Stack(
+//              children: [
+
+//                _isLoadingPage
+//                    ? Container(
+//                  alignment: FractionalOffset.center,
+//                  child: CircularProgressIndicator(),
+//                )
+//                    : Container(
+//                  color: Colors.transparent,
+//                ),
+//              ],
+//
+//            ),
+          ),
+        )
+    );
+
+  }
+  JavascriptChannel _toasterJavascriptChannel(BuildContext context) {
+    return JavascriptChannel(
+        name: 'Toaster',
+        onMessageReceived: (JavascriptMessage message) {
+          Scaffold.of(context).showSnackBar(
+            SnackBar(content: Text(message.message)),
+          );
+        });
+  }
+}
+
+class PaymentDetailPage2 extends StatefulWidget{
   final int itemCount;
   final double totalAmount;
   final double redeemAmount;
@@ -372,12 +702,12 @@ class PaymentDetailPage extends StatefulWidget{
   final String source;
   final OrderOutstanding outstandingitem;
   final String dstoreCode;
-  PaymentDetailPage({this.itemCount, this.totalAmount, this.redeemAmount, this.payMode, this.sAddress, this.dAddress, this.itemList, this.source, this.outstandingitem, this.dstoreCode});
+  PaymentDetailPage2({this.itemCount, this.totalAmount, this.redeemAmount, this.payMode, this.sAddress, this.dAddress, this.itemList, this.source, this.outstandingitem, this.dstoreCode});
 
   @override
-  _paymentDetailPage createState() => _paymentDetailPage();
+  _paymentDetailPage2 createState() => _paymentDetailPage2();
 }
-class _paymentDetailPage extends State<PaymentDetailPage> {
+class _paymentDetailPage2 extends State<PaymentDetailPage2> {
   DataService dataService = DataService();
   OrderData param=new OrderData();
 //  final _keyLoader = new GlobalKey<FormState>();

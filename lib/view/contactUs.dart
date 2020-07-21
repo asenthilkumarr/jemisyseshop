@@ -9,6 +9,7 @@ import 'package:jemisyseshop/style.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
 import 'package:jemisyseshop/widget/titleBar.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class ContactUsPage extends StatefulWidget{
   @override
@@ -22,10 +23,13 @@ class _contactUsPage extends State<ContactUsPage> {
   String _phone = '';
   Color currentColor = primary1Color;
   Color bgColor = Colors.white;
+  bool isWeb = false;
   void changemenuColor(Color color) => setState(() => currentColor = color);
   void changebgColor(Color color) => setState(() => bgColor = color);
 
   void loadDefault() async{
+    if(kIsWeb)
+      isWeb = true;
     var dt = await dataService.getSetting();
     if(dt.length>0)
       _setting = dt[0];
@@ -118,12 +122,26 @@ class _contactUsPage extends State<ContactUsPage> {
                       Container(
 //                        height: 200,
                         width: double.infinity,
-                        decoration: BoxDecoration(
+                        decoration: !isWeb ? BoxDecoration(
                             gradient: SweepGradient(
                               colors: [Colors.blue, Colors.green, Colors.yellow, Colors.red, Colors.blue],
                               stops: [0.0, 0.25, 0.5, 0.75, 1],
                             ),
                             shape: BoxShape.rectangle
+                        ) : BoxDecoration(
+                          // Box decoration takes a gradient
+                          gradient: LinearGradient(
+                            // Where the linear gradient begins and ends
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            // Add one stop for each color. Stops should increase from 0 to 1
+                            stops: [0, 1],
+                            colors: [
+                              // Colors are easy thanks to Flutter's Colors class.
+                              buttonColor,
+                              listLabelbgColor,//0xFFEDE7F6
+                            ],
+                          ),
                         ),
                         /*
                         decoration: BoxDecoration(

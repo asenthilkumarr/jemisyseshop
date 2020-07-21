@@ -1,9 +1,11 @@
 
 import 'dart:async';
+//import 'dart:html';
 
+import 'package:easy_web_view/easy_web_view.dart';
 import 'package:flutter/material.dart';
+//import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:jemisyseshop/model/common.dart';
-import 'package:jemisyseshop/model/menu.dart';
 import 'package:jemisyseshop/style.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -28,8 +30,7 @@ class _aboutUsPage extends State<AboutUsPage> {
       title: 'About Us',
       theme: MasterScreen.themeData(context),
       home: Scaffold(
-        key: scaffoldKey,
-//        drawer: MenuItemWedget3(scaffoldKey: scaffoldKey, isLogin: false),
+//        key: scaffoldKey,
         appBar: AppBar(
           title: Text('About Us', style: TextStyle(color: Colors.white),),
           leading: IconButton(
@@ -43,15 +44,22 @@ class _aboutUsPage extends State<AboutUsPage> {
           backgroundColor: primary1Color,
           centerTitle: true,
         ),
-        body: WebView(
-          initialUrl: aboutusUrl,
-//          initialUrl: "http://51.79.160.233/eShopWebPages/JEMiSysAboutUs.htm",
-//        initialUrl: "http://51.79.160.233/TopCashiPaymentWeb/Home/Contact",
-          javascriptMode: JavascriptMode.unrestricted,
-          onWebViewCreated: (WebViewController webViewController) {
-            _controller.complete(webViewController);
-          },),
+//        url: "https://google.com",
+
+        body: EasyWebView(
+          src: "http://51.79.160.233/eShopWebPages/JEMiSysAboutUs.htm",
+//          src: "https://youtube.com",
+          isHtml: false, // Use Html syntax
+          isMarkdown: false, // Use markdown syntax
+//          convertToWidets: false, // Try to convert to flutter widgets
+          // width: 100,
+          // height: 100,
+          onLoaded: () {},
+        ),
+
+
       ),
     );
+
   }
 }

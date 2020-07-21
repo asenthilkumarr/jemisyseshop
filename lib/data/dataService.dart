@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 class DataService {
   //SharedPreferences prefs;
 
@@ -11,6 +12,54 @@ class DataService {
     "APIKey": "SkVNaVN5czo1MzU2NDNBVDk4NjU0MzU2"
   };
 
+  Future<List<Voucher>> getVouchers(String eMail) async {
+    List<Voucher> result = new List<Voucher>();
+    http.Response response = await http.get(
+      apiurlERP + "Voucher/GetVouchers?eMail=" + eMail,
+      headers: userheaders,
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      for (Map i in data) {
+        var iRow = Voucher.fromData(i);
+        result.add(iRow);
+      }
+      return result;
+    }
+    else {
+      return result;
+    }
+  }
+  Future<PaymentLog> getPaymentLog(String transactionID) async {
+    PaymentLog result = new PaymentLog();
+    http.Response response = await http.get(
+      apiurlERP + "PaymentSuccess/GetTransaction?transaction_id=" + transactionID,
+      headers: userheaders,
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      result = PaymentLog.fromData(data);
+      return result;
+    }
+    else {
+      return result;
+    }
+  }
+  Future<String> getPaymentNextNo() async {
+    String result;
+    http.Response response = await http.get(
+      apiurl + "Setting/GetPaymentNextNo",
+      headers: userheaders,
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      result = data;
+      return result;
+    }
+    else {
+      return result;
+    }
+  }
   Future<Points> getPoints(String eMail) async {
     Points result = new Points();
     http.Response response = await http.get(
@@ -362,6 +411,10 @@ class DataService {
       var data = jsonDecode(response.body);
       for (Map i in data) {
         var iRow = Customer.fromJson(i);
+        if (!kIsWeb) {
+          await FCM_RegisterToken(iRow.eMail.toString());
+        }
+
         result=iRow;
       }
       return result;
@@ -438,6 +491,9 @@ class DataService {
       var data = jsonDecode(response.body);
       for (Map i in data) {
         var iRow = Customer.fromJson(i);
+        if (!kIsWeb) {
+          await FCM_RegisterToken(iRow.eMail.toString());
+        }
         result=iRow;
       }
       customerdata = result;
@@ -503,4 +559,22 @@ class DataService {
       return result;
     }
   }
+  Future<String> FCM_RegisterToken(String eMailParam) async {
+    FCM_UpdateToken param = FCM_UpdateToken();
+    param.token = await firebaseMessaging.getToken();
+    param.deviceId = await GetMacAddress();
+    param.eMail = eMailParam;
+    http.Response response = await http.post(
+      apiurl + "FCM/UpdateToken",
+      headers: userheaders,
+      body: json.encode(param.toParam()),
+    );
+    if (response.statusCode == 200) {
+      return "Updated";
+    }
+    else {
+      return "Error";
+    }
+  }
+
 }

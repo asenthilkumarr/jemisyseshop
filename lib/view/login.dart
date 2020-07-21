@@ -170,6 +170,7 @@ class _LoginPage extends State<LoginPage>{
                                     ),
                                   ]),
                               child:  Container(
+                                constraints: BoxConstraints(minWidth: 250, maxWidth: 350),
                                 color: Colors.white,
                                 //padding: const EdgeInsets.fromLTRB(15.0,10,15,10),//I used some padding without fixed width and height
                                 // Image(image: AssetImage("assets/logo3.png"),

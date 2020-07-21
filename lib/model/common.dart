@@ -1,5 +1,9 @@
+
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:get_mac/get_mac.dart';
 import 'package:intl/intl.dart';
 import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
@@ -11,6 +15,13 @@ final String apiurl = 'http://51.79.160.233/JEMiSyseShopAPI/api/';
 final String apiurlERP = 'http://51.79.160.233/JEMiSyseShopAPI/api/';
 final String imageDefaultUrl = 'http://51.79.160.233/JEMiSyseShopImage/';
 final String emailapiurl = "http://51.79.160.233/SMSeMailAppsToolAPI/";
+
+final String paymenturl = "http://51.79.160.233/JEMiSyseShopAPI/api/Payment";
+final String paymentBackurl = "http://51.79.160.233/JEMiSyseShopAPI/api/PaymentBack";
+final String paymentSuccessurl = "http://51.79.160.233/JEMiSyseShopAPI/api/PaymentSuccess";
+
+final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
+
 String imgFolderName = "";
 String imageUrl = "";
 String bannerimageUrl = '';
@@ -24,6 +35,7 @@ bool isLogin = false;
 String udid = "";
 int cartCount = 0;
 Customer customerdata;
+
 /*
 String gDocNo = '';
 String gVipName = '';
@@ -41,6 +53,7 @@ final List<Country2> country = [
   Country2('Singapore', 'SG', 'SGD', 'assets/SG.png'),
 ];
 String currencysymbol = "\$";
+String currencyCode = "\$";
 String appTitle = "JEMiSys eShop";
 bool hideGoldRate = false;
 bool hideTitleMessage = false;
@@ -55,6 +68,29 @@ final formatterint = new NumberFormat('#,##0', 'en_US');
 
 Color menubgColor = Color(0xFFFFF1F1);
 Color menuitembgColor = Color(0xFF170904);
+
+class Message {
+  final String title;
+  final String body;
+  final String screen;
+  const Message({
+    @required this.title,
+    @required this.body,
+    @required this.screen,
+  });
+}
+
+Future<String> GetMacAddress() async {
+  String platformVersion;
+  // Platform messages may fail, so we use a try/catch PlatformException.
+  try {
+    platformVersion = await GetMac.macAddress;
+  } on PlatformException {
+    platformVersion = 'Failed';
+  }
+
+  return platformVersion;
+}
 
 class Commonfn{
   Future<Customer> getCustomer(String userID, String password) async{
@@ -134,7 +170,6 @@ class Paymentfn{
     DataService dataService = DataService();
     String returnmag = "ERROR";
     var status = await dataService.getCheckStockOnline(customerdata.eMail);
-
     if(status.status == 1 && status.returnStatus == "OK"){
       var result = await dataService.updateOrder(param);
       if(result.status == 1){

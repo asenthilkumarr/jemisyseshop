@@ -1,5 +1,49 @@
 import 'package:jemisyseshop/model/common.dart';
 
+class Voucher {
+  String refNo;
+  double voucherValue;
+  String remarks;
+  bool isSelected;
+  Voucher({this.refNo, this.voucherValue, this.remarks, this.isSelected});
+  factory Voucher.fromData(Map<String, dynamic> json){
+    return Voucher(
+      refNo: json['refNo'],
+      voucherValue: double.parse(json['voucherValue'].toString()),
+      remarks: json['remarks'],
+      isSelected: false
+    );
+  }
+}
+class PaymentLog {
+  String response_code;
+  String acquirer_transaction_id;
+  String acquirer_authorized_ccy;
+  String acquirer_authorized_amount;
+  String acquirer_response_msg;
+
+  PaymentLog(
+      {this.response_code, this.acquirer_transaction_id, this.acquirer_authorized_ccy,
+        this.acquirer_authorized_amount, this.acquirer_response_msg});
+
+  factory PaymentLog.fromData(Map<String, dynamic> json){
+    if (json['response_code'] == "0") {
+      return PaymentLog(
+        response_code: json['response_code'],
+        acquirer_transaction_id: json['acquirer_transaction_id'],
+        acquirer_authorized_ccy: json['acquirer_authorized_ccy'],
+        acquirer_authorized_amount: json['acquirer_authorized_amount'],
+      );
+    }
+    else {
+      return PaymentLog(
+        response_code: json['response_code'],
+        acquirer_transaction_id: json['acquirer_transaction_id'],
+        acquirer_response_msg: json['acquirer_response_msg'],
+      );
+    }
+  }
+}
 class Store{
   String storeCode;
   String description;
@@ -46,9 +90,11 @@ class OrderH {
   String shipRefNo;
   String shipBy;
   String orderType;
+  bool isVisiblemore;
 
   OrderH({this.orderNo, this.orderDate, this.netAmount, this.dcustomerTitle, this.dcustomerName,
-        this.dAddress1, this.dAddress2, this.invoiceNo, this.invoiceDate, this.shipDate, this.shipBy, this.shipRefNo, this.orderType});
+        this.dAddress1, this.dAddress2, this.invoiceNo, this.invoiceDate, this.shipDate,
+    this.shipBy, this.shipRefNo, this.orderType, this.isVisiblemore});
 
   factory OrderH.fromData(Map<String, dynamic> json){
     return OrderH(
@@ -64,7 +110,8 @@ class OrderH {
         shipDate: json['shipDate'].toString() != "0001-01-01T00:00:00" ? DateTime.parse(json["shipDate"]) : null,
         shipBy: json['shipBy'],
         shipRefNo: json['shipRefNo'],
-        orderType: json['orderType']
+        orderType: json['orderType'],
+        isVisiblemore: true
     );
   }
 }
@@ -80,9 +127,10 @@ class OrderD{
   double unitPrice;
   double totalPrice;
   String imagefileName;
+  bool isVisible;
 
   OrderD({this.orderNo, this.designCode, this.version, this.inventoryCode, this.onlineName, this.description,
-  this.jewelsize, this.shippingDays, this.unitPrice, this.totalPrice, this.imagefileName});
+  this.jewelsize, this.shippingDays, this.unitPrice, this.totalPrice, this.imagefileName, this.isVisible});
 
   factory OrderD.fromData(Map<String, dynamic> json){
     return OrderD(
@@ -97,6 +145,7 @@ class OrderD{
       unitPrice: double.parse(json['unitPrice'].toString()),
       totalPrice: double.parse(json['totalPrice'].toString()),
       imagefileName: json['imagefileName'] != "" ? imageUrl + json['imagefileName'] : json['imagefileName'],
+        isVisible: false
     );
   }
 }
@@ -341,10 +390,14 @@ class Setting {
   String contactInstagram;
   String contactFacebook;
   String contactTwitter;
+  String paymode_CC;
+  String paymode_Nets;
+  String paymode_Points;
+  String paymode_Voucher;
 
   Setting({ this.appName, this.currCode, this.currSymbol, this.startupImageName, this.imageFolderName, this.fontName, this.message, this.isERPandEShopOnSameServer, this.isBackendJEMiSys, this.paymentGateway,
   this.aboutusUrl, this.contactCompanyName, this.contactName, this.contactNumber, this.contactEmail, this.contactAddress,
-  this.contactInstagram, this.contactFacebook, this.contactTwitter});
+  this.contactInstagram, this.contactFacebook, this.contactTwitter, this.paymode_CC, this.paymode_Nets, this.paymode_Points, this.paymode_Voucher});
 
   factory Setting.fromJson(Map<String, dynamic> json) {
     imgFolderName = json['imageFolderName'];
@@ -352,25 +405,29 @@ class Setting {
     startupimageUrl = imageDefaultUrl + imgFolderName+"/Startup/";
     bannerimageUrl = imageDefaultUrl + imgFolderName+"/Banner/";
     return Setting(
-      appName: json['appName'],
-      currCode: json['currCode'],
-      currSymbol: json['currSymbol'],
-      message: json['message'],
-      startupImageName: startupimageUrl+json['startupImageName'],
-      imageFolderName: json['imageFolderName'],
-      fontName: json['fontName'],
-      isERPandEShopOnSameServer: json['isERPandEShopOnSameServer'] == "0" ? false : true,
-      isBackendJEMiSys: json['isBackendJEMiSys'],
-      paymentGateway: json['paymentGateway'],
-      aboutusUrl: json['aboutusUrl'],
-      contactCompanyName: json['contactCompanyName'],
-      contactName: json['contactName'],
-      contactNumber: json['contactNumber'],
-      contactEmail: json['contactEmail'],
-      contactAddress: json['contactAddress'],
-      contactInstagram: json['contactInstagram'],
-      contactFacebook: json['contactFacebook'],
-      contactTwitter: json['contactTwitter'],
+        appName: json['appName'],
+        currCode: json['currCode'],
+        currSymbol: json['currSymbol'],
+        message: json['message'],
+        startupImageName: startupimageUrl+json['startupImageName'],
+        imageFolderName: json['imageFolderName'],
+        fontName: json['fontName'],
+        isERPandEShopOnSameServer: json['isERPandEShopOnSameServer'] == "0" ? false : true,
+        isBackendJEMiSys: json['isBackendJEMiSys'],
+        paymentGateway: json['paymentGateway'],
+        aboutusUrl: json['aboutusUrl'],
+        contactCompanyName: json['contactCompanyName'],
+        contactName: json['contactName'],
+        contactNumber: json['contactNumber'],
+        contactEmail: json['contactEmail'],
+        contactAddress: json['contactAddress'],
+        contactInstagram: json['contactInstagram'],
+        contactFacebook: json['contactFacebook'],
+        contactTwitter: json['contactTwitter'],
+        paymode_CC: json['paymode_CC'],
+        paymode_Nets: json['paymode_Nets'],
+        paymode_Points: json['paymode_Points'],
+        paymode_Voucher: json['paymode_Voucher']
     );
   }
 }
@@ -736,6 +793,19 @@ class City{
       orderOfDisplay: json['orderOfDisplay'],
     );
   }
+}
+class FCM_UpdateToken{
+  String deviceId;
+  String eMail;
+  String token;
+
+  FCM_UpdateToken({this.deviceId, this.eMail, this.token});
+
+  Map<String, dynamic> toParam() =>{
+    'deviceId':deviceId,
+    'eMail':eMail,
+    'token':token
+  };
 }
 
 class SendEmail {

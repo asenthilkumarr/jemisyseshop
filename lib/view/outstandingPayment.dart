@@ -6,6 +6,7 @@ import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
+import 'package:jemisyseshop/view/order.dart';
 import 'package:jemisyseshop/view/payment.dart';
 import '../style.dart';
 import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
@@ -38,12 +39,15 @@ class _OutstandingPayment extends State<OutstandingPayment>{
     return chkNull;
   }
 
-  void checkAmount(double amount){
+  void checkAmount(double amount) async {
     FocusScope.of(context).requestFocus(FocusNode());
     if(dt.totalAmount - dt.receivedAmount >= amount){
-      Navigator.push(context, MaterialPageRoute(
-          builder: (context) =>
-              PaymentPage(totalAmount: amount, source: "IP",outstandingitem: widget.outstanding,)));
+      if(paymentGateway != ""){
+        Navigator.push(context, MaterialPageRoute(
+            builder: (context) =>
+                PaymentPage(totalAmount: amount, source: "IP",outstandingitem: widget.outstanding,)));
+      }
+
     }
   }
 

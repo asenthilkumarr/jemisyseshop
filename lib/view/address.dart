@@ -1399,6 +1399,7 @@ class _addressEntryPage extends State<AddressEntryPage>{
                       ),
                     ),
                   Container(
+                    constraints: BoxConstraints(minWidth: 300, maxWidth: 450),
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(10.0,10.0,10.0,8.0),
                       child: SingleChildScrollView(

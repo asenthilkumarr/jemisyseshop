@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "808220891961",
+    "firebase_url": "https://jemisys-af38e.firebaseio.com",
+    "project_id": "jemisys-af38e",
+    "storage_bucket": "jemisys-af38e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:808220891961:android:26f97536b3bd65a6cc66e8",
+        "android_client_info": {
+          "package_name": "com.jemisys.jemisyseshop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "808220891961-i0c4stobfr839rdc5bgonsnedg7prsis.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUCAFmKsz1OMTztzhAx-eFIei27HNZOcE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "808220891961-i0c4stobfr839rdc5bgonsnedg7prsis.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:808220891961:android:7b4d41dd5d9233d8cc66e8",
+        "android_client_info": {
+          "package_name": "com.myapp.jemisys"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "808220891961-i0c4stobfr839rdc5bgonsnedg7prsis.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUCAFmKsz1OMTztzhAx-eFIei27HNZOcE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "808220891961-i0c4stobfr839rdc5bgonsnedg7prsis.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

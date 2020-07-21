@@ -110,21 +110,6 @@ void _openPage(menuItem, BuildContext context) {
           }
         }), (Route<dynamic> route) => false);
   }
-  else {
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      switch (menuItem) {
-        case 'Test':
-          return Test();
-          break;
-//        case 'Category':
-//          return CategoryScreen();
-//          break;
-
-        default:
-          return MasterScreen(currentIndex: 0, key: null,);
-      }
-    }));
-  }
 }
 class MenuItemWedget extends StatefulWidget{
   final GlobalKey<ScaffoldState> scaffoldKey;
@@ -392,6 +377,18 @@ class menuItemWedget extends State<MenuItemWedget> {
                                     builder: (context) => AboutUsPage()),);
                             }
                         ) : Container(),
+
+                        ListTile(
+                            title: Text('Test'),
+                            onTap: () {
+                              widget.scaffoldKey.currentState.openEndDrawer();
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Test()),);
+                            }
+                        ),
+
                         GestureDetector(
                           onTap: (){
                             showDialog(

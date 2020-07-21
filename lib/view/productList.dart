@@ -45,7 +45,7 @@ class _productListPage extends State<ProductListPage> {
   String filterSelect ="Metal Type";
   int _selectedGroupIndex = 0;
   int totItem = 0;
-  bool totisVisable = true;
+  bool totisVisable = true, isWeb = false;
   String _filterType = "", _selgroup = "";
   ItemScrollController _scrollControllerlist = ItemScrollController();
 
@@ -378,6 +378,8 @@ class _productListPage extends State<ProductListPage> {
   }
 
   void loadDefault() async{
+    if(kIsWeb)
+      isWeb = true;
     if(widget.fsource == "MENU"){
       if(widget.filterType == "WATCHONLY"){
         productdt = await getProductDetail("WATCHES", widget.filterType);
@@ -467,12 +469,15 @@ class _productListPage extends State<ProductListPage> {
                     },
                     child: Container(
 //                      height: 80,
-                      decoration: BoxDecoration(
-                        gradient: SweepGradient(
-                          colors: [Colors.blue, Colors.green, Colors.yellow, Colors.red, Colors.blue],
-                          stops: [0.0, 0.25, 0.5, 0.75, 1],
-                        ),
-                        shape: BoxShape.circle
+                      decoration: !isWeb ? BoxDecoration(
+                          gradient: SweepGradient(
+                            colors: [Colors.blue, Colors.green, Colors.yellow, Colors.red, Colors.blue],
+                            stops: [0.0, 0.25, 0.5, 0.75, 1],
+                          ),
+                          shape: BoxShape.circle
+                      ) : BoxDecoration(
+                          color: Color(0xFFDDDEDD),
+                          shape: BoxShape.circle
                       ),
                       padding: EdgeInsets.all(3),
                       child: CircleAvatar(

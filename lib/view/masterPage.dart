@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,7 @@ import 'package:jemisyseshop/view/login.dart';
 import 'package:jemisyseshop/view/productDetails.dart';
 import 'package:jemisyseshop/view/productList.dart';
 import 'package:jemisyseshop/view/profile.dart';
+import 'package:jemisyseshop/view/voucherDetail.dart';
 import 'package:jemisyseshop/widget/cartNotification.dart';
 import 'package:jemisyseshop/widget/goldRate.dart';
 import 'package:jemisyseshop/widget/productGridWidget.dart';
@@ -95,6 +97,9 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
 
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   final _formKeyReset = GlobalKey<FormState>();
+  var scaffoldKey = GlobalKey<ScaffoldState>();
+  GlobalKey _keyGoldRate = GlobalKey();
+
   List<Group> groupdt = List<Group>();
   List<Product> productdt = List<Product>();
   List<Product> selProductlist = new List<Product>();
@@ -116,11 +121,10 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   TabController _tabController;
   TabController _tabControllerFilter;
 
-  GlobalKey _keyGoldRate = GlobalKey();
-  GlobalKey _keyShowCart = GlobalKey();
-  GlobalKey _keyFiltermenu = GlobalKey();
 
-  var scaffoldKey = GlobalKey<ScaffoldState>();
+//  GlobalKey _keyShowCart = GlobalKey();
+//  GlobalKey _keyFiltermenu = GlobalKey();
+
 
   //Country2 sCountry2;
   int menuSelected = 0;
@@ -131,6 +135,11 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   static const snackBarDuration = Duration(seconds: 3);
   DateTime backButtonPressTime;
   BuildContext dialogContext;
+
+  final FirebaseMessaging _fbm = FirebaseMessaging();
+  final List<Message> messages = [];
+  Flushbar flush;
+  bool _wasButtonClicked;
 
   void checkLogin() async {
     Customer param = Customer();
@@ -733,17 +742,17 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
         a = 0;
     if (screenwidth <= 550)
       itemCount = 2;
-    else if (screenwidth <= 650)
-      itemCount = 3;
     else if (screenwidth <= 750)
+      itemCount = 3;
+    else if (screenwidth <= 850)
       itemCount = 4;
-    else if (screenwidth <= 950)
+    else if (screenwidth <= 1050)
       itemCount = 5;
-    else if (screenwidth <= 1100)
+    else if (screenwidth <= 1200)
       itemCount = 6;
-    else if (screenwidth <= 1250)
+    else if (screenwidth <= 1450)
       itemCount = 7;
-    else if (screenwidth <= 1400)
+    else if (screenwidth <= 1600)
       itemCount = 8;
     else
       itemCount = 10;
@@ -1608,9 +1617,97 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     return true;
   }
 
+  void firebaseMessagingConfigure() {
+    _fbm.configure(
+        onMessage: (Map<String, dynamic> message) async {
+          print('onMessage: $message');
+          final notification = message['notification'];
+          setState(() {
+            messages.add(Message(
+                title: notification['title'], body: notification['body']
+            ));
+            flush = Flushbar<bool> (
+              borderRadius: 15,
+              title: notification['title'],
+              message: notification['body'],
+              flushbarPosition: FlushbarPosition.TOP,
+              flushbarStyle: FlushbarStyle.FLOATING,
+              reverseAnimationCurve: Curves.decelerate,
+              forwardAnimationCurve: Curves.elasticOut,
+              backgroundGradient: LinearGradient(colors: [Colors.teal, Colors.blueAccent],),
+              backgroundColor: Colors.red,
+              boxShadows: [BoxShadow(color: Colors.blue[800], offset: Offset(0.0, 2.0), blurRadius: 3.0,)],
+              isDismissible: false,
+              //duration: Duration(seconds: 20 ),
+              icon: Icon(
+                Icons.info_outline,
+                color: Colors.white,
+              ),
+              mainButton: FlatButton(
+                onPressed: () {
+                  flush.dismiss(true);
+                },
+                child: Text(
+                  "OK",
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+              showProgressIndicator: true,
+              progressIndicatorBackgroundColor: Colors.blueGrey,
+              titleText: Text(
+                notification['title'],
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: 17.0, color: Colors.yellow, fontFamily: "ShadowsIntoLightTwo"),
+              ),
+              messageText: Text(
+                notification['body'],
+                style: TextStyle(fontSize: 14.0, color: Colors.white, fontFamily: "ShadowsIntoLightTwo"),
+              ),
+            )..show(context).then((result) {
+              setState(() { // setState() is optional here
+                _wasButtonClicked = result;
+              });
+            });
+          });
+        },
+        onLaunch: (Map<String, dynamic> message) async {
+          print('onLaunch: $message');
+          _serialiseAndNavigate(message);
+        },
+        onResume: (Map<String, dynamic> message) async {
+          print('onResume: $message');
+          _serialiseAndNavigate(message);
+        }
+    );
+
+    _fbm.requestNotificationPermissions(
+        const IosNotificationSettings(sound: true, badge: true, alert: true)
+    );
+  }
+
+  void _serialiseAndNavigate(Map<String, dynamic> message) {
+    var notificationData = message['data'];
+    var screen = notificationData['screen'];
+    if (screen != null) {
+      // Navigate to the screen defined
+      if (screen == 'voucher') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => VoucherDetailPage()),);
+      }
+      // If there's no view it'll just open the app on the first view
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    if (!kIsWeb) {
+      firebaseMessagingConfigure();
+      var dt = dataService.FCM_RegisterToken("");
+    }
+
     menuSelected = widget.currentIndex;
 
     _tabController = new TabController(vsync: this, length: hMenuCount,);

@@ -1,4 +1,5 @@
 import 'dart:core';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jemisyseshop/data/dataService.dart';
@@ -16,8 +17,8 @@ class OrderOutstandingList extends StatefulWidget {
 }
 //State is information of the application that can change over time or when some actions are taken.
 class _State extends State<OrderOutstandingList>{
-  ScrollController _scrollController2 = new ScrollController();
-  DataService obj = new DataService();
+  DataService dataService = DataService();
+  ScrollController _scrollController = new ScrollController();
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   List<OrderOutstanding> itemDt = [];
   double sumValue = 0;
@@ -26,13 +27,12 @@ class _State extends State<OrderOutstandingList>{
   int itemCount = 0;
   final format = DateFormat('yyyy/MM/dd');
   final fdatetime = new DateFormat('dd-MM-yyyy hh:mm aa');
-  final fdate = new DateFormat('dd-MM-yyyy');
+//  final fdate = new DateFormat('dd-MM-yyyy');
   bool _isOnTop = true;
-  DataService dataService = DataService();
   DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
 
   _scrollToTop() {
-    _scrollController2.animateTo(_scrollController2.position.minScrollExtent,
+    _scrollController.animateTo(_scrollController.position.minScrollExtent,
         duration: Duration(milliseconds: 300), curve: Curves.easeIn);
     setState(() => _isOnTop = true);
   }
@@ -49,7 +49,7 @@ class _State extends State<OrderOutstandingList>{
   ListView Orderlist(List<OrderOutstanding> data) {
     return
       new ListView.builder(
-        controller: _scrollController2,
+        controller: _scrollController,
         scrollDirection: Axis.vertical,
         itemCount: data.length,
         itemBuilder: (BuildContext context, int index) =>
@@ -148,11 +148,15 @@ class _State extends State<OrderOutstandingList>{
                       child: IconButton(icon: Icon(Icons.attach_money,size: 35,
                         color: Colors.yellowAccent ,),
                           onPressed: (){
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => OutstandingPayment(outstanding: Dt,)),);  // do what you need to do when "Click here" gets clicked
-
+                            if(paymentGateway != ""){
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => OutstandingPayment(outstanding: Dt,)),);  // do what you need to do when "Click here" gets clicked
+                            }
+                            else{
+                              showInfoFlushbar(context, "Payment Gateway didn't enabled, please visit nearby store.");
+                            }
                           }),
                     ),
                   ),
@@ -172,7 +176,7 @@ class _State extends State<OrderOutstandingList>{
   @override
   void initState() {
     super.initState();
-    _scrollController2 = ScrollController();
+    _scrollController = ScrollController();
 //    _fetchOrderList();
   }
   @override
@@ -218,6 +222,24 @@ class _State extends State<OrderOutstandingList>{
       ),
     );
 
+  }
+  void showInfoFlushbar(BuildContext context, String msg) {
+    Flushbar(
+      margin: EdgeInsets.all(8),
+      backgroundGradient: LinearGradient(colors: [Colors.blue, Colors.teal]),
+      backgroundColor: Colors.red,
+      boxShadows: [BoxShadow(color: Colors.blue[800], offset: Offset(0.0, 2.0), blurRadius: 3.0,)],
+      borderRadius: 8,
+      title: 'Failed to Register!',
+      message: '$msg',
+      icon: Icon(
+        Icons.info_outline,
+        size: 28,
+        color: Colors.blue.shade300,
+      ),
+      // leftBarIndicatorColor: Colors.blue.shade300,
+      duration: Duration(seconds: 3),
+    )..show(context);
   }
 }
 
