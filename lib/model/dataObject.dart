@@ -807,7 +807,6 @@ class FCM_UpdateToken{
     'token':token
   };
 }
-
 class SendEmail {
   String source;
   String storeCode;
@@ -827,6 +826,7 @@ class SendEmail {
   String vipname;
   String userid;
   String SendeMailToCustomerInvoiceResult;
+
   SendEmail({
     this.source, this.storeCode , this.macid, this.mailHost, this.mailFrom, this.mailTo,
     this.mailSubject,this.mailBody,this.mailAttachFileName,this.docno,this.returnStatus,this.errormsg,this.status,

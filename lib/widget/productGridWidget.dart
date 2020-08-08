@@ -212,9 +212,6 @@ class ProductGridWidgetHome extends StatelessWidget {
     return Scaffold(
         body: Builder(
           builder: (context) {
-            final screenSize = MediaQuery
-                .of(context)
-                .size;
             return Card(
                 shape: RoundedRectangleBorder(
                   side: BorderSide(

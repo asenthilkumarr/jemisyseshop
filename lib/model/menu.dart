@@ -380,12 +380,14 @@ class menuItemWedget extends State<MenuItemWedget> {
 
                         ListTile(
                             title: Text('Test'),
-                            onTap: () {
+                            onTap: () async {
                               widget.scaffoldKey.currentState.openEndDrawer();
-                              Navigator.push(
+                              await Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => Test()),);
+
+                              print("-------AAAAAAAAAAAA----------AAAAAAAAAAAAAAAAAAA--------AAAAAAAAAA----------");
                             }
                         ),
 

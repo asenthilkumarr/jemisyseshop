@@ -6,6 +6,7 @@ import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/style.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class VoucherList extends StatefulWidget {
   @override
@@ -14,6 +15,7 @@ class VoucherList extends StatefulWidget {
 //State is information of the application that can change over time or when some actions are taken.
 class _voucherList extends State<VoucherList>{
   DataService dataService = new DataService();
+  Commonfn cfobj = Commonfn();
   List<Voucher> itemDt = [];
   List<Voucher> selectedVoucher = [];
   double totalVAmount = 0;
@@ -133,6 +135,14 @@ class _voucherList extends State<VoucherList>{
   }
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery
+        .of(context)
+        .size;
+    screenWidth = screenSize.width;
+    if(kIsWeb){
+      screenWidth =  cfobj.ScreenWidth(screenSize.width);
+    }
+
     return MaterialApp(
       theme: MasterScreen.themeData(context),
       home:  Scaffold(
@@ -151,10 +161,27 @@ class _voucherList extends State<VoucherList>{
         body: itemDt == null || itemDt.length == 0 ? Container(
           color: Colors.white,
         ) :
-      Container(
-        constraints: BoxConstraints(minWidth: 250, maxHeight: 500),
-        padding: const EdgeInsets.fromLTRB(10,8,10,5),
-        child:  VoucherlistView(itemDt)
+      Row(
+        children: [
+          Flexible(
+            child: Container(
+              color: webLeftContainerColor,
+            ),
+          ),
+          Align(
+            alignment: Alignment.topCenter,
+            child: Container(
+                constraints: BoxConstraints(minWidth: 250, maxWidth: screenWidth),
+              padding: const EdgeInsets.fromLTRB(10,8,10,5),
+              child:  VoucherlistView(itemDt)
+            ),
+          ),
+          Flexible(
+            child: Container(
+              color: webRightContainerColor,
+            ),
+          ),
+        ],
       ),
         bottomNavigationBar: BottomAppBar(
             child: Container(

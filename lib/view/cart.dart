@@ -10,6 +10,7 @@ import 'package:jemisyseshop/view/masterPage.dart';
 import 'package:jemisyseshop/view/productDetails.dart';
 import 'package:jemisyseshop/view/address.dart';
 import 'login.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class CartPage extends StatefulWidget{
   final String pSource;
@@ -22,6 +23,7 @@ class CartPage extends StatefulWidget{
 }
 class _cartPage extends State<CartPage> {
   DataService dataService = DataService();
+  Commonfn cfobj = Commonfn();
   final _keyLoader = new GlobalKey<FormState>();
   List<Cart> cartlist = new List<Cart>();
   String dropdownValue = '15';
@@ -445,6 +447,10 @@ class _cartPage extends State<CartPage> {
     final screenSize = MediaQuery
         .of(context)
         .size;
+    screenWidth = screenSize.width;
+    if(kIsWeb){
+      screenWidth =  cfobj.ScreenWidth(screenSize.width);
+    }
 
     return MaterialApp(
       title: 'Cart',
@@ -472,135 +478,155 @@ class _cartPage extends State<CartPage> {
           centerTitle: true,
         ),
         body: SafeArea(
-            child: Column(
+            child: Row(
               children: [
-                Container(
-                  color: Color(0xFF517295),
-                  height: 45,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 0.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                Flexible(
+                  child: Container(
+                    color: webLeftContainerColor,
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: Container(
+                    constraints: BoxConstraints(minWidth: 250, maxWidth: screenWidth),
+                    child: Column(
                       children: [
-                        Expanded(
-                          flex: 1,
-                          child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 8.0),
-                                child: Text("Items ($itemCount)",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 17),),
-                              )),
+                        Container(
+                          color: Color(0xFF517295),
+                          height: 45,
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 0.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(left: 8.0),
+                                        child: Text("Items ($itemCount)",
+                                          style: TextStyle(
+                                              color: Colors.white, fontSize: 17),),
+                                      )),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(right: 8.0),
+                                        child: Text(
+                                            "$currencysymbol${formatterint.format(
+                                                sumValue)}", style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.bold)),
+                                      )),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                        Expanded(
-                          flex: 1,
-                          child: Align(
-                              alignment: Alignment.centerRight,
-                              child: Padding(
-                                padding: const EdgeInsets.only(right: 8.0),
-                                child: Text(
-                                    "$currencysymbol${formatterint.format(
-                                        sumValue)}", style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.bold)),
-                              )),
+                        Flexible(
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                for(var i = 0; i < cartlist.length; i++)
+                                  CartList(cartlist[i], i),
+                                sumValue != 0 ? Container(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 20.0, right: 20.0, top: 30.0, bottom: 30),
+                                    child: Column(
+                                      children: [
+                                        Text("Summary", style: TextStyle(fontSize: 20.0,
+                                            fontWeight: FontWeight.bold),),
+                                        SizedBox(height: 15,),
+                                        Row(
+//                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                          children: [
+                                            Expanded(
+                                                child: Text("Sub Total")),
+                                            Expanded(
+                                              child: Align(
+                                                  alignment: Alignment.centerRight,
+                                                  child: Text(
+                                                    "$currencysymbol${formatterint
+                                                        .format(sumValue)}",
+                                                    style: TextStyle(
+                                                        fontWeight: FontWeight.bold),)),
+                                            )
+                                          ],
+                                        ),
+                                        SizedBox(height: 5,),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                                child: Text("Shipping Charge")),
+                                            Expanded(
+                                              child: Align(
+                                                  alignment: Alignment.centerRight,
+                                                  child: shippingCharge != 0 ? Text(
+                                                      "$currencysymbol${formatterint
+                                                          .format(shippingCharge)}")
+                                                      : Text("Free")),
+                                            )
+                                          ],
+                                        ),
+                                        SizedBox(height: 5,),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                                child: Text("Shipping Insurance")),
+                                            Expanded(
+                                              child: Align(
+                                                  alignment: Alignment.centerRight,
+                                                  child: shippingInsurance != 0 ? Text(
+                                                      "$currencysymbol${formatterint
+                                                          .format(shippingInsurance)}")
+                                                      : Text("Free")),
+                                            )
+                                          ],
+                                        ),
+                                        SizedBox(height: 5,),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                                child: Text("Grand Total")),
+                                            Expanded(
+                                              child: Align(
+                                                  alignment: Alignment.centerRight,
+                                                  child: Text(
+                                                      "$currencysymbol${formatterint
+                                                          .format(sumValue)}",
+                                                      style: TextStyle(
+                                                          fontWeight: FontWeight
+                                                              .bold))),
+                                            )
+                                          ],
+                                        ),
+                                        SizedBox(height: 25,),
+                                      ],
+                                    ),
+                                  ),
+                                ) : Container(),
+                              ],
+                            ),
+
+                          ),
                         ),
                       ],
+
                     ),
                   ),
                 ),
                 Flexible(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        for(var i = 0; i < cartlist.length; i++)
-                          CartList(cartlist[i], i),
-                        sumValue != 0 ? Container(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 20.0, right: 20.0, top: 30.0, bottom: 30),
-                            child: Column(
-                              children: [
-                                Text("Summary", style: TextStyle(fontSize: 20.0,
-                                    fontWeight: FontWeight.bold),),
-                                SizedBox(height: 15,),
-                                Row(
-//                                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                                  children: [
-                                    Expanded(
-                                        child: Text("Sub Total")),
-                                    Expanded(
-                                      child: Align(
-                                          alignment: Alignment.centerRight,
-                                          child: Text(
-                                            "$currencysymbol${formatterint
-                                                .format(sumValue)}",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),)),
-                                    )
-                                  ],
-                                ),
-                                SizedBox(height: 5,),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                        child: Text("Shipping Charge")),
-                                    Expanded(
-                                      child: Align(
-                                          alignment: Alignment.centerRight,
-                                          child: shippingCharge != 0 ? Text(
-                                              "$currencysymbol${formatterint
-                                                  .format(shippingCharge)}")
-                                              : Text("Free")),
-                                    )
-                                  ],
-                                ),
-                                SizedBox(height: 5,),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                        child: Text("Shipping Insurance")),
-                                    Expanded(
-                                      child: Align(
-                                          alignment: Alignment.centerRight,
-                                          child: shippingInsurance != 0 ? Text(
-                                              "$currencysymbol${formatterint
-                                                  .format(shippingInsurance)}")
-                                              : Text("Free")),
-                                    )
-                                  ],
-                                ),
-                                SizedBox(height: 5,),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                        child: Text("Grand Total")),
-                                    Expanded(
-                                      child: Align(
-                                          alignment: Alignment.centerRight,
-                                          child: Text(
-                                              "$currencysymbol${formatterint
-                                                  .format(sumValue)}",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight
-                                                      .bold))),
-                                    )
-                                  ],
-                                ),
-                                SizedBox(height: 25,),
-                              ],
-                            ),
-                          ),
-                        ) : Container(),
-                      ],
-                    ),
-
+                  child: Container(
+                    color: webRightContainerColor,
                   ),
                 ),
               ],
-
             )
         ),
         bottomNavigationBar: source != "W" ? BottomAppBar(

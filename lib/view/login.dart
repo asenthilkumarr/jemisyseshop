@@ -1,15 +1,18 @@
-import 'package:flushbar/flushbar.dart';
+import 'dart:convert';
+
+//import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/model/dialogs.dart';
+import 'package:jemisyseshop/style.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
 import 'package:jemisyseshop/view/registration.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../style.dart';
-import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
+import "package:http/http.dart" as http;
 import 'dart:core';
 
 class LoginPage extends StatefulWidget{
@@ -27,6 +30,105 @@ class _LoginPage extends State<LoginPage>{
   TextEditingController txtpassword = TextEditingController();
   final GlobalKey<State> _keyLoaderLogin = new GlobalKey<State>();
   DataService dataService = DataService();
+
+  GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: <String>[
+      'email',
+      'https://www.googleapis.com/auth/contacts.readonly',
+    ],
+  );
+  GoogleSignInAccount _currentUser;
+  String _contactText;
+
+  Future<void> _handleGetContact() async {
+    setState(() {
+      _contactText = "Loading contact info...";
+    });
+    final http.Response response = await http.get(
+      'https://people.googleapis.com/v1/people/me/connections'
+          '?requestMask.includeField=person.names',
+      headers: await _currentUser.authHeaders,
+    );
+    if (response.statusCode != 200) {
+      setState(() {
+        _contactText = "People API gave a ${response.statusCode} "
+            "response. Check logs for details.";
+      });
+      print('People API ${response.statusCode} response: ${response.body}');
+      return;
+    }
+    final Map<String, dynamic> data = json.decode(response.body);
+    final String namedContact = _pickFirstNamedContact(data);
+    setState(() {
+      if (namedContact != null) {
+        _contactText = "I see you know $namedContact!";
+      } else {
+        _contactText = "No contacts to display.";
+      }
+    });
+  }
+  String _pickFirstNamedContact(Map<String, dynamic> data) {
+    final List<dynamic> connections = data['connections'];
+    final Map<String, dynamic> contact = connections?.firstWhere(
+          (dynamic contact) => contact['names'] != null,
+      orElse: () => null,
+    );
+    if (contact != null) {
+      final Map<String, dynamic> name = contact['names'].firstWhere(
+            (dynamic name) => name['displayName'] != null,
+        orElse: () => null,
+      );
+      if (name != null) {
+        return name['displayName'];
+      }
+    }
+    return null;
+  }
+  Future<void> _handleSignIn() async {
+    try {
+      await _googleSignIn.signIn();
+    } catch (error) {
+      print(error);
+    }
+  }
+  Future<void> _handleSignOut() => _googleSignIn.disconnect();
+  Widget _buildBody() {
+    if (_currentUser != null) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          ListTile(
+            leading: GoogleUserCircleAvatar(
+              identity: _currentUser,
+            ),
+            title: Text(_currentUser.displayName ?? ''),
+            subtitle: Text(_currentUser.email ?? ''),
+          ),
+          const Text("Signed in successfully."),
+          Text(_contactText ?? ''),
+          RaisedButton(
+            child: const Text('SIGN OUT'),
+            onPressed: _handleSignOut,
+          ),
+          RaisedButton(
+            child: const Text('REFRESH'),
+            onPressed: _handleGetContact,
+          ),
+        ],
+      );
+    } else {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          const Text("You are not currently signed in."),
+          RaisedButton(
+            child: const Text('SIGN IN'),
+            onPressed: _handleSignIn,
+          ),
+        ],
+      );
+    }
+  }
 
   String ShowRetypePassword() {
     if (PasswordEnter == "Y") {
@@ -103,19 +205,25 @@ class _LoginPage extends State<LoginPage>{
 
   @override
   void initState() {
-
     super.initState();
+    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
+      setState(() {
+        _currentUser = account;
+      });
+      if (_currentUser != null) {
+        _handleGetContact();
+      }
+    });
+    _googleSignIn.signInSilently();
     ShowRetypePassword();
     loadDefault();
   }
 
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
       title: "Login",
         theme: MasterScreen.themeData(context),
-
         home: Scaffold(
           appBar: AppBar(
             title: Text('Login',style: TextStyle(color: Colors.white,)),
@@ -128,6 +236,11 @@ class _LoginPage extends State<LoginPage>{
             backgroundColor: Color(0xFFFF8752),
             centerTitle: true,
           ),
+            body: ConstrainedBox(
+              constraints: const BoxConstraints.expand(),
+              child: _buildBody(),
+            )
+          /*
           body: SafeArea(
             child: SingleChildScrollView(
               child: Center(
@@ -325,14 +438,16 @@ class _LoginPage extends State<LoginPage>{
                                         children: <Widget>[
                                           Expanded(
                                             child: FacebookSignInButton(onPressed: () {},
-                                              textStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, fontFamily: "Roboto",color: Colors.white),
+                                              textStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white),
                                               text: 'Facebook',
                                             ),
                                           ),
                                           SizedBox(width: 3,),
                                           Expanded(
-                                            child: GoogleSignInButton(onPressed: () {}, darkMode: true,
-                                              textStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, fontFamily: "Roboto",color: Colors.white),
+                                            child: GoogleSignInButton(onPressed: () {
+
+                                            }, darkMode: true,
+                                              textStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white),
                                               text: 'Google',
                                             ),
                                           ),
@@ -415,6 +530,7 @@ class _LoginPage extends State<LoginPage>{
               ),
             ),
           ),
+          */
         ));
   }
 }

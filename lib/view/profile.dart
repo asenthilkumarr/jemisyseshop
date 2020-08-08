@@ -13,19 +13,22 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../style.dart';
 import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
 import 'dart:core';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class ProfilePage extends StatefulWidget{
   @override
   _ProfilePage createState() => _ProfilePage();
 }
 class _ProfilePage extends State<ProfilePage>{
+  DataService dataService = DataService();
+  Commonfn cfobj = Commonfn();
+
   String PasswordEnter = "N";
   String txtPassword = "";
   bool _isRow = true;
   TextEditingController txtuserid = TextEditingController();
   TextEditingController txtpassword = TextEditingController();
   final GlobalKey<State> _keyLoaderLogin = new GlobalKey<State>();
-  DataService dataService = DataService();
 
   String ShowRetypePassword() {
     if (PasswordEnter == "Y") {
@@ -83,7 +86,14 @@ void signOut() async{
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery
+        .of(context)
+        .size;
 
+    screenWidth = screenSize.width;
+    if(kIsWeb){
+      screenWidth =  cfobj.ScreenWidth(screenSize.width);
+    }
     return MaterialApp(
       title: "Profile",
         theme: MasterScreen.themeData(context),
@@ -103,229 +113,249 @@ void signOut() async{
             centerTitle: true,
           ),
           body: SafeArea(
-            child: SingleChildScrollView(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Row(
+              children: [
+                Flexible(
+                  child: Container(
+                    color: webLeftContainerColor,
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: Container(
+                    constraints: BoxConstraints(minWidth: 250, maxWidth: screenWidth),
+                    child: SingleChildScrollView(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
 //                    crossAxisAlignment: CrossAxisAlignment.stretch,
 //                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    //Spacer(),
+                          children: <Widget>[
+                            //Spacer(),
 //                      Spacer(),
-                    Container(),
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.rectangle,
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(0.0),
-                                    topRight: Radius.circular(0.0)
-                                ),
-                                boxShadow: <BoxShadow>[
-                                  BoxShadow(
-                                    color: Colors.white,
-                                    blurRadius: 50.0,
-                                    offset: Offset(0.0, 0.0),
-                                  ),
-                                ]),
-                            //height: 200,
-                            child: Container(
-                              margin: EdgeInsets.only(left: 15.0, top: 15.0,right: 15.0, bottom: 15.0),
-                              decoration: BoxDecoration(
-                                  boxShadow: <BoxShadow>[
-                                    BoxShadow(
-                                      color: Colors.grey,
-                                      blurRadius: 6.0,
-                                      offset: Offset(1.0, 3.0),
-                                    ),
-                                  ]),
-                              child:  Container(
-                                color: Colors.white,
-                                //padding: const EdgeInsets.fromLTRB(15.0,10,15,10),//I used some padding without fixed width and height
-                                // Image(image: AssetImage("assets/logo3.png"),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(15.0),
-                                  child: Column(
-                                    children: <Widget>[
-                                      SizedBox(height: 0,),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          Padding(
-                                            padding: const EdgeInsets.fromLTRB(0.0,0.0,3.0,0.0),
-                                            child: Icon(
-                                              Icons.person_pin,
-                                              color:buttonColor,
-                                              size: 100.0,
+                            Container(),
+                            Align(
+                              alignment: Alignment.bottomCenter,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        shape: BoxShape.rectangle,
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(0.0),
+                                            topRight: Radius.circular(0.0)
+                                        ),
+                                        boxShadow: <BoxShadow>[
+                                          BoxShadow(
+                                            color: Colors.white,
+                                            blurRadius: 50.0,
+                                            offset: Offset(0.0, 0.0),
+                                          ),
+                                        ]),
+                                    //height: 200,
+                                    child: Container(
+                                      margin: EdgeInsets.only(left: 15.0, top: 15.0,right: 15.0, bottom: 15.0),
+                                      decoration: BoxDecoration(
+                                          boxShadow: <BoxShadow>[
+                                            BoxShadow(
+                                              color: Colors.grey,
+                                              blurRadius: 6.0,
+                                              offset: Offset(1.0, 3.0),
                                             ),
-
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          Padding(
-                                            padding: const EdgeInsets.fromLTRB(0.0,0.0,3.0,0.0),
-                                            child: Text('  $userID' ,
-                                                style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold,fontSize: 14)
-                                              //style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold,fontSize: 14),
-                                            ),
-
-                                          ),
-                                        ],
-                                      ),
-                                     // Spacer(),
-                                      SizedBox(height: 5,),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: <Widget>[
-                                          Expanded(
-                                              child:ListTile(
-                                                  dense: true,
-                                                  title: Column(
-                                                      mainAxisAlignment: MainAxisAlignment.start,
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-
-                                                        Text('Hi,  $userName' ,
-                                                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,fontSize: 14)
-                                                          //style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold,fontSize: 14),
-                                                        ),
-                                                       ]),
-                                                  onTap: () { /* react to the tile being tapped */ }
-                                              )
-                                          ),
-                                        ],
-                                      ),
-                                      Divider(),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: <Widget>[
-                                          Expanded(
-                                              child:ListTile(
-                                                  leading: const Icon(Icons.shopping_cart),
-                                                  trailing: const Icon(Icons.arrow_forward),
-                                                dense: true,
-                                                  title: Column(
-                                                      mainAxisAlignment: MainAxisAlignment.start,
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                        Text('My Cart' ,
-                                                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,fontSize: 14)
-                                                          //style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold,fontSize: 14),
-                                                        ),
-                                                      ]),
-                                                  onTap: () {
-                                                    //Navigator.pop(context);
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) => CartPage(pSource: "S",)),);
-                                                  }
-                                              )
-                                          ),
-                                        ],
-                                      ),
-                                      Divider(),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: <Widget>[
-                                          Expanded(
-                                              child:ListTile(
-                                                  leading: const Icon(Icons.home),
-                                                  trailing: const Icon(Icons.arrow_forward),
-                                                  dense: true,
-                                                  title: Column(
-                                                      mainAxisAlignment: MainAxisAlignment.start,
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                        Text('My Home Try-On' ,
-                                                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,fontSize: 14)
-                                                          //style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold,fontSize: 14),
-                                                        ),
-                                                      ]),
-                                                  onTap: () { /* react to the tile being tapped */
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) => CartPage(pSource: "H",)),);
-                                                  }
-                                              )
-                                          ),
-                                        ],
-                                      ),
-                                      Divider(),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: <Widget>[
-                                          Expanded(
-                                              child:ListTile(
-                                                  leading: const Icon(Icons.favorite_border),
-                                                  dense: true,
-                                                  trailing: const Icon(Icons.arrow_forward),
-                                                  title: Column(
-                                                      mainAxisAlignment: MainAxisAlignment.start,
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                        Text('My Wishlist' ,
-                                                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,fontSize: 14)
-                                                          //style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold,fontSize: 14),
-                                                        ),
-                                                      ]),
-                                                  onTap: () {
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) => CartPage(pSource: "W",)),);
-                                                  }
-                                              )
-                                          ),
-                                        ],
-                                      ),
-                                      Divider(),
-                                      SizedBox(height: 60,),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          Expanded(
-                                            child: RaisedButton(
-                                              shape: new RoundedRectangleBorder(
-                                                borderRadius: new BorderRadius.circular(30.0),
-                                                side: BorderSide(color: buttonShadowColor),
-                                              ),
-                                              color: buttonColor,
-                                              textColor: buttonTextColor,
-                                              padding: EdgeInsets.all(13.0),
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.min,
+                                          ]),
+                                      child:  Container(
+                                        color: Colors.white,
+                                        //padding: const EdgeInsets.fromLTRB(15.0,10,15,10),//I used some padding without fixed width and height
+                                        // Image(image: AssetImage("assets/logo3.png"),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(15.0),
+                                          child: Column(
+                                            children: <Widget>[
+                                              SizedBox(height: 0,),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
                                                 children: <Widget>[
-                                                  Text('Logout',style: TextStyle(color: Colors.white, fontSize: 18,fontWeight:FontWeight.bold )),
+                                                  Padding(
+                                                    padding: const EdgeInsets.fromLTRB(0.0,0.0,3.0,0.0),
+                                                    child: Icon(
+                                                      Icons.person_pin,
+                                                      color:buttonColor,
+                                                      size: 100.0,
+                                                    ),
+
+                                                  ),
                                                 ],
                                               ),
-                                              onPressed: () {
-                                                signOut();
-                                              },
-                                            ),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: <Widget>[
+                                                  Padding(
+                                                    padding: const EdgeInsets.fromLTRB(0.0,0.0,3.0,0.0),
+                                                    child: Text('  $userID' ,
+                                                        style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold,fontSize: 14)
+                                                      //style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold,fontSize: 14),
+                                                    ),
+
+                                                  ),
+                                                ],
+                                              ),
+                                             // Spacer(),
+                                              SizedBox(height: 5,),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                children: <Widget>[
+                                                  Expanded(
+                                                      child:ListTile(
+                                                          dense: true,
+                                                          title: Column(
+                                                              mainAxisAlignment: MainAxisAlignment.start,
+                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                              children: [
+
+                                                                Text('Hi,  $userName' ,
+                                                                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,fontSize: 14)
+                                                                  //style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold,fontSize: 14),
+                                                                ),
+                                                               ]),
+                                                          onTap: () { /* react to the tile being tapped */ }
+                                                      )
+                                                  ),
+                                                ],
+                                              ),
+                                              Divider(),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                children: <Widget>[
+                                                  Expanded(
+                                                      child:ListTile(
+                                                          leading: const Icon(Icons.shopping_cart),
+                                                          trailing: const Icon(Icons.arrow_forward),
+                                                        dense: true,
+                                                          title: Column(
+                                                              mainAxisAlignment: MainAxisAlignment.start,
+                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                              children: [
+                                                                Text('My Cart' ,
+                                                                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,fontSize: 14)
+                                                                  //style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold,fontSize: 14),
+                                                                ),
+                                                              ]),
+                                                          onTap: () {
+                                                            //Navigator.pop(context);
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                  builder: (context) => CartPage(pSource: "S",)),);
+                                                          }
+                                                      )
+                                                  ),
+                                                ],
+                                              ),
+                                              Divider(),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                children: <Widget>[
+                                                  Expanded(
+                                                      child:ListTile(
+                                                          leading: const Icon(Icons.home),
+                                                          trailing: const Icon(Icons.arrow_forward),
+                                                          dense: true,
+                                                          title: Column(
+                                                              mainAxisAlignment: MainAxisAlignment.start,
+                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                              children: [
+                                                                Text('My Home Try-On' ,
+                                                                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,fontSize: 14)
+                                                                  //style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold,fontSize: 14),
+                                                                ),
+                                                              ]),
+                                                          onTap: () { /* react to the tile being tapped */
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                  builder: (context) => CartPage(pSource: "H",)),);
+                                                          }
+                                                      )
+                                                  ),
+                                                ],
+                                              ),
+                                              Divider(),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                children: <Widget>[
+                                                  Expanded(
+                                                      child:ListTile(
+                                                          leading: const Icon(Icons.favorite_border),
+                                                          dense: true,
+                                                          trailing: const Icon(Icons.arrow_forward),
+                                                          title: Column(
+                                                              mainAxisAlignment: MainAxisAlignment.start,
+                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                              children: [
+                                                                Text('My Wishlist' ,
+                                                                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,fontSize: 14)
+                                                                  //style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold,fontSize: 14),
+                                                                ),
+                                                              ]),
+                                                          onTap: () {
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                  builder: (context) => CartPage(pSource: "W",)),);
+                                                          }
+                                                      )
+                                                  ),
+                                                ],
+                                              ),
+                                              Divider(),
+                                              SizedBox(height: 60,),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: <Widget>[
+                                                  Expanded(
+                                                    child: RaisedButton(
+                                                      shape: new RoundedRectangleBorder(
+                                                        borderRadius: new BorderRadius.circular(30.0),
+                                                        side: BorderSide(color: buttonShadowColor),
+                                                      ),
+                                                      color: buttonColor,
+                                                      textColor: buttonTextColor,
+                                                      padding: EdgeInsets.all(13.0),
+                                                      child: Row(
+                                                        mainAxisSize: MainAxisSize.min,
+                                                        children: <Widget>[
+                                                          Text('Logout',style: TextStyle(color: Colors.white, fontSize: 18,fontWeight:FontWeight.bold )),
+                                                        ],
+                                                      ),
+                                                      onPressed: () {
+                                                        signOut();
+                                                      },
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              SizedBox(height: 15,),
+                                               ],
                                           ),
-                                        ],
+                                        ),
                                       ),
-                                      SizedBox(height: 15,),
-                                       ],
-                                  ),
+                                    )
                                 ),
                               ),
-                            )
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
+                Flexible(
+                  child: Container(
+                    color: webRightContainerColor,
+                  ),
+                ),
+              ],
             ),
           ),
         ));

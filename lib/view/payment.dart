@@ -15,6 +15,7 @@ import 'package:jemisyseshop/style.dart';
 import 'package:jemisyseshop/view/order.dart';
 import 'package:jemisyseshop/view/voucherList.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class PaymentPage extends StatefulWidget{
   final int itemCount;
@@ -273,7 +274,7 @@ class _paymentPage extends State<PaymentPage> {
                                   ),
                                   SizedBox(height: 8,),
                                   Visibility(
-                                    visible: false,
+                                    visible: !kIsWeb ? false : true,
                                     child:Padding(
                                       padding: const EdgeInsets.only(left: 8.0, bottom: 3.0, right: 8.0),
                                       child: Container(
@@ -430,15 +431,79 @@ class _paymentPage extends State<PaymentPage> {
                               ),
                             ),
                             onPressed: () async {
-                              if(radioItem == 'Master / VISA Card'){
-                                Navigator.push(context, MaterialPageRoute(
-                                    builder: (context) =>
-                                        PaymentDetailPage(redeemVoucher: redeemVouchers, itemCount: itemCount,totalAmount: sumValue, redeemAmount: redeemValue, payMode: "VISA / MASTER",sAddress: widget.sAddress, dAddress: widget.dAddress,itemList: widget.itemList, source: widget.source, outstandingitem: widget.outstandingitem,dstoreCode: widget.dstoreCode,)));
+                              if(!kIsWeb) {
+                                print(kIsWeb);
+                                print("------------------------------------------------------------------------------"+radioItem);
+                                if (radioItem == 'Master / VISA Card') {
+                                  Navigator.push(context, MaterialPageRoute(
+                                      builder: (context) =>
+                                          PaymentDetailPage(
+                                            redeemVoucher: redeemVouchers,
+                                            itemCount: itemCount,
+                                            totalAmount: sumValue,
+                                            redeemAmount: redeemValue,
+                                            payMode: "VISA / MASTER",
+                                            sAddress: widget.sAddress,
+                                            dAddress: widget.dAddress,
+                                            itemList: widget.itemList,
+                                            source: widget.source,
+                                            outstandingitem: widget
+                                                .outstandingitem,
+                                            dstoreCode: widget.dstoreCode,)));
+                                }
+                                else {
+                                  Navigator.push(context, MaterialPageRoute(
+                                      builder: (context) =>
+                                          PaymentDetailPage(
+                                            redeemVoucher: redeemVouchers,
+                                            itemCount: itemCount,
+                                            totalAmount: sumValue,
+                                            redeemAmount: redeemValue,
+                                            payMode: "NETS",
+                                            sAddress: widget.sAddress,
+                                            dAddress: widget.dAddress,
+                                            itemList: widget.itemList,
+                                            source: widget.source,
+                                            outstandingitem: widget
+                                                .outstandingitem,
+                                            dstoreCode: widget.dstoreCode,)));
+                                }
                               }
                               else{
-                                Navigator.push(context, MaterialPageRoute(
-                                    builder: (context) =>
-                                        PaymentDetailPage(redeemVoucher: redeemVouchers, itemCount: itemCount,totalAmount: sumValue, redeemAmount: redeemValue, payMode: "NETS",sAddress: widget.sAddress, dAddress: widget.dAddress, itemList: widget.itemList, source: widget.source, outstandingitem: widget.outstandingitem,dstoreCode: widget.dstoreCode,)));
+                                if (radioItem == 'Master / VISA Card') {
+                                  Navigator.push(context, MaterialPageRoute(
+                                      builder: (context) =>
+                                          PaymentDetailPage2(
+                                            redeemVoucher: redeemVouchers,
+                                            itemCount: itemCount,
+                                            totalAmount: sumValue,
+                                            redeemAmount: redeemValue,
+                                            payMode: "VISA / MASTER",
+                                            sAddress: widget.sAddress,
+                                            dAddress: widget.dAddress,
+                                            itemList: widget.itemList,
+                                            source: widget.source,
+                                            outstandingitem: widget
+                                                .outstandingitem,
+                                            dstoreCode: widget.dstoreCode,)));
+                                }
+                                else {
+                                  Navigator.push(context, MaterialPageRoute(
+                                      builder: (context) =>
+                                          PaymentDetailPage2(
+                                            redeemVoucher: redeemVouchers,
+                                            itemCount: itemCount,
+                                            totalAmount: sumValue,
+                                            redeemAmount: redeemValue,
+                                            payMode: "NETS",
+                                            sAddress: widget.sAddress,
+                                            dAddress: widget.dAddress,
+                                            itemList: widget.itemList,
+                                            source: widget.source,
+                                            outstandingitem: widget
+                                                .outstandingitem,
+                                            dstoreCode: widget.dstoreCode,)));
+                                }
                               }
                             },
                           ),
@@ -486,19 +551,19 @@ class _paymentDetailPage extends State<PaymentDetailPage> {
   bool isOrderCreated = false, _isLoadingPage;
 
   Future<void> loadDefault() async {
-    if(widget.itemList != null){
-      for(var i = 0; i<widget.itemList.length; i++){
+    if (widget.itemList != null) {
+      for (var i = 0; i < widget.itemList.length; i++) {
         totalAmount += widget.itemList[i].totalPrice;
       }
     }
     var dt = await dataService.getSetting();
-    if(dt.length>0){
+    if (dt.length > 0) {
       paymode_CC = dt[0].paymode_CC;
       paymode_Nets = dt[0].paymode_Nets;
       paymode_Points = dt[0].paymode_Points;
       paymode_Voucher = dt[0].paymode_Voucher;
     }
-    pNo = await dataService. getPaymentNextNo();
+    pNo = await dataService.getPaymentNextNo();
     srcUrl = paymenturl + "?paymentMode=VM&orderID="+pNo+"&payType=S&amount="+widget.totalAmount.toString()+"&currency="+currencyCode;
     setState(() {
 
@@ -637,12 +702,15 @@ Widget getPage(){
               },
               onPageFinished: (String url) async {
 //                print('Page finished loading: $url');
+                print("----------------------------------------------------------------------1A-------------"+url);
+                print(paymentSuccessurl);
                 if(!url.startsWith(paymenturl)){
                   setState(() {
                     _isLoadingPage = false;
                   });
                 }
                 else if(url.startsWith(paymentSuccessurl)){
+                  print("----------------------------------------------------------------------1A-------------"+url);
                   String qryString = url.split('?')[1];
                   if(qryString!= null){
                     String tID = qryString.split('=')[1];
@@ -650,6 +718,7 @@ Widget getPage(){
                       pLog = await dataService.getPaymentLog(tID);
                       if(pLog.response_code == "0" && isOrderCreated == false){
                         isOrderCreated = true;
+                        print("----------------------------------------------------------------------1A-------------");
                         UpdatePayment("VISA MASTER");
                       }
                     }
@@ -701,8 +770,9 @@ class PaymentDetailPage2 extends StatefulWidget{
   final List<Cart> itemList;
   final String source;
   final OrderOutstanding outstandingitem;
+  final List<Voucher> redeemVoucher;
   final String dstoreCode;
-  PaymentDetailPage2({this.itemCount, this.totalAmount, this.redeemAmount, this.payMode, this.sAddress, this.dAddress, this.itemList, this.source, this.outstandingitem, this.dstoreCode});
+  PaymentDetailPage2({this.itemCount, this.totalAmount, this.redeemAmount, this.payMode, this.sAddress, this.dAddress, this.itemList, this.source, this.outstandingitem, this.dstoreCode, this.redeemVoucher});
 
   @override
   _paymentDetailPage2 createState() => _paymentDetailPage2();
@@ -715,20 +785,88 @@ class _paymentDetailPage2 extends State<PaymentDetailPage2> {
   var sX = 0.0;
   var sY = 0.0;
   var textVar = "";
+  bool isOrderCreated;
+  String srcUrl = "", pNo = "", paymode_CC = "", paymode_Nets = "", paymode_Points="", paymode_Voucher="";
   double totalAmount = 0;
   TextEditingController txtCardNo = TextEditingController();
   TextEditingController txtExpiry = TextEditingController();
   TextEditingController txtCVV = TextEditingController();
   TextEditingController txtNameoncard = TextEditingController();
-  void loadDefault(){
+
+  void loadDefault() async {
     totalAmount = 0;
-    if(widget.itemList != null){
-      for(var i = 0; i<widget.itemList.length; i++){
+    if (widget.itemList != null) {
+      for (var i = 0; i < widget.itemList.length; i++) {
         totalAmount += widget.itemList[i].totalPrice;
       }
     }
+    var dt = await dataService.getSetting();
+    if (dt.length > 0) {
+      paymode_CC = dt[0].paymode_CC;
+      paymode_Nets = dt[0].paymode_Nets;
+      paymode_Points = dt[0].paymode_Points;
+      paymode_Voucher = dt[0].paymode_Voucher;
+    }
+    pNo = await dataService.getPaymentNextNo();
+    srcUrl =
+        paymenturl + "?paymentMode=VM&orderID=" + pNo + "&payType=S&amount=" +
+            widget.totalAmount.toString() + "&currency=" + currencyCode;
+    setState(() {
+
+    });
   }
-  void UpdatePayment() async{
+  void UpdatePayment(String payMode) async{
+    isOrderCreated = true;
+    String voucherNo = "";
+    double voucherAmount = 0;
+    if(widget.redeemVoucher.length>0){
+      for(int i=0;i<widget.redeemVoucher.length;i++){
+        if(voucherNo!= "") voucherNo += ";";
+        voucherAmount += widget.redeemVoucher[i].voucherValue;
+        voucherNo += widget.redeemVoucher[i].refNo;
+      }
+    }
+    if(widget.source==null){
+      Paymentfn objcf = new Paymentfn();
+      param.eMail = userID;
+      param.totalAmount = totalAmount;
+      param.discount = 0;
+      param.netAmount = totalAmount;
+      param.deliveryMode = "S";
+      param.shippingAddress = widget.sAddress;
+      param.billingAddress = widget.dAddress;
+      param.dstoreCode = widget.dstoreCode;
+      param.payMode1 = paymode_CC;
+      param.payMode1_Amt = widget.totalAmount;
+      param.payMode1_Ref = pNo;
+      param.payMode2 = widget.redeemAmount != 0 ? paymode_Points : null;
+      param.payMode2_Amt = widget.redeemAmount;
+      param.payMode2_Ref = null;
+      param.payMode3 = voucherAmount> 0 ? paymode_Voucher : null;
+      param.payMode3_Amt = voucherAmount;
+      param.payMode3_Ref = voucherNo;
+      param.mode = "I";
+      objcf.updateOrder(param, widget.itemList, null, context);
+    }
+    else if(widget.source == "IP"){
+      Paymentfn objpf = new Paymentfn();
+      OrderUpdateParam param = new OrderUpdateParam();
+      param.storeCode = widget.outstandingitem.storeCode;
+      param.refNo = widget.outstandingitem.refNo;
+      param.docType = widget.outstandingitem.docType;
+      param.amount = widget.totalAmount;
+      param.payMode = paymode_CC;
+      param.reff = pNo;
+      var result = await dataService.updateOrderOutstanding(param);
+      if(result.status == 1){
+        await objpf.sendmail(widget.outstandingitem.storeCode, widget.outstandingitem.refNo, widget.outstandingitem.docType, context);
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+            OrderPage(source: "IP",)), (Route<dynamic> route) => false);
+      }
+    }
+  }
+
+  void UpdatePayment2() async{
     if(widget.source==null){
       Paymentfn objcf = new Paymentfn();
       param.eMail = userID;
@@ -825,7 +963,7 @@ class _paymentDetailPage2 extends State<PaymentDetailPage2> {
                                 child: Stack(
                                   children: <Widget>[
                                     ConstrainedBox(
-                                      child: Image.asset("assets/cardTemplet.png", fit: BoxFit.fitWidth,),
+                                      child: Image.asset("assets/cardTemplet.png", fit: BoxFit.fitHeight,),
                                       constraints: BoxConstraints.expand(),
                                     ),
                                     Container(
@@ -843,97 +981,105 @@ class _paymentDetailPage2 extends State<PaymentDetailPage2> {
                                 ),
                               ),
                               SizedBox(height: 15,),
-                              TextField(
-                                controller: txtCardNo,
-                                autocorrect: true,
-                                keyboardType: TextInputType.numberWithOptions(),
-                                decoration: InputDecoration(
-                                  isDense: true,
+                              Container(
+                                constraints: BoxConstraints(minWidth: 250, maxWidth: 350),
+                                child: Column(
+                                  children: [
+                                    TextField(
+                                      controller: txtCardNo,
+                                      autocorrect: true,
+                                      keyboardType: TextInputType.numberWithOptions(),
+                                      decoration: InputDecoration(
+                                        isDense: true,
 //                                      hintText: 'Full Name',
-                                  labelText: "Card Numher",
+                                        labelText: "Card Numher",
 //                                  prefixIcon: Icon(Icons.person),
-                                  hintStyle: TextStyle(color: Colors.grey),
-                                  filled: true,
-                                  fillColor:  Colors.white70,
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color: BoxBorderColor, width: 1),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color:  BoxBorderColor, width: 1),
-                                  ),
-                                  contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 20, right: 20),
-                                ),),
-                              SizedBox(height: 15,),
-                              TextField(
-                                controller: txtExpiry,
-                                autocorrect: true,
-                                keyboardType: TextInputType.numberWithOptions(),
-                                decoration: InputDecoration(
-                                  isDense: true,
-                                      hintText: 'Expiry',
-                                  labelText: "MM/YY",
+                                        hintStyle: TextStyle(color: Colors.grey),
+                                        filled: true,
+                                        fillColor:  Colors.white70,
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                          borderSide: BorderSide(color: BoxBorderColor, width: 1),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                          borderSide: BorderSide(color:  BoxBorderColor, width: 1),
+                                        ),
+                                        contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 20, right: 20),
+                                      ),),
+                                    SizedBox(height: 15,),
+                                    TextField(
+                                      controller: txtExpiry,
+                                      autocorrect: true,
+                                      keyboardType: TextInputType.numberWithOptions(),
+                                      decoration: InputDecoration(
+                                        isDense: true,
+                                        hintText: 'Expiry',
+                                        labelText: "MM/YY",
 //                                  prefixIcon: Icon(Icons.person),
-                                  hintStyle: TextStyle(color: Colors.grey),
-                                  filled: true,
-                                  fillColor:  Colors.white70,
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color: BoxBorderColor, width: 1),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color:  BoxBorderColor, width: 1),
-                                  ),
-                                  contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 20, right: 20),
-                                ),),
-                              SizedBox(height: 15,),
-                              TextField(
-                                controller: txtCVV,
-                                autocorrect: true,
-                                keyboardType: TextInputType.numberWithOptions(),
-                                decoration: InputDecoration(
-                                  isDense: true,
+                                        hintStyle: TextStyle(color: Colors.grey),
+                                        filled: true,
+                                        fillColor:  Colors.white70,
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                          borderSide: BorderSide(color: BoxBorderColor, width: 1),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                          borderSide: BorderSide(color:  BoxBorderColor, width: 1),
+                                        ),
+                                        contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 20, right: 20),
+                                      ),),
+                                    SizedBox(height: 15,),
+                                    TextField(
+                                      controller: txtCVV,
+                                      autocorrect: true,
+                                      keyboardType: TextInputType.numberWithOptions(),
+                                      decoration: InputDecoration(
+                                        isDense: true,
 //                                      hintText: 'Full Name',
-                                  labelText: "CVV",
+                                        labelText: "CVV",
 //                                  prefixIcon: Icon(Icons.person),
-                                  hintStyle: TextStyle(color: Colors.grey),
-                                  filled: true,
-                                  fillColor:  Colors.white70,
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color: BoxBorderColor, width: 1),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color:  BoxBorderColor, width: 1),
-                                  ),
-                                  contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 20, right: 20),
-                                ),),
-                              SizedBox(height: 15,),
-                              TextField(
-                                controller: txtNameoncard,
-                                autocorrect: true,
-                                decoration: InputDecoration(
-                                  isDense: true,
+                                        hintStyle: TextStyle(color: Colors.grey),
+                                        filled: true,
+                                        fillColor:  Colors.white70,
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                          borderSide: BorderSide(color: BoxBorderColor, width: 1),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                          borderSide: BorderSide(color:  BoxBorderColor, width: 1),
+                                        ),
+                                        contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 20, right: 20),
+                                      ),),
+                                    SizedBox(height: 15,),
+                                    TextField(
+                                      controller: txtNameoncard,
+                                      autocorrect: true,
+                                      decoration: InputDecoration(
+                                        isDense: true,
 //                                      hintText: 'Full Name',
-                                  labelText: "Name on card",
+                                        labelText: "Name on card",
 //                                  prefixIcon: Icon(Icons.person),
-                                  hintStyle: TextStyle(color: Colors.grey),
-                                  filled: true,
-                                  fillColor:  Colors.white70,
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color: BoxBorderColor, width: 1),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color:  BoxBorderColor, width: 1),
-                                  ),
-                                  contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 20, right: 20),
-                                ),),
-                              SizedBox(height: 15,)
+                                        hintStyle: TextStyle(color: Colors.grey),
+                                        filled: true,
+                                        fillColor:  Colors.white70,
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                          borderSide: BorderSide(color: BoxBorderColor, width: 1),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                          borderSide: BorderSide(color:  BoxBorderColor, width: 1),
+                                        ),
+                                        contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 20, right: 20),
+                                      ),),
+                                    SizedBox(height: 15,)
+
+                                  ],
+                                ),
+                              )
                             ],
                           ),
                         ),
@@ -973,7 +1119,9 @@ class _paymentDetailPage2 extends State<PaymentDetailPage2> {
                               ),
                             ),
                             onPressed: () async {
-                              UpdatePayment();
+                              print("----------Print Click Payment-------------");
+                              UpdatePayment("VISA MASTER");
+                              print("----------Print End Payment-------------");
                             },
                           ),
                         ),

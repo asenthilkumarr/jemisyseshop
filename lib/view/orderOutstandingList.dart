@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:jemisyseshop/view/outstandingPayment.dart';
 import '../style.dart';
 import 'masterPage.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class OrderOutstandingList extends StatefulWidget {
   @override
@@ -18,6 +19,7 @@ class OrderOutstandingList extends StatefulWidget {
 //State is information of the application that can change over time or when some actions are taken.
 class _State extends State<OrderOutstandingList>{
   DataService dataService = DataService();
+  Commonfn cfobj = Commonfn();
   ScrollController _scrollController = new ScrollController();
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   List<OrderOutstanding> itemDt = [];
@@ -155,7 +157,7 @@ class _State extends State<OrderOutstandingList>{
                                     builder: (context) => OutstandingPayment(outstanding: Dt,)),);  // do what you need to do when "Click here" gets clicked
                             }
                             else{
-                              showInfoFlushbar(context, "Payment Gateway didn't enabled, please visit nearby store.");
+                              cfobj.showInfoFlushbar(context, "Payment Gateway didn't enabled, please visit nearby store.", "Warning");
                             }
                           }),
                     ),
@@ -185,7 +187,15 @@ class _State extends State<OrderOutstandingList>{
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-    double screenhight = MediaQuery.of(context).size.height;
+
+    final screenSize = MediaQuery
+        .of(context)
+        .size;
+    screenWidth = screenSize.width;
+    if(kIsWeb){
+      screenWidth =  cfobj.ScreenWidth(screenSize.width);
+    }
+
     return MaterialApp(
       theme: MasterScreen.themeData(context),
       home:  Scaffold(
@@ -200,46 +210,47 @@ class _State extends State<OrderOutstandingList>{
 
           backgroundColor: Color(0xFFFF8752),
           centerTitle: true,
-        ),     body:
-      Container(
-        padding: const EdgeInsets.fromLTRB(10,8,10,5),
-        child:  FutureBuilder<List<OrderOutstanding>>(
-          future: _fetchOrderList(),
-          builder: (context, snapshot) {
-            if (itemDt.length > 0) {
-              List<OrderOutstanding> data = itemDt;
-              return Orderlist(data);
-            } else if (snapshot.hasError) {
-              return Text("${snapshot.error}");
-              //return Text("No Record found");
-            }
-            //return Container();
-            return Text("No Record found!");
-          },
         ),
-      ),
+        body: Row(
+          children: [
+            Flexible(
+              child: Container(
+                color: webLeftContainerColor,
+              ),
+            ),
+            Align(
+              alignment: Alignment.topCenter,
+              child: Container(
+                constraints: BoxConstraints(minWidth: 250, maxWidth: screenWidth),
+                padding: const EdgeInsets.fromLTRB(10,8,10,5),
+                child:  FutureBuilder<List<OrderOutstanding>>(
+                  future: _fetchOrderList(),
+                  builder: (context, snapshot) {
+                    if (itemDt.length > 0) {
+                      List<OrderOutstanding> data = itemDt;
+                      return Orderlist(data);
+                    } else if (snapshot.hasError) {
+                      return Text("${snapshot.error}");
+                      //return Text("No Record found");
+                    }
+                    //return Container();
+                    return Text("No Record found!");
+                  },
+                ),
+              ),
+            ),
+            Flexible(
+              child: Container(
+                color: webRightContainerColor,
+              ),
+            ),
+          ],
+        ),
 
       ),
     );
 
   }
-  void showInfoFlushbar(BuildContext context, String msg) {
-    Flushbar(
-      margin: EdgeInsets.all(8),
-      backgroundGradient: LinearGradient(colors: [Colors.blue, Colors.teal]),
-      backgroundColor: Colors.red,
-      boxShadows: [BoxShadow(color: Colors.blue[800], offset: Offset(0.0, 2.0), blurRadius: 3.0,)],
-      borderRadius: 8,
-      title: 'Failed to Register!',
-      message: '$msg',
-      icon: Icon(
-        Icons.info_outline,
-        size: 28,
-        color: Colors.blue.shade300,
-      ),
-      // leftBarIndicatorColor: Colors.blue.shade300,
-      duration: Duration(seconds: 3),
-    )..show(context);
-  }
+
 }
 

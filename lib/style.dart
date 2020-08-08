@@ -24,6 +24,8 @@ const Color lightTextColor = Color(0xFF757575);
 
 const double textborderRadius = 15.0;
 
+const Color webLeftContainerColor = Color(0xFFD2F6C4);//Colors.redAccent;
+const Color webRightContainerColor = Color(0xFFF6C4ED);//Colors.redAccent;
 
 const Body1Style = TextStyle(
   fontFamily: FontNameDefault,

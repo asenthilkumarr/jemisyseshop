@@ -19,6 +19,7 @@ final String emailapiurl = "http://51.79.160.233/SMSeMailAppsToolAPI/";
 final String paymenturl = "http://51.79.160.233/JEMiSyseShopAPI/api/Payment";
 final String paymentBackurl = "http://51.79.160.233/JEMiSyseShopAPI/api/PaymentBack";
 final String paymentSuccessurl = "http://51.79.160.233/JEMiSyseShopAPI/api/PaymentSuccess";
+final String paymentSuccessurl2 = "http://localhost/Payment/SuccessMessage.html";
 
 final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
 
@@ -48,10 +49,9 @@ int gReceivedAmount = 0;
 int gBalanceAmount = 0;
 */
 String titMessage = "";
+double screenWidth = 300;
+double screenMainContentWidth = 700;
 
-final List<Country2> country = [
-  Country2('Singapore', 'SG', 'SGD', 'assets/SG.png'),
-];
 String currencysymbol = "\$";
 String currencyCode = "\$";
 String appTitle = "JEMiSys eShop";
@@ -79,6 +79,10 @@ class Message {
     @required this.screen,
   });
 }
+
+final List<Country2> country = [
+  Country2('Singapore', 'SG', 'SGD', 'assets/SG.png'),
+];
 
 Future<String> GetMacAddress() async {
   String platformVersion;
@@ -163,6 +167,29 @@ class Commonfn{
     bool isLogin = await prefs.getBool('isLogin');
     return isLogin;
   }
+
+  double ScreenWidth(double tscreenwidth) {
+    double sWidth = 0,
+        a = 0;
+    if (tscreenwidth <= 550)
+      sWidth = tscreenwidth;
+    else if (tscreenwidth <= 750)
+      sWidth = tscreenwidth;
+    else if (tscreenwidth <= 850)
+      sWidth = 700;
+    else if (tscreenwidth <= 1050)
+      sWidth = 800;
+    else if (tscreenwidth <= 1200)
+      sWidth = 900;
+    else if (tscreenwidth <= 1450)
+      sWidth = 1050;
+    else if (tscreenwidth <= 1600)
+      sWidth = 1300;
+    else
+      sWidth = 1400;
+
+    return sWidth;
+  }
 }
 
 class Paymentfn{
@@ -178,13 +205,12 @@ class Paymentfn{
         }
         await sendmail("", result.value, "eCORDER", context);
         returnmag = "OK";
-
         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
             OrderPage(itemlist: itemList, masterScreenFormKey: _masterScreenFormKey,)), (Route<dynamic> route) => false);
 
 //        await Dialogs.AlertMessage(context, "Order Completed");
 //        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-//            MasterScreen(currentIndex: 0, key: null,)), (Route<dynamic> route) => false);
+//            MasterScreen(currentIndex: 0, ky: null,)), (Route<dynamic> route) => false);
       }
       else{
         await Dialogs.AlertMessage(context, result.errorMessage);
@@ -201,19 +227,21 @@ class Paymentfn{
     final _keyLoader = new GlobalKey<FormState>();
     String res = "Faild";
     //SharedPreferences prefs =  await SharedPreferences.getInstance();
-    Dialogs.showLoadingDialog(context, _keyLoader); //invoking go
+//    Dialogs.showLoadingDialog(context, _keyLoader); //invoking go
     SendEmail param = SendEmail();
     param.docno = docNo;
     param.mailTo=  userID;
     param.doctype= docType;
     param.vipname = userName;
     param.storeCode = storeCode;
+    print(param.toParam());
+    print("------------------------------------------------------------AAAAAAAAAAAA------------------------------------");
     var dt2 = await dataService.sendEmailtoCustomer(param);
-    await Navigator.of(
-        _keyLoader.currentContext, rootNavigator: true)
-        .pop(); //close the dialoge
+//    await Navigator.of(
+//        _keyLoader.currentContext, rootNavigator: true)
+//        .pop(); //close the dialoge
 
-    if (dt2.returnStatus != null && dt2.returnStatus == 'Message Sent Succesfully') {
+    if (dt2 != null && dt2.returnStatus != null && dt2.returnStatus == 'Message Sent Succesfully') {
       res = 'OK';
     }
     else {

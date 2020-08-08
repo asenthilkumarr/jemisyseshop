@@ -7,6 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:jemisyseshop/model/common.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:jemisyseshop/style.dart';
 
 class VoucherDetailPage extends StatefulWidget {
   @override
@@ -15,6 +17,7 @@ class VoucherDetailPage extends StatefulWidget {
 
 class _VoucherDetailPageState extends State<VoucherDetailPage> {
   ScrollController _scrollController2 = new ScrollController();
+  Commonfn cfobj = Commonfn();
 
   List itemDt = [
     {
@@ -174,6 +177,13 @@ class _VoucherDetailPageState extends State<VoucherDetailPage> {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+    final screenSize = MediaQuery
+        .of(context)
+        .size;
+    screenWidth = screenSize.width;
+    if(kIsWeb){
+      screenWidth =  cfobj.ScreenWidth(screenSize.width);
+    }
     return new Scaffold(
       appBar: new AppBar(
         title: new Text('Voucher Details',
@@ -185,86 +195,104 @@ class _VoucherDetailPageState extends State<VoucherDetailPage> {
         backgroundColor: Color(0xFFFF8752),
       ),
       //hit Ctrl+space in intellij to know what are the options you can use in flutter widgets
-      body: Container(
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Expanded(
-              child: ListView.builder(
-                  controller: _scrollController2,
-                  scrollDirection: Axis.vertical,
-                  itemCount: itemDt.length,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-                      height: 140,
-                      width: double.maxFinite,
-                      child: Card(
-                        elevation: 5,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            /*border: Border(
-                              top: BorderSide(
-                                  width: 2.0, color: itemDt[index].buySell == 'B' ? Colors.green : Colors.red),
-                            ),*/
-                            border: Border.all(
-                              color: Colors.blueGrey,
-                              width: 3,
-                            ),
-                            borderRadius: BorderRadius.circular(12),
-                            color: Colors.white,
-                          ),
-                          child: Padding(
-                            padding: EdgeInsets.all(7),
-                            child: Stack(children: <Widget>[
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: Stack(
-                                  children: <Widget>[
-                                    Padding(
-                                        padding: const EdgeInsets.only(left: 0, top: 5),
-                                        child: Column(
-                                          children: <Widget>[
-                                            Row(
-                                              children: <Widget>[
-                                                tradeIcon(itemDt[index]),
-                                                SizedBox(
-                                                  width: 10,
-                                                ),
-                                                //tradeNameSymbol(itemDt[index]),
-                                                Spacer(),
-                                                tradeStatus(itemDt[index]),
-                                                SizedBox(
-                                                  width: 10,
-                                                ),
-                                                //changeIcon(itemDt[index]),
-                                                //SizedBox(
-                                                //   width: 20,
-                                                //)
-                                              ],
-                                            ),
-                                            Row(
-                                              children: <Widget>[
-                                                tradeAmount(itemDt[index]),
-                                                Spacer(),
-                                                tradeWeight(itemDt[index])
-                                              ],
-                                            )
-                                          ],
-                                        ))
-                                  ],
-                                ),
-                              )
-                            ]),
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
+      body: Row(
+        children: [
+          Flexible(
+            child: Container(
+              color: webLeftContainerColor,
             ),
-          ],
-        ),
+          ),
+          Align(
+            alignment: Alignment.topCenter,
+            child: Container(
+              constraints: BoxConstraints(minWidth: 250, maxWidth: screenWidth),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                    child: ListView.builder(
+                        controller: _scrollController2,
+                        scrollDirection: Axis.vertical,
+                        itemCount: itemDt.length,
+                        itemBuilder: (context, index) {
+                          return Container(
+                            padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                            height: 140,
+                            width: double.maxFinite,
+                            child: Card(
+                              elevation: 5,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  /*border: Border(
+                                    top: BorderSide(
+                                        width: 2.0, color: itemDt[index].buySell == 'B' ? Colors.green : Colors.red),
+                                  ),*/
+                                  border: Border.all(
+                                    color: Colors.blueGrey,
+                                    width: 3,
+                                  ),
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.all(7),
+                                  child: Stack(children: <Widget>[
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Stack(
+                                        children: <Widget>[
+                                          Padding(
+                                              padding: const EdgeInsets.only(left: 0, top: 5),
+                                              child: Column(
+                                                children: <Widget>[
+                                                  Row(
+                                                    children: <Widget>[
+                                                      tradeIcon(itemDt[index]),
+                                                      SizedBox(
+                                                        width: 10,
+                                                      ),
+                                                      //tradeNameSymbol(itemDt[index]),
+                                                      Spacer(),
+                                                      tradeStatus(itemDt[index]),
+                                                      SizedBox(
+                                                        width: 10,
+                                                      ),
+                                                      //changeIcon(itemDt[index]),
+                                                      //SizedBox(
+                                                      //   width: 20,
+                                                      //)
+                                                    ],
+                                                  ),
+                                                  Row(
+                                                    children: <Widget>[
+                                                      tradeAmount(itemDt[index]),
+                                                      Spacer(),
+                                                      tradeWeight(itemDt[index])
+                                                    ],
+                                                  )
+                                                ],
+                                              ))
+                                        ],
+                                      ),
+                                    )
+                                  ]),
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Flexible(
+            child: Container(
+              color: webRightContainerColor,
+            ),
+          ),
+        ],
       ),
       /*bottomNavigationBar: BottomAppBar(
         child: new Row(

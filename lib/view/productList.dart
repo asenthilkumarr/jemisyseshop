@@ -31,6 +31,7 @@ class ProductListPage extends StatefulWidget{
 }
 class _productListPage extends State<ProductListPage> {
   DataService dataService = DataService();
+  Commonfn cfobj = Commonfn();
   var scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
@@ -522,6 +523,10 @@ class _productListPage extends State<ProductListPage> {
     final screenSize = MediaQuery
         .of(context)
         .size;
+    screenWidth = screenSize.width;
+    if(kIsWeb){
+      screenWidth =  cfobj.ScreenWidth(screenSize.width);
+    }
 
     return MaterialApp(
       title: 'Product List',
@@ -551,85 +556,105 @@ class _productListPage extends State<ProductListPage> {
                 color: Colors.white,
                 child: Stack(
                   children: [
-                    Column(
-                        children: [
-                          //Customtitle(context, widget.title),
-                          groupdt != null && groupdt.length > 0 ? Container(
-                            height: 133,
-                              child: groupListView(groupdt))
-                              : Container(),
-                          groupdt != null && groupdt.length > 0 ? SizedBox(height: 5,) : Container(),
-                          Container(
-                            height: 40,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Flexible(
-                                  flex: 1,
-                                  child: InkWell(
-                                    onTap: () {
-                                      Filter_Click();
-                                      //scaffoldKey.currentState.openDrawer();
-                                    },
-                                    child: Container(
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Container(
+                            color: webLeftContainerColor,
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.topCenter,
+                          child: Container(
+                            constraints: BoxConstraints(minWidth: 250, maxWidth: screenWidth),
+                            child: Column(
+                                children: [
+                                  //Customtitle(context, widget.title),
+                                  groupdt != null && groupdt.length > 0 ? Container(
+                                    height: 133,
+                                      child: groupListView(groupdt))
+                                      : Container(),
+                                  groupdt != null && groupdt.length > 0 ? SizedBox(height: 5,) : Container(),
+                                  Container(
+                                    height: 40,
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                                      children: [
+                                        Flexible(
+                                          flex: 1,
+                                          child: InkWell(
+                                            onTap: () {
+                                              Filter_Click();
+                                              //scaffoldKey.currentState.openDrawer();
+                                            },
+                                            child: Container(
 //                              color: listLabelbgColor,
-                                      decoration: BoxDecoration(
-                                        color: listLabelbgColor,
-                                        border: Border.all(
-                                          color: Colors.grey,
-                                          width: 1,
-                                        ),
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.max,
-                                        children: <Widget>[
-                                          Spacer(),
-                                          Padding(
-                                            padding: const EdgeInsets.only(left:8.0, right:6.0),
-                                            child: Image(image: AssetImage("assets/filter_icon.png"),width: 16, height: 16,),
+                                              decoration: BoxDecoration(
+                                                color: listLabelbgColor,
+                                                border: Border.all(
+                                                  color: Colors.grey,
+                                                  width: 1,
+                                                ),
+                                              ),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.max,
+                                                children: <Widget>[
+                                                  Spacer(),
+                                                  Padding(
+                                                    padding: const EdgeInsets.only(left:8.0, right:6.0),
+                                                    child: Image(image: AssetImage("assets/filter_icon.png"),width: 16, height: 16,),
+                                                  ),
+                                                  Text('FILTER', style: TextStyle(color: Colors.white),),
+                                                  Spacer(),
+                                                ],
+                                              ),
+                                            ),
                                           ),
-                                          Text('FILTER', style: TextStyle(color: Colors.white),),
-                                          Spacer(),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Flexible(
-                                  flex: 1,
-                                  child: InkWell(
-                                    onTap: () {
-                                      sort_Click();
-                                    },
-                                    child: Container(
-//                              color: listLabelbgColor,
-                                      decoration: BoxDecoration(
-                                        color: listLabelbgColor,
-                                        border: Border.all(
-                                          color: Colors.grey,
-                                          width: 1,
                                         ),
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.max,
-                                        children: <Widget>[
-                                          Spacer(),
-                                          Transform.rotate(
-                                              angle: 90 * pi / 180,
-                                              child: Icon(Icons.swap_horiz, color: Colors.white,)),Text('SORT', style: TextStyle(color: Colors.white),),
-                                          Spacer(),
-                                        ],
-                                      ),
+                                        Flexible(
+                                          flex: 1,
+                                          child: InkWell(
+                                            onTap: () {
+                                              sort_Click();
+                                            },
+                                            child: Container(
+//                              color: listLabelbgColor,
+                                              decoration: BoxDecoration(
+                                                color: listLabelbgColor,
+                                                border: Border.all(
+                                                  color: Colors.grey,
+                                                  width: 1,
+                                                ),
+                                              ),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.max,
+                                                children: <Widget>[
+                                                  Spacer(),
+                                                  Transform.rotate(
+                                                      angle: 90 * pi / 180,
+                                                      child: Icon(Icons.swap_horiz, color: Colors.white,)),Text('SORT', style: TextStyle(color: Colors.white),),
+                                                  Spacer(),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ),
-                              ],
+                                  productdt.length>0 ? homeWidget(screenSize.height, screenSize.width)
+                                  : Container(),
+
+                                ]
                             ),
                           ),
-                          productdt.length>0 ? homeWidget(screenSize.height, screenSize.width)
-                          : Container(),
-
-                        ]
+                        ),
+                        Flexible(
+                          child: Container(
+                            color: webRightContainerColor,
+                          ),
+                        ),
+                      ],
                     ),
                     Align(
                       alignment: Alignment.topCenter,

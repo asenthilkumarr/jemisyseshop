@@ -11,6 +11,7 @@ import 'package:jemisyseshop/style.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
 import 'package:jemisyseshop/widget/expansionTile.dart';
 import 'package:flutter_range_slider/flutter_range_slider.dart' as frs;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class FilterPage extends StatefulWidget{
 //  final FilterValue fValue;
@@ -22,6 +23,7 @@ class FilterPage extends StatefulWidget{
 }
 class _filterPage extends State<FilterPage> {
   DataService dataService = DataService();
+  Commonfn cfobj = Commonfn();
   List<Product> productdt = new List<Product>();
   List<Product> fproductdt = new List<Product>();
 
@@ -1004,9 +1006,13 @@ class _filterPage extends State<FilterPage> {
     final screenSize = MediaQuery
         .of(context)
         .size;
+    screenWidth = screenSize.width;
+    if(kIsWeb){
+      screenWidth =  cfobj.ScreenWidth(screenSize.width);
+    }
     if(source == "groupName") {
       return Container(
-          width: screenSize.width - 143,
+          width: screenWidth - 143,
           decoration: BoxDecoration(
             color: Colors.white,
             border: Border.all(
@@ -1056,7 +1062,7 @@ class _filterPage extends State<FilterPage> {
     }
     else if(source == "metalType"){
       return  Container(
-          width: screenSize.width-143,
+          width: screenWidth-143,
           decoration: BoxDecoration(
             color: Colors.white,
             border: Border.all(
@@ -1106,7 +1112,7 @@ class _filterPage extends State<FilterPage> {
     }
     else if(source == "brand"){
       return  Container(
-          width: screenSize.width-143,
+          width: screenWidth-143,
           decoration: BoxDecoration(
             color: Colors.white,
             border: Border.all(
@@ -1157,7 +1163,7 @@ class _filterPage extends State<FilterPage> {
     }
     else if(source == "design"){
       return  Container(
-          width: screenSize.width-143,
+          width: screenWidth-143,
           decoration: BoxDecoration(
             color: Colors.white,
             border: Border.all(
@@ -1223,7 +1229,7 @@ class _filterPage extends State<FilterPage> {
     }
     else if(source == "discount"){
       return  Container(
-          width: screenSize.width-143,
+          width: screenWidth-143,
           decoration: BoxDecoration(
             color: Colors.white,
             border: Border.all(
@@ -1273,7 +1279,7 @@ class _filterPage extends State<FilterPage> {
     }
     else if(source == "jewelSize"){
       return  Container(
-          width: screenSize.width-143,
+          width: screenWidth-143,
           decoration: BoxDecoration(
             color: Colors.white,
             border: Border.all(
@@ -1324,7 +1330,7 @@ class _filterPage extends State<FilterPage> {
     }
     else if(source == "price") {
       return Container(
-          width: screenSize.width-143,
+          width: screenWidth-143,
           decoration: BoxDecoration(
             color: Colors.white,
             border: Border.all(
@@ -1338,7 +1344,7 @@ class _filterPage extends State<FilterPage> {
               child: new ListView(
                 children: [
                   Container(
-                    width: screenSize.width-143,
+                    width: screenWidth-143,
                     height: 120,
                     color: Colors.white,
                     child: Column(
@@ -1429,7 +1435,7 @@ class _filterPage extends State<FilterPage> {
     }
     else if(source == "weight"){
       return Container(
-          width: screenSize.width-143,
+          width: screenWidth-143,
           decoration: BoxDecoration(
             color: Colors.white,
             border: Border.all(
@@ -1443,7 +1449,7 @@ class _filterPage extends State<FilterPage> {
               child: new ListView(
                   children: [
                     Container(
-                      width: screenSize.width-143,
+                      width: screenWidth-143,
                       height: 120,
                       child: Column(
                         children: [
@@ -1533,7 +1539,7 @@ class _filterPage extends State<FilterPage> {
         child: Column(
           children: [
           Container(
-            width: screenSize.width-143,
+            width: screenWidth-143,
             height: 120,
             color: Colors.white,
             child: Column(
@@ -1629,7 +1635,7 @@ class _filterPage extends State<FilterPage> {
       return Align(
         alignment: Alignment.topCenter,
         child: Container(
-          width: screenSize.width-143,
+          width: screenWidth-143,
           height: 120,
           child: Column(
             children: [
@@ -1713,7 +1719,7 @@ class _filterPage extends State<FilterPage> {
 
     else
       Container(
-          width: screenSize.width-133,
+          width: screenWidth-133,
           decoration: BoxDecoration(
             color: Colors.white,
             border: Border.all(
@@ -1749,31 +1755,29 @@ class _filterPage extends State<FilterPage> {
                       ))));
   }
 
-  Widget FilterWidget(){
+  Widget FilterWidget(double tscreenWidth){
     final screenSize = MediaQuery
         .of(context)
         .size;
-
-    return  Flexible(
-      child: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              // Box decoration takes a gradient
-              gradient: LinearGradient(
-                // Where the linear gradient begins and ends
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                // Add one stop for each color. Stops should increase from 0 to 1
-                stops: [0, 1],
-                colors: [
-                  // Colors are easy thanks to Flutter's Colors class.
-                  primary1Color,
-                  Colors.white
-                ],
-              ),
+    return  Stack(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            // Box decoration takes a gradient
+            gradient: LinearGradient(
+              // Where the linear gradient begins and ends
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              // Add one stop for each color. Stops should increase from 0 to 1
+              stops: [0, 1],
+              colors: [
+                // Colors are easy thanks to Flutter's Colors class.
+                primary1Color,
+                Colors.white
+              ],
             ),
           ),
+        ),
         Container(
           child: Padding(
             padding: const EdgeInsets.only(
@@ -1781,6 +1785,7 @@ class _filterPage extends State<FilterPage> {
             child: Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Container(
                   height: screenSize.height-110,
@@ -1855,7 +1860,7 @@ class _filterPage extends State<FilterPage> {
                             ),
                           ),
                         )
-                        : Container(),
+                            : Container(),
                         fValue.brand.length>0 ? SizedBox(height: 5,)
                             : Container(),
                         fValue.design.length>0 ? Material(
@@ -1915,7 +1920,7 @@ class _filterPage extends State<FilterPage> {
                             ),
                           ),
                         )
-                          : Container(),
+                            : Container(),
                         fValue.discount.length > 0 ?  SizedBox(height: 5,)
                             : Container(),
                         Material(
@@ -1948,85 +1953,85 @@ class _filterPage extends State<FilterPage> {
                                   child: Padding(
                                     padding: const EdgeInsets.only(left: 8.0, top: 12.0, bottom: 12.0),
                                     child: Text("Weight Range",
-                                    style: TextStyle(color: source == "weight" ? Colors.white : Colors.black),),
+                                      style: TextStyle(color: source == "weight" ? Colors.white : Colors.black),),
                                   )),
                             ),
                           ),
                         )
-                        : Container(),
+                            : Container(),
                         /*
-                        RawMaterialButton(
-                          fillColor: source == "groupName" ? buttonShadowColor : Colors.white,
-                          onPressed:(){
-                            showFilter("groupName");
-                          },
-                          child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 8.0),
-                                child: Text("Product Type"),
-                              )),
-                        ),
-                        RawMaterialButton(
-                          fillColor: source == "metalType" ? buttonShadowColor : Colors.white,
-                          onPressed:(){
-                            showFilter("metalType");
-                          },
-                          child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 8.0, bottom: 5),
-                                child: Text("Metal Type"),
-                              )),
-                        ),
-                        RawMaterialButton(
-                          fillColor: source == "brand" ? buttonShadowColor : Colors.white,
-                          onPressed:(){
-                            showFilter("brand");
-                          },
-                          child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 8.0),
-                                child: Text("Brand"),
-                              )),
-                        ),
-                        RawMaterialButton(
-                          fillColor: source == "discount" ? buttonShadowColor : Colors.white,
-                          onPressed:(){
-                            showFilter("discount");
-                          },
-                          child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 8.0),
-                                child: Text("Discount"),
-                              )),
-                        ),
-                        RawMaterialButton(
-                          fillColor: source == "price" ? buttonShadowColor : Colors.white,
-                          onPressed:(){
-                            showFilter("price");
-                          },
-                          child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 8.0),
-                                child: Text("Price Range"),
-                              )),
-                        ),
-                        RawMaterialButton(
-                          fillColor: source == "weight" ? buttonShadowColor : Colors.white,
-                          onPressed:(){
-                            showFilter("weight");
-                          },
-                          child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 8.0),
-                                child: Text("Weight Range"),
-                              )),
-                        ),
+                            RawMaterialButton(
+                              fillColor: source == "groupName" ? buttonShadowColor : Colors.white,
+                              onPressed:(){
+                                showFilter("groupName");
+                              },
+                              child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: Text("Product Type"),
+                                  )),
+                            ),
+                            RawMaterialButton(
+                              fillColor: source == "metalType" ? buttonShadowColor : Colors.white,
+                              onPressed:(){
+                                showFilter("metalType");
+                              },
+                              child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 8.0, bottom: 5),
+                                    child: Text("Metal Type"),
+                                  )),
+                            ),
+                            RawMaterialButton(
+                              fillColor: source == "brand" ? buttonShadowColor : Colors.white,
+                              onPressed:(){
+                                showFilter("brand");
+                              },
+                              child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: Text("Brand"),
+                                  )),
+                            ),
+                            RawMaterialButton(
+                              fillColor: source == "discount" ? buttonShadowColor : Colors.white,
+                              onPressed:(){
+                                showFilter("discount");
+                              },
+                              child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: Text("Discount"),
+                                  )),
+                            ),
+                            RawMaterialButton(
+                              fillColor: source == "price" ? buttonShadowColor : Colors.white,
+                              onPressed:(){
+                                showFilter("price");
+                              },
+                              child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: Text("Price Range"),
+                                  )),
+                            ),
+                            RawMaterialButton(
+                              fillColor: source == "weight" ? buttonShadowColor : Colors.white,
+                              onPressed:(){
+                                showFilter("weight");
+                              },
+                              child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: Text("Weight Range"),
+                                  )),
+                            ),
 */
                       ],
                     ),
@@ -2034,12 +2039,10 @@ class _filterPage extends State<FilterPage> {
                 ),
                 FilterWidgetValue(),
               ],
-
             ),
           ),
         ),
-        ]
-      ),
+      ]
     );
   }
 
@@ -2058,10 +2061,13 @@ class _filterPage extends State<FilterPage> {
     final screenSize = MediaQuery
         .of(context)
         .size;
+    screenWidth = screenSize.width;
+    if(kIsWeb){
+      screenWidth =  cfobj.ScreenWidth(screenSize.width);
+    }
 
     return MaterialApp(
       title: 'Filter',
-
       theme: MasterScreen.themeData(context),
       home: Scaffold(
         appBar: AppBar(
@@ -2081,17 +2087,30 @@ class _filterPage extends State<FilterPage> {
           centerTitle: true,
         ),
         body: SafeArea(
-          child: Column(
-            children: [
-              //Customtitle2(context, "Filter", stickyKey),
-              FilterWidget(),
-          ]
-        ),
+          child: Container(
+//            child: Text("SENTHI"),
+            child: Row(
+              children: [
+                Flexible(
+                  child: Container(
+                    color: webLeftContainerColor,
+                  ),
+                ),
+                FilterWidget(screenWidth),
+                Flexible(
+                  child: Container(
+                    color: webRightContainerColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
         bottomNavigationBar: BottomAppBar(
-
             child: Container(
               height: 50,
+              /*
+              constraints: BoxConstraints(minWidth: 250, maxWidth: screenWidth, maxHeight: 50, minHeight: 50),
               decoration: BoxDecoration(
                 // Box decoration takes a gradient
                 gradient: LinearGradient(
@@ -2107,61 +2126,82 @@ class _filterPage extends State<FilterPage> {
                   ],
                 ),
               ),
+              */
               child: Padding(
                 padding: const EdgeInsets.only(left: 1.0, right: 1.0),
                 child: new Row(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-                      Expanded(
-                        child: SizedBox(
-                          height: 50,
-                          child: RaisedButton(
-                            color: Color(0xFF509583),
-                            padding: const EdgeInsets.fromLTRB(
-                                0.0, 0.0, 0.0, 0.0),
-                            child: Text(
-                              "Reset",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
+                      Flexible(
+                        child: Container(
+                          color: webLeftContainerColor,
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: Container(
+                          constraints: BoxConstraints(minWidth: 250, maxWidth: screenWidth),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: RaisedButton(
+                                  color: Color(0xFF509583),
+                                  padding: const EdgeInsets.fromLTRB(
+                                      0.0, 0.0, 0.0, 0.0),
+                                  child: Text(
+                                    "Reset",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  onPressed: () async {
+                                    reset_Click();
+                                  },
+                                ),
                               ),
-                            ),
-                            onPressed: () async {
-                              reset_Click();
-                            },
+                              SizedBox(width: 1,),
+                              Expanded(
+                                flex: 1,
+                                child: RaisedButton(
+                                  color: Color(0xFF517295),
+                                  padding: const EdgeInsets.fromLTRB(
+                                      0.0, 0.0, 0.0, 0.0),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(0.0),
+                                    child: Text(
+                                      "Apply",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 15, fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  onPressed: () async {
+                                    apply_Click();
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                      SizedBox(width: 1,),
-                      Expanded(
-                        child: SizedBox(
-                          height: 50,
-                          child: RaisedButton(
-                            color: Color(0xFF517295),
-                            padding: const EdgeInsets.fromLTRB(
-                                0.0, 0.0, 0.0, 0.0),
-                            child: Padding(
-                              padding: const EdgeInsets.all(0.0),
-                              child: Text(
-                                "Apply",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15, fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            onPressed: () async {
-                              apply_Click();
-                            },
-                          ),
+                      Flexible(
+                        child: Container(
+                          color: webRightContainerColor,
                         ),
                       ),
                     ]
                 ),
               ),
-            )
+            ),
         ),
       ),
     );

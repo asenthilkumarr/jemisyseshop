@@ -3,9 +3,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:jemisyseshop/data/dataService.dart';
+import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/style.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class ShowRoomPage extends StatefulWidget{
   @override
@@ -13,6 +15,7 @@ class ShowRoomPage extends StatefulWidget{
 }
 class _showRoomPage extends State<ShowRoomPage> {
   DataService dataService = DataService();
+  Commonfn cfobj = Commonfn();
   var scaffoldKey = GlobalKey<ScaffoldState>();
   List<Store> list = new List<Store>();
   Future<List<Cart>> getDefaultData() async {
@@ -93,6 +96,10 @@ class _showRoomPage extends State<ShowRoomPage> {
     final screenSize = MediaQuery
         .of(context)
         .size;
+    screenWidth = screenSize.width;
+    if(kIsWeb){
+      screenWidth =  cfobj.ScreenWidth(screenSize.width);
+    }
 
     return MaterialApp(
       title: 'Showroom',
@@ -114,10 +121,30 @@ class _showRoomPage extends State<ShowRoomPage> {
           centerTitle: true,
         ),
         body: SafeArea(
-          child: ListView(
-            children: <Widget>[
-              for(var i = 0; i < list.length; i++)
-                storeDetail(list[i], i),
+          child: Row(
+            children: [
+              Flexible(
+                child: Container(
+                  color: webLeftContainerColor,
+                ),
+              ),
+              Align(
+                alignment: Alignment.topCenter,
+                child: Container(
+                  constraints: BoxConstraints(minWidth: 250, maxWidth: screenWidth),
+                  child: ListView(
+                    children: <Widget>[
+                      for(var i = 0; i < list.length; i++)
+                        storeDetail(list[i], i),
+                    ],
+                  ),
+                ),
+              ),
+              Flexible(
+                child: Container(
+                  color: webRightContainerColor,
+                ),
+              ),
             ],
           ),
         ),

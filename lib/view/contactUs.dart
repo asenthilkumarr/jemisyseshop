@@ -18,6 +18,7 @@ class ContactUsPage extends StatefulWidget{
 class _contactUsPage extends State<ContactUsPage> {
   var scaffoldKey = GlobalKey<ScaffoldState>();
   DataService dataService = DataService();
+  Commonfn cfobj = Commonfn();
   Setting _setting = new Setting();
   Future<void> _launched;
   String _phone = '';
@@ -75,7 +76,10 @@ class _contactUsPage extends State<ContactUsPage> {
     final screenSize = MediaQuery
         .of(context)
         .size;
-
+    screenWidth = screenSize.width;
+    if(kIsWeb){
+      screenWidth =  cfobj.ScreenWidth(screenSize.width);
+    }
     return MaterialApp(
       title: 'Contact Us',
       theme: MasterScreen.themeData(context),
@@ -115,264 +119,284 @@ class _contactUsPage extends State<ContactUsPage> {
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                    children: [
-                      Container(
+              Row(
+                children: [
+                  Flexible(
+                    child: Container(
+                      color: webLeftContainerColor,
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child: Container(
+                      constraints: BoxConstraints(minWidth: 250, maxWidth: screenWidth),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                            children: [
+                              Container(
 //                        height: 200,
-                        width: double.infinity,
-                        decoration: !isWeb ? BoxDecoration(
-                            gradient: SweepGradient(
-                              colors: [Colors.blue, Colors.green, Colors.yellow, Colors.red, Colors.blue],
-                              stops: [0.0, 0.25, 0.5, 0.75, 1],
-                            ),
-                            shape: BoxShape.rectangle
-                        ) : BoxDecoration(
-                          // Box decoration takes a gradient
-                          gradient: LinearGradient(
-                            // Where the linear gradient begins and ends
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            // Add one stop for each color. Stops should increase from 0 to 1
-                            stops: [0, 1],
-                            colors: [
-                              // Colors are easy thanks to Flutter's Colors class.
-                              buttonColor,
-                              listLabelbgColor,//0xFFEDE7F6
-                            ],
-                          ),
-                        ),
-                        /*
-                        decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                stops: [0.1, 0.3, 0.7, 1],
-                                colors: [primary1Color, Colors.white30, Colors.orange, primary1Color])
-                        ),
-                         */
-                        child:  _setting != null ? Column(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: Image.network(iconImg, height: 100,),
-                            ),
-                            _setting.contactCompanyName != null && _setting.contactCompanyName != "" ?
-                            Text(_setting.contactCompanyName, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18),)
-                            : Container(),
-                            SizedBox(height: 10,),
-                            _setting.contactName != null && _setting.contactName != "" ? Container(
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: (){
-                                    //_launched = _makePhoneCall('tel:${_setting.contactNumber}');
-                                  },
+                                width: double.infinity,
+                                decoration: !isWeb ? BoxDecoration(
+                                    gradient: SweepGradient(
+                                      colors: [Colors.blue, Colors.green, Colors.yellow, Colors.red, Colors.blue],
+                                      stops: [0.0, 0.25, 0.5, 0.75, 1],
+                                    ),
+                                    shape: BoxShape.rectangle
+                                ) : BoxDecoration(
+                                  // Box decoration takes a gradient
+                                  gradient: LinearGradient(
+                                    // Where the linear gradient begins and ends
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    // Add one stop for each color. Stops should increase from 0 to 1
+                                    stops: [0, 1],
+                                    colors: [
+                                      // Colors are easy thanks to Flutter's Colors class.
+                                      buttonColor,
+                                      listLabelbgColor,//0xFFEDE7F6
+                                    ],
+                                  ),
+                                ),
+                                /*
+                                decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        stops: [0.1, 0.3, 0.7, 1],
+                                        colors: [primary1Color, Colors.white30, Colors.orange, primary1Color])
+                                ),
+                                 */
+                                child:  _setting != null ? Column(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      child: Image.network(iconImg, height: 100,),
+                                    ),
+                                    _setting.contactCompanyName != null && _setting.contactCompanyName != "" ?
+                                    Text(_setting.contactCompanyName, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18),)
+                                    : Container(),
+                                    SizedBox(height: 10,),
+                                    _setting.contactName != null && _setting.contactName != "" ? Container(
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: (){
+                                            //_launched = _makePhoneCall('tel:${_setting.contactNumber}');
+                                          },
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.max,
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Icon(Icons.person, color: Colors.white, size: 20,),
+                                              SizedBox(width: 10,),
+                                              Text(_setting.contactName, style: TextStyle(fontSize: 18, color: Colors.white),),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ) : Container(),
+                                    _setting.contactName != null && _setting.contactName != "" ? SizedBox(height: 10,) : Container(),
+                                    _setting.contactNumber != null && _setting.contactNumber != "" ? Container(
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: (){
+                                          //_launched = _makePhoneCall('tel:${_setting.contactNumber}');
+                                          },
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.max,
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Icon(Icons.phone, color: Colors.white, size: 20,),
+                                            SizedBox(width: 10,),
+                                            Text(_setting.contactNumber, style: TextStyle(fontSize: 18, color: Colors.white),),
+                                          ],
+                                        ),
+                                        ),
+                                      ),
+                                    ) : Container(),
+                                    _setting.contactNumber != null && _setting.contactNumber != "" ? SizedBox(height: 10,) : Container(),
+                                    _setting.contactEmail != null && _setting.contactEmail != "" ? Container(
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: (){
+                                            //_createEmail('mailto:${_setting.contactEmail}');
+                                          },
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.max,
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Icon(Icons.email, color: Colors.white, size: 20,),
+                                              SizedBox(width: 10,),
+                                              Text(_setting.contactEmail, style: TextStyle(fontSize: 18, color: Colors.white),),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ) : Container(),
+                                    _setting.contactEmail != null && _setting.contactEmail != "" ? SizedBox(height: 10,) : Container(),
+                                  ],
+                                )
+                                : Container(),
+                              ),
+                              SizedBox(height: 10,),
+                              Container(
+                                color: Color(0xFFD7DBDD),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
                                   child: Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(Icons.person, color: Colors.white, size: 20,),
-                                      SizedBox(width: 10,),
-                                      Text(_setting.contactName, style: TextStyle(fontSize: 18, color: Colors.white),),
+                                      Text("Reach us:"),
+                                      Spacer(),
                                     ],
                                   ),
                                 ),
                               ),
-                            ) : Container(),
-                            _setting.contactName != null && _setting.contactName != "" ? SizedBox(height: 10,) : Container(),
-                            _setting.contactNumber != null && _setting.contactNumber != "" ? Container(
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: (){
-                                  //_launched = _makePhoneCall('tel:${_setting.contactNumber}');
-                                  },
-                                child: Row(
+                              SizedBox(height: 5,),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
                                   mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Icon(Icons.phone, color: Colors.white, size: 20,),
-                                    SizedBox(width: 10,),
-                                    Text(_setting.contactNumber, style: TextStyle(fontSize: 18, color: Colors.white),),
+                                    _setting.contactEmail != null && _setting.contactEmail != "" ? Container(
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: (){
+                                            _createEmail('mailto:${_setting.contactEmail}');
+                                          },
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.max,
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            children: [
+                                              Icon(Icons.email, color: Colors.grey, size: 20,),
+                                              SizedBox(width: 10,),
+                                              Text("Mail us", style: TextStyle(fontSize: 18),),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ) : Container(),
+                                    _setting.contactEmail != null && _setting.contactEmail != "" ? Divider() : Container(),
+                                    _setting.contactNumber != null && _setting.contactNumber != "" ? Container(
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: (){
+                                            _launched = _makePhoneCall('tel:${_setting.contactNumber}');
+                                          },
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.max,
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            children: [
+                                              Icon(Icons.phone, color: Colors.grey, size: 20,),
+                                              SizedBox(width: 10,),
+                                              Text("Give us a call", style: TextStyle(fontSize: 18),),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ) : Container(),
+                                    _setting.contactNumber != null && _setting.contactNumber != "" ? Divider() : Container(),
                                   ],
                                 ),
-                                ),
                               ),
-                            ) : Container(),
-                            _setting.contactNumber != null && _setting.contactNumber != "" ? SizedBox(height: 10,) : Container(),
-                            _setting.contactEmail != null && _setting.contactEmail != "" ? Container(
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: (){
-                                    //_createEmail('mailto:${_setting.contactEmail}');
-                                  },
+                              SizedBox(height: 5,),
+                              Container(
+                                color: Color(0xFFD7DBDD),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
                                   child: Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(Icons.email, color: Colors.white, size: 20,),
-                                      SizedBox(width: 10,),
-                                      Text(_setting.contactEmail, style: TextStyle(fontSize: 18, color: Colors.white),),
+                                      Text("Find us on:"),
+                                      Spacer(),
                                     ],
                                   ),
                                 ),
                               ),
-                            ) : Container(),
-                            _setting.contactEmail != null && _setting.contactEmail != "" ? SizedBox(height: 10,) : Container(),
-                          ],
-                        )
-                        : Container(),
-                      ),
-                      SizedBox(height: 10,),
-                      Container(
-                        color: Color(0xFFD7DBDD),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Text("Reach us:"),
-                              Spacer(),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 5,),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _setting.contactEmail != null && _setting.contactEmail != "" ? Container(
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: (){
-                                    _createEmail('mailto:${_setting.contactEmail}');
-                                  },
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Icon(Icons.email, color: Colors.grey, size: 20,),
-                                      SizedBox(width: 10,),
-                                      Text("Mail us", style: TextStyle(fontSize: 18),),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ) : Container(),
-                            _setting.contactEmail != null && _setting.contactEmail != "" ? Divider() : Container(),
-                            _setting.contactNumber != null && _setting.contactNumber != "" ? Container(
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: (){
-                                    _launched = _makePhoneCall('tel:${_setting.contactNumber}');
-                                  },
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Icon(Icons.phone, color: Colors.grey, size: 20,),
-                                      SizedBox(width: 10,),
-                                      Text("Give us a call", style: TextStyle(fontSize: 18),),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ) : Container(),
-                            _setting.contactNumber != null && _setting.contactNumber != "" ? Divider() : Container(),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 5,),
-                      Container(
-                        color: Color(0xFFD7DBDD),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Text("Find us on:"),
-                              Spacer(),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 5,),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            _setting.contactInstagram != null && _setting.contactInstagram != "" ? Container(
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: (){
-                                    _launched = _launchInBrowser('${_setting.contactInstagram}');
-                                  },
-                                  child: Row(
+                              SizedBox(height: 5,),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  children: [
+                                    _setting.contactInstagram != null && _setting.contactInstagram != "" ? Container(
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: (){
+                                            _launched = _launchInBrowser('${_setting.contactInstagram}');
+                                          },
+                                          child: Row(
 //                                    mainAxisSize: MainAxisSize.max,
 //                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Image.asset("assets/instagram.png", height: 20,),
-                                      SizedBox(width: 10,),
-                                      Text("Instagram", style: TextStyle(fontSize: 18),),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ) : Container(),
-                            _setting.contactInstagram != null && _setting.contactInstagram != "" ? Divider() : Container(),
-                            _setting.contactFacebook != null && _setting.contactFacebook != "" ? Container(
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: (){
-                                    _launched = _launchInBrowser('${_setting.contactFacebook}');
-                                  },
-                                  child: Row(
+                                            children: [
+                                              Image.asset("assets/instagram.png", height: 20,),
+                                              SizedBox(width: 10,),
+                                              Text("Instagram", style: TextStyle(fontSize: 18),),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ) : Container(),
+                                    _setting.contactInstagram != null && _setting.contactInstagram != "" ? Divider() : Container(),
+                                    _setting.contactFacebook != null && _setting.contactFacebook != "" ? Container(
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: (){
+                                            _launched = _launchInBrowser('${_setting.contactFacebook}');
+                                          },
+                                          child: Row(
 //                                    mainAxisSize: MainAxisSize.max,
 //                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Image.asset("assets/facebook.png", height: 20,),
-                                      SizedBox(width: 10,),
-                                      Text("FaceBook", style: TextStyle(fontSize: 18),),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ) : Container(),
-                            _setting.contactFacebook != null && _setting.contactFacebook != "" ? Divider() : Container(),
-                            _setting.contactTwitter != null && _setting.contactTwitter != "" ? Container(
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: (){
-                                    _launched = _launchInBrowser('${_setting.contactTwitter}');
-                                  },
-                                  child: Row(
+                                            children: [
+                                              Image.asset("assets/facebook.png", height: 20,),
+                                              SizedBox(width: 10,),
+                                              Text("FaceBook", style: TextStyle(fontSize: 18),),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ) : Container(),
+                                    _setting.contactFacebook != null && _setting.contactFacebook != "" ? Divider() : Container(),
+                                    _setting.contactTwitter != null && _setting.contactTwitter != "" ? Container(
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: (){
+                                            _launched = _launchInBrowser('${_setting.contactTwitter}');
+                                          },
+                                          child: Row(
 //                                    mainAxisSize: MainAxisSize.max,
 //                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Image.asset("assets/twitter.png", height: 20,),
-                                      SizedBox(width: 10,),
-                                      Text("Twitter", style: TextStyle(fontSize: 18),),
-                                    ],
-                                  ),
+                                            children: [
+                                              Image.asset("assets/twitter.png", height: 20,),
+                                              SizedBox(width: 10,),
+                                              Text("Twitter", style: TextStyle(fontSize: 18),),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ) : Container(),
+                                    _setting.contactTwitter != null && _setting.contactTwitter != "" ? Divider() : Container(),
+                                  ],
                                 ),
-                              ),
-                            ) : Container(),
-                            _setting.contactTwitter != null && _setting.contactTwitter != "" ? Divider() : Container(),
-                          ],
+                              )
+                            ]
                         ),
-                      )
-                    ]
-                ),
+                      ),
+                    ),
+                  ),
+                  Flexible(
+                    child: Container(
+                      color: webRightContainerColor,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

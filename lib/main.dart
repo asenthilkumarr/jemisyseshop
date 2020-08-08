@@ -166,6 +166,7 @@ class splashScreen extends State<SplashScreen>{
         fit: StackFit.expand,
         children: <Widget>[
           sDT.length > 0 && sDT[0].startupImageName != "" ? Container(
+            constraints: BoxConstraints(minWidth: 350, maxWidth: 750),
             decoration: BoxDecoration(
               // Box decoration takes a gradient
               image: DecorationImage(

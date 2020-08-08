@@ -2,14 +2,21 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
-
 import 'package:flutter/foundation.dart' show kIsWeb;
+
 class DataService {
   //SharedPreferences prefs;
 
   final Map<String, String> userheaders = {
     "Content-type": "application/json",
     "APIKey": "SkVNaVN5czo1MzU2NDNBVDk4NjU0MzU2"
+  };
+  final Map<String, String> userheadersWithOrigin = {
+    "Content-type": "application/json",
+    "APIKey": "SkVNaVN5czo1MzU2NDNBVDk4NjU0MzU2",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "origin, x-requested-with, content-type",
+    "Access-Control-Allow-Methods": "PUT, GET, POST, DELETE, OPTIONS"
   };
 
   Future<List<Voucher>> getVouchers(String eMail) async {
@@ -92,6 +99,7 @@ class DataService {
   }
   Future<ReturnResponse> updateOrder(OrderData param) async {
     ReturnResponse result = new ReturnResponse();
+    print(json.encode(param.toParam()));
     http.Response response = await http.post(
         apiurl + "Order/UpdateOrder",
         headers: userheaders,
@@ -522,23 +530,27 @@ class DataService {
   }
   Future<SendEmail> sendEmailtoCustomer(SendEmail param) async {
     SendEmail result;
-    String sparam ='{"param":'+json.encode(param.toParam())+'}';
-
-    http.Response response = await http.post(
-        emailapiurl + "SMSeMailService.svc/SendeMailToCustomerInvoice",
-        headers: userheaders,
-        //ody: json.encode(param.toParam())
-        body: sparam
-    );
-
-    if (response.statusCode == 200) {
-      var data = jsonDecode(response.body);
-      result = SendEmail.fromJson(data);
-      return result;
+    String sparam = '{"doctype": "eCORDER","param":' + json.encode(param.toParam()) + ', "mode": "I"}';
+    try {
+      http.Response response = await http.post(
+          emailapiurl + "SMSeMailService.svc/SendeMailToCustomerInvoice",
+          headers: {"Content-type": "application/json"},
+          body: sparam
+      );
+      print(response.body);
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        result = SendEmail.fromJson(data);
+        return result;
+      }
+      else {
+        return result;
+        //throw Exception('Failed to load album');
+      }
     }
-    else {
+    catch (e){
+      print("------------------------------------------------------------------Catch " + e.toString());
       return result;
-      //throw Exception('Failed to load album');
     }
   }
   Future<List<Store>> getStores() async {

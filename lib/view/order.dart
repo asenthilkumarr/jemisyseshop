@@ -8,6 +8,7 @@ import 'package:jemisyseshop/style.dart';
 import 'package:jemisyseshop/view/cart.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
 import 'package:jemisyseshop/view/productDetails.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class OrderPage extends StatefulWidget{
   final List<Cart> itemlist;
@@ -20,6 +21,7 @@ class OrderPage extends StatefulWidget{
 }
 class _orderPage extends State<OrderPage> {
   DataService dataService = DataService();
+  Commonfn cfobj = Commonfn();
   List<Cart> cartlist = new List<Cart>();
   double sumValue = 0;
   double shippingCharge = 0;
@@ -164,7 +166,14 @@ class _orderPage extends State<OrderPage> {
   }
   @override
   Widget build(BuildContext context) {
-    CartPage objc = new CartPage();
+    final screenSize = MediaQuery
+        .of(context)
+        .size;
+    screenWidth = screenSize.width;
+    if(kIsWeb){
+      screenWidth =  cfobj.ScreenWidth(screenSize.width);
+    }
+
     return MaterialApp(
       title: 'Order',
       theme: MasterScreen.themeData(context),
@@ -205,161 +214,183 @@ class _orderPage extends State<OrderPage> {
 
                     ),
                   ),
-                  Column(
+                  Row(
                     children: [
                       Flexible(
-                          child: SingleChildScrollView(
-                            child: Column(
-                              children: [
-                                Stack(
-                                  children : [
-                                    Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                            border: Border.all(
-                                              width: 1,
-                                              color: listLabelbgColor,
-                                            ),
-                                            borderRadius: BorderRadius.circular(10)
-                                        ),
-                                        padding: EdgeInsets.all(5),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                                          children: [
-                                            RichText(
-                                              text: TextSpan(
-                                                style: TextStyle(fontSize: 18, color: Colors.green),
+                        child: Container(
+                          color: webLeftContainerColor,
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: Container(
+                            constraints: BoxConstraints(minWidth: 250, maxWidth: screenWidth),
+                            child: SingleChildScrollView(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Stack(
+                                    children : [
+                                      Padding(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                color: listLabelbgColor,
+                                              ),
+                                              borderRadius: BorderRadius.circular(10),
+                                          ),
+                                          padding: EdgeInsets.all(5),
+
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                                            mainAxisSize: MainAxisSize.max,
+
+                                            children: [
+                                              Wrap(
                                                 children: [
-                                                  WidgetSpan(
-                                                    child: Icon(
-                                                      Icons.check,
-                                                      color: Colors.green,
-                                                      size: 25.0,
-                                                    ),
+                                                  Icon(
+                                                    Icons.check,
+                                                    color: Colors.green,
+                                                    size: 25.0,
                                                   ),
-                                                  TextSpan(
-                                                    text: widget.source != "IP" ? " Thank you, your order has been placed."
-                                                    : " Thank you, your payment updated successfully.",
+                                                  RichText(
+                                                    text: TextSpan(
+                                                      style: TextStyle(fontSize: 18, color: Colors.green),
+                                                      children: [
+                                                        TextSpan(
+                                                          text: widget.source != "IP" ? " Thank you, your order has been placed."
+                                                              : " Thank you, your payment updated successfully.",
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
                                                 ],
                                               ),
-                                            ),
-                                            Text("An email confirmation has been send to you."),
-                                          ],
+
+                                              Text("An email confirmation has been send to you."),
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    Positioned(
-                                        right: 0.0,
-                                        child: GestureDetector(
-                                          onTap: () async {
-                                            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-                                                MasterScreen(currentIndex: 0, key: null,)), (Route<dynamic> route) => false);
+                                      Positioned(
+                                          right: 0.0,
+                                          child: GestureDetector(
+                                            onTap: () async {
+                                              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+                                                  MasterScreen(currentIndex: 0, key: null,)), (Route<dynamic> route) => false);
 //                                            Navigator.of(context).pop();
-                                          },
-                                          child: Align(
-                                            alignment: Alignment.topCenter,
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(8.0),
-                                              child: CircleAvatar(
-                                                radius: 12.0,
-                                                backgroundColor: primary1Color,
-                                                child: Icon(
-                                                  Icons.close, color: Colors.white, size: 20,),
+                                            },
+                                            child: Align(
+                                              alignment: Alignment.topCenter,
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: CircleAvatar(
+                                                  radius: 12.0,
+                                                  backgroundColor: primary1Color,
+                                                  child: Icon(
+                                                    Icons.close, color: Colors.white, size: 20,),
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        )),
-                                  ]
-                                ),
-                                widget.source != "IP" ? Column(
-                                  children: [
-                                    for(var i = 0; i < cartlist.length; i++)
-                                      CartList(cartlist[i], i),
-                                    sumValue != 0 ? Container(
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 20.0, right: 20.0, top: 30.0, bottom: 30),
-                                        child: Column(
-                                          children: [
-                                            Text("Summary", style: TextStyle(fontSize: 20.0,
-                                                fontWeight: FontWeight.bold),),
-                                            SizedBox(height: 15,),
-                                            Row(
+                                          )),
+                                    ]
+                                  ),
+                                  widget.source != "IP" ? Column(
+                                    children: [
+                                      for(var i = 0; i < cartlist.length; i++)
+                                        CartList(cartlist[i], i),
+                                      sumValue != 0 ? Container(
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 20.0, right: 20.0, top: 30.0, bottom: 30),
+                                          child: Column(
+                                            children: [
+                                              Text("Summary", style: TextStyle(fontSize: 20.0,
+                                                  fontWeight: FontWeight.bold),),
+                                              SizedBox(height: 15,),
+                                              Row(
 //                                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                                              children: [
-                                                Expanded(
-                                                    child: Text("Sub Total")),
-                                                Expanded(
-                                                  child: Align(
-                                                      alignment: Alignment.centerRight,
-                                                      child: Text(
-                                                        "$currencysymbol${formatterint
-                                                            .format(sumValue)}",
-                                                        style: TextStyle(
-                                                            fontWeight: FontWeight.bold),)),
-                                                )
-                                              ],
-                                            ),
-                                            SizedBox(height: 5,),
-                                            Row(
-                                              children: [
-                                                Expanded(
-                                                    child: Text("Shipping Charge")),
-                                                Expanded(
-                                                  child: Align(
-                                                      alignment: Alignment.centerRight,
-                                                      child: shippingCharge != 0 ? Text(
-                                                          "$currencysymbol${formatterint
-                                                              .format(shippingCharge)}")
-                                                          : Text("Free")),
-                                                )
-                                              ],
-                                            ),
-                                            SizedBox(height: 5,),
-                                            Row(
-                                              children: [
-                                                Expanded(
-                                                    child: Text("Shipping Insurance")),
-                                                Expanded(
-                                                  child: Align(
-                                                      alignment: Alignment.centerRight,
-                                                      child: shippingInsurance != 0 ? Text(
-                                                          "$currencysymbol${formatterint
-                                                              .format(shippingInsurance)}")
-                                                          : Text("Free")),
-                                                )
-                                              ],
-                                            ),
-                                            SizedBox(height: 5,),
-                                            Row(
-                                              children: [
-                                                Expanded(
-                                                    child: Text("Grand Total")),
-                                                Expanded(
-                                                  child: Align(
-                                                      alignment: Alignment.centerRight,
-                                                      child: Text(
+                                                children: [
+                                                  Expanded(
+                                                      child: Text("Sub Total")),
+                                                  Expanded(
+                                                    child: Align(
+                                                        alignment: Alignment.centerRight,
+                                                        child: Text(
                                                           "$currencysymbol${formatterint
                                                               .format(sumValue)}",
                                                           style: TextStyle(
-                                                              fontWeight: FontWeight
-                                                                  .bold))),
-                                                )
-                                              ],
-                                            ),
-                                            SizedBox(height: 25,),
-                                          ],
+                                                              fontWeight: FontWeight.bold),)),
+                                                  )
+                                                ],
+                                              ),
+                                              SizedBox(height: 5,),
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                      child: Text("Shipping Charge")),
+                                                  Expanded(
+                                                    child: Align(
+                                                        alignment: Alignment.centerRight,
+                                                        child: shippingCharge != 0 ? Text(
+                                                            "$currencysymbol${formatterint
+                                                                .format(shippingCharge)}")
+                                                            : Text("Free")),
+                                                  )
+                                                ],
+                                              ),
+                                              SizedBox(height: 5,),
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                      child: Text("Shipping Insurance")),
+                                                  Expanded(
+                                                    child: Align(
+                                                        alignment: Alignment.centerRight,
+                                                        child: shippingInsurance != 0 ? Text(
+                                                            "$currencysymbol${formatterint
+                                                                .format(shippingInsurance)}")
+                                                            : Text("Free")),
+                                                  )
+                                                ],
+                                              ),
+                                              SizedBox(height: 5,),
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                      child: Text("Grand Total")),
+                                                  Expanded(
+                                                    child: Align(
+                                                        alignment: Alignment.centerRight,
+                                                        child: Text(
+                                                            "$currencysymbol${formatterint
+                                                                .format(sumValue)}",
+                                                            style: TextStyle(
+                                                                fontWeight: FontWeight
+                                                                    .bold))),
+                                                  )
+                                                ],
+                                              ),
+                                              SizedBox(height: 25,),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ) : Container(),
-                                  ],
-                                ) : Container(),
+                                      ) : Container(),
+                                    ],
+                                  ) : Container(),
 
-                              ],
+                                ],
+                              ),
                             ),
-                          )
+                        ),
+                      ),
+                      Flexible(
+                        child: Container(
+                          color: webRightContainerColor,
+                        ),
                       ),
                     ],
                   )

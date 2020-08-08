@@ -5,7 +5,7 @@ import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/model/dialogs.dart';
 import 'package:jemisyseshop/style.dart';
 import 'package:jemisyseshop/view/payment.dart';
-
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'masterPage.dart';
 
 class AddressPage extends StatefulWidget{
@@ -19,6 +19,7 @@ class AddressPage extends StatefulWidget{
 }
 class _addressPage extends State<AddressPage> {
   DataService dataService = DataService();
+  Commonfn cfobj = Commonfn();
   final _keyLoader = new GlobalKey<FormState>();
   List<Store> storeList = new List<Store>();
   List<Address> dAddress = [];
@@ -190,7 +191,13 @@ class _addressPage extends State<AddressPage> {
 
   @override
   Widget build(BuildContext context) {
-//    print(billingAddress.fullName);
+    final screenSize = MediaQuery
+        .of(context)
+        .size;
+    screenWidth = screenSize.width;
+    if(kIsWeb){
+      screenWidth =  cfobj.ScreenWidth(screenSize.width);
+    }
     return MaterialApp(
       title: 'Address',
       theme: MasterScreen.themeData(context),
@@ -226,644 +233,638 @@ class _addressPage extends State<AddressPage> {
 
                   ),
                 ),
-                Column(
-//                crossAxisAlignment: CrossAxisAlignment.start,
+                Row(
                   children: [
-                    Container(
-                      color: buttonColor,
-                      height: 45,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 0.0),
-                        child: Row(
-//                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Expanded(
-                              flex: 1,
-                              child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 8.0),
-                                    child: Text("Items ($itemCount)",
-                                      style: TextStyle(color: buttonTextColor,
-                                          fontSize: 17),),
-                                  )),),
-                            Expanded(
-                              flex: 1,
-                              child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(right: 8.0),
-                                    child: Text(
-                                        "$currencysymbol${formatterint.format(
-                                            sumValue)}", style: TextStyle(
-                                        color: buttonTextColor,
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.bold)),
-                                  )),),
-                          ],
-                        ),
+                    Flexible(
+                      child: Container(
+                        color: webLeftContainerColor,
                       ),
                     ),
-                    Flexible(
-                      child: SingleChildScrollView(
+                    Align(
+                      alignment: Alignment.topCenter,
+                      child: Container(
+                        constraints: BoxConstraints(minWidth: 250, maxWidth: screenWidth),
                         child: Column(
+//                crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 15.0, top: 5, right: 15, bottom: 5),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                      width: 1,
-                                      color: listLabelbgColor,
-                                    ),
-                                    borderRadius: BorderRadius.circular(10)
-                                ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                            Container(
+                              color: buttonColor,
+                              height: 45,
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 0.0),
+                                child: Row(
+//                        crossAxisAlignment: CrossAxisAlignment.stretch,
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          0.1, 0.1, 0.1, 0.0),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: listbgColor,
-                                          borderRadius: BorderRadius.only(
-                                              topLeft: Radius.circular(10.2),
-                                              topRight: Radius.circular(10.2)
-                                          ),
-                                        ),
-
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 5.0, top: 5.0, bottom: 5.0),
-                                          child: Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Text("Delivery Mode",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight
-                                                      .bold),),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      decoration: BoxDecoration(
-                                          border: Border(
-                                            top: BorderSide(
-                                              width: 1,
-                                              color: listLabelbgColor,
-                                            ),
-                                          )
-                                      ),
-                                      child: Column(
-                                        children:
-                                        fList.map((data) =>
-                                            Container(
-                                              height: 35,
-                                              child: GestureDetector(
-                                                  onTap: () {
-                                                    setState(() {
-                                                      radioItem = data.name;
-                                                      id = data.index;
-                                                      _handleRadioValueChange(
-                                                          data);
-                                                    });
-                                                  },
-                                                  child: Row(
-                                                    mainAxisSize: MainAxisSize
-                                                        .max,
-                                                    children: [
-                                                      Radio(
-                                                        value: data.index,
-                                                        groupValue: id,
-                                                        onChanged: (val) {
-                                                          setState(() {
-                                                            radioItem =
-                                                                data.name;
-                                                            id = data.index;
-                                                            _handleRadioValueChange(
-                                                                data);
-                                                          });
-                                                        },
-                                                      ),
-                                                      Text("${data.name}",),
-                                                    ],
-                                                  )
-                                              ),
-                                            )
-                                        ).toList(),
-                                      ),
-                                    ),
+                                    Expanded(
+                                      flex: 1,
+                                      child: Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(left: 8.0),
+                                            child: Text("Items ($itemCount)",
+                                              style: TextStyle(color: buttonTextColor,
+                                                  fontSize: 17),),
+                                          )),),
+                                    Expanded(
+                                      flex: 1,
+                                      child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(right: 8.0),
+                                            child: Text(
+                                                "$currencysymbol${formatterint.format(
+                                                    sumValue)}", style: TextStyle(
+                                                color: buttonTextColor,
+                                                fontSize: 17,
+                                                fontWeight: FontWeight.bold)),
+                                          )),),
                                   ],
                                 ),
                               ),
                             ),
-                            radioItem == "Deliver at the Shipping Address"
-                                ? Padding(
-                              padding: const EdgeInsets.fromLTRB(
-                                  15.0, 10, 15, 0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                        width: 1.0,
-                                        color: listLabelbgColor
-                                    ),
-                                    borderRadius: BorderRadius.circular(10)
-                                ),
+                            Flexible(
+                              child: SingleChildScrollView(
                                 child: Column(
                                   children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: listbgColor,
-                                        borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(10.2),
-                                            topRight: Radius.circular(10.2)
-                                        ),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 5.0, top: 5.0, bottom: 5.0),
-                                        child: Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Text("Shipping Address",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),),
-                                        ),
-                                      ),
-                                    ),
-                                    dAddress.length > 0 ? Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 0.0, right: 0.0),
-                                        child: Container(
-                                          height: 35,
-                                          decoration: BoxDecoration(
-                                              border: Border(
-                                                top: BorderSide(
-                                                  width: 1,
-                                                  color: listLabelbgColor,
-                                                ),
-                                              )
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 8.0, right: 8.0),
-                                            child: DropdownButton<Address>(
-                                              isExpanded: true,
-                                              value: selectedAddress,
-                                              onChanged: (Address newValue) {
-                                                selectedAddress = newValue;
-                                                if(sameval){
-                                                  billingAddress = selectedAddress;
-                                                }
-                                                setState(() {});
-                                              },
-                                              underline: Container(),
-                                              items: dAddress.map((
-                                                  Address taddress) {
-                                                return new DropdownMenuItem<
-                                                    Address>(
-                                                  value: taddress,
-                                                  child: new Text("${taddress
-                                                      .title} ${taddress
-                                                      .fullName} ${taddress
-                                                      .address1}",
-                                                    style: new TextStyle(
-                                                      color: Colors.black,),
-                                                    overflow: TextOverflow
-                                                        .ellipsis,
-                                                  ),
-                                                );
-                                              }).toList(),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 15.0, top: 5, right: 15, bottom: 5),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                              width: 1,
+                                              color: listLabelbgColor,
                                             ),
-                                          ),
+                                            borderRadius: BorderRadius.circular(10)
                                         ),
-                                      ),
-                                    )
-                                        : Container(),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.fromLTRB(
+                                                  0.1, 0.1, 0.1, 0.0),
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  color: listbgColor,
+                                                  borderRadius: BorderRadius.only(
+                                                      topLeft: Radius.circular(10.2),
+                                                      topRight: Radius.circular(10.2)
+                                                  ),
+                                                ),
 
-                                    dAddress.length > 0 ? Stack(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 0.0, right: 0.0),
-                                          child: Container(
-                                            width: double.infinity,
-                                            decoration: BoxDecoration(
-                                                border: Border(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.only(
+                                                      left: 5.0, top: 5.0, bottom: 5.0),
+                                                  child: Align(
+                                                    alignment: Alignment.centerLeft,
+                                                    child: Text("Delivery Mode",
+                                                      style: TextStyle(
+                                                          fontWeight: FontWeight
+                                                              .bold),),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                  border: Border(
                                                     top: BorderSide(
                                                       width: 1,
                                                       color: listLabelbgColor,
                                                     ),
-                                                    bottom: BorderSide(
-                                                      width: 1,
-                                                      color: listLabelbgColor,
-                                                    )
-                                                )
-                                            ),
-                                            child: Padding(
-                                              padding: const EdgeInsets
-                                                  .fromLTRB(
-                                                  12.0, 8.0, 8.0, 8.0),
+                                                  )
+                                              ),
                                               child: Column(
-                                                mainAxisAlignment: MainAxisAlignment
-                                                    .start,
-                                                crossAxisAlignment: CrossAxisAlignment
-                                                    .start,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      selectedAddress.title != "" ? Text( "${selectedAddress.title}",
-                                                        style: TextStyle(fontWeight: FontWeight.bold),)
-                                                          : Container(),
-                                                      selectedAddress.title != "" ? SizedBox(width: 3,)
-                                                          : Container(),
-                                                      selectedAddress.fullName != "" ? Text("${selectedAddress.fullName}",
-                                                        style: TextStyle(fontWeight: FontWeight.bold),)
-                                                          : Container(),
-                                                    ],
-                                                  ),
-                                                  Row(
-                                                    children: [
-                                                      selectedAddress.address1 != "" ? Text("${selectedAddress.address1}")
-                                                          : Container(),
-                                                      selectedAddress.address1 != "" ? SizedBox(width: 3,)
-                                                          : Container(),
-                                                      selectedAddress.address2 != "" ? Text("${selectedAddress.address2}")
-                                                          : Container(),
-                                                    ],
-                                                  ),
-                                                  selectedAddress.address3 != "" ? Row(
-                                                    children: [
-                                                      Text("${selectedAddress.address3}"),
-                                                      selectedAddress.address3 != "" ? SizedBox(width: 3,)
-                                                          : Container(),
-//                                                    Text("${selectedAddress.pinCode}"),
-                                                    ],
-                                                  )
-                                                      : Container(),
-                                                  selectedAddress.city != "" || selectedAddress.state != "" ? Row(
-                                                    children: [
-                                                      selectedAddress.city != null && selectedAddress.city != "" ? Text("${selectedAddress.city}")
-                                                          : Container(),
-                                                      selectedAddress.city != null && selectedAddress.city != "" ? SizedBox(width: 3,)
-                                                          : Container(),
-                                                      selectedAddress.state != null && selectedAddress.state != "" ? Text("${selectedAddress.state}")
-                                                          : Container(),
-                                                    ],
-                                                  ) : Container(),
-                                                  Row(
-                                                    children: [
-                                                      selectedAddress.country != "" ? Text("${selectedAddress.country}")
-                                                          : Container(),
-                                                      selectedAddress.country != "" ? SizedBox(width: 3,)
-                                                          : Container(),
-                                                      selectedAddress.pinCode != "" ? Text("${selectedAddress.pinCode}")
-                                                          : Container(),
-                                                    ],
-                                                  ),
-                                                  selectedAddress.mobileNo != "" ? Row(
-                                                    children: [
-                                                      Text("Mobile No. : "),
-                                                      Text(selectedAddress.mobileNo),
-                                                    ],
-                                                  )
-                                                      : Container(),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Positioned(
-                                            right: 15.0,
-                                            bottom: 0.0,
-                                            child: GestureDetector(
-                                              onTap: () async {},
-                                              child: Align(
-                                                alignment: Alignment.topCenter,
-                                                child: Padding(
-                                                  padding: const EdgeInsets.all(
-                                                      8.0),
-                                                  child: CircleAvatar(
-                                                    radius: 10.0,
-                                                    backgroundColor: Colors
-                                                        .green,
-                                                    child: Icon(
-                                                      Icons.check,
-                                                      color: Colors.white,
-                                                      size: 17,),
-                                                  ),
-                                                ),
-                                              ),
-                                            )),
-                                      ],
-                                    )
-                                        : Container(),
-                                    enableNewAddress == "A" ? Container(
-                                        child: Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              8.0, 3.0, 8.0, 3.0),
-                                          child: Material(
-                                            child: InkWell(
-                                              onTap: () async {
-                                                var result = await Navigator
-                                                    .push(
-                                                    context, MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        AddressEntryPage()));
-                                                if (result != null &&
-                                                    result != false) {
-                                                  AddnewAddress("S",
-                                                      result); //Shipping Address
-                                                }
-                                              },
-                                              child: Card(
-                                                color: listbgColor,
-                                                //Color(0xFFEEEEEE),
-                                                child: Padding(
-                                                  padding: const EdgeInsets
-                                                      .fromLTRB(
-                                                      8.0, 10.0, 8.0, 10.0),
-                                                  child: Row(
-                                                    mainAxisAlignment: MainAxisAlignment
-                                                        .center,
-                                                    children: [
-                                                      Text(
-                                                        " + Add New Address ",
-                                                        style: TextStyle(
-                                                            fontSize: 17),),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                    )
-                                        : Container(),
-                                  ],
-                                ),
-                              ),
-                            )
-                                : Padding(
-                              padding: const EdgeInsets.fromLTRB(
-                                  15.0, 10, 15, 0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                        width: 1.0,
-                                        color: listLabelbgColor
-                                    ),
-                                    borderRadius: BorderRadius.circular(10)
-                                ),
-                                child: Column(
-                                    children: [
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: listbgColor,
-                                          borderRadius: BorderRadius.only(
-                                              topLeft: Radius.circular(10.2),
-                                              topRight: Radius.circular(10.2)
-                                          ),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 5.0, top: 5.0, bottom: 5.0),
-                                          child: Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Text("Chose Your Store",
-                                              style: TextStyle(fontWeight: FontWeight.bold),),
-                                          ),
-                                        ),
-                                      ),
-                                      Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 0.0, right: 0.0),
-                                          child: Container(
-                                            height: 35,
-                                            decoration: BoxDecoration(
-                                                border: Border(
-                                                  top: BorderSide(
-                                                    width: 1,
-                                                    color: listLabelbgColor,
-                                                  ),
-                                                )
-                                            ),
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 8.0, right: 8.0),
-                                              child: DropdownButton<Store>(
-                                                isExpanded: true,
-                                                value: selectedStore,
-                                                onChanged: (Store newValue) {
-                                                  selectedStore = newValue;
-
-                                                  setState(() {});
-                                                },
-                                                underline: Container(),
-                                                items: storeList.map((
-                                                    Store taddress) {
-                                                  return new DropdownMenuItem<
-                                                      Store>(
-                                                    value: taddress,
-                                                    child: new Text("${taddress
-                                                        .storeCode} ${taddress
-                                                        .address1} ${taddress
-                                                        .address1}",
-                                                      style: new TextStyle(
-                                                        color: Colors.black,),
-                                                      overflow: TextOverflow
-                                                          .ellipsis,
-                                                    ),
-                                                  );
-                                                }).toList(),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      selectedStore != null ? Stack(
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 0.0, right: 0.0),
-                                            child: Container(
-                                              width: double.infinity,
-                                              decoration: BoxDecoration(
-                                                  border: Border(
-                                                      top: BorderSide(
-                                                        width: 1,
-                                                        color: listLabelbgColor,
+                                                children:
+                                                fList.map((data) =>
+                                                    Container(
+                                                      height: 35,
+                                                      child: GestureDetector(
+                                                          onTap: () {
+                                                            setState(() {
+                                                              radioItem = data.name;
+                                                              id = data.index;
+                                                              _handleRadioValueChange(
+                                                                  data);
+                                                            });
+                                                          },
+                                                          child: Row(
+                                                            mainAxisSize: MainAxisSize
+                                                                .max,
+                                                            children: [
+                                                              Radio(
+                                                                value: data.index,
+                                                                groupValue: id,
+                                                                onChanged: (val) {
+                                                                  setState(() {
+                                                                    radioItem =
+                                                                        data.name;
+                                                                    id = data.index;
+                                                                    _handleRadioValueChange(
+                                                                        data);
+                                                                  });
+                                                                },
+                                                              ),
+                                                              Text("${data.name}",),
+                                                            ],
+                                                          )
                                                       ),
-                                                      bottom: BorderSide(
-                                                        width: 1,
-                                                        color: listLabelbgColor,
-                                                      )
-                                                  )
+                                                    )
+                                                ).toList(),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    radioItem == "Deliver at the Shipping Address"
+                                        ? Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          15.0, 10, 15, 0),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                                width: 1.0,
+                                                color: listLabelbgColor
+                                            ),
+                                            borderRadius: BorderRadius.circular(10)
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                color: listbgColor,
+                                                borderRadius: BorderRadius.only(
+                                                    topLeft: Radius.circular(10.2),
+                                                    topRight: Radius.circular(10.2)
+                                                ),
                                               ),
                                               child: Padding(
-                                                padding: const EdgeInsets
-                                                    .fromLTRB(
-                                                    12.0, 8.0, 8.0, 8.0),
-                                                child: Column(
-                                                  mainAxisAlignment: MainAxisAlignment
-                                                      .start,
-                                                  crossAxisAlignment: CrossAxisAlignment
-                                                      .start,
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        selectedStore.storeCode != "" ? Text( "${selectedStore.storeCode}",
-                                                          style: TextStyle(fontWeight: FontWeight.bold),)
-                                                            : Container(),
-                                                        selectedStore.description != "" ? SizedBox(width: 3,)
-                                                            : Container(),
-                                                        selectedStore.description != "" ? Text("${selectedStore.description}",
-                                                          style: TextStyle(fontWeight: FontWeight.bold),)
-                                                            : Container(),
-                                                      ],
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        selectedStore.address1 != "" ? Text("${selectedStore.address1}")
-                                                            : Container(),
-                                                      ],
-                                                    ),
-                                                    selectedStore.address2 != "" ? Row(
-                                                      children: [
-                                                        Text("${selectedStore.address2}"),
-                                                      ],
-                                                    )
-                                                        : Container(),
-                                                    selectedStore.address3 != "" ? Row(
-                                                      children: [
-                                                        Text("${selectedStore.address3}"),
-                                                        selectedStore.address3 != "" ? SizedBox(width: 3,)
-                                                            : Container(),
-                                                      ],
-                                                    )
-                                                        : Container(),
-                                                    Row(
-                                                      children: [
-                                                        selectedStore.state != "" ? Text("${selectedStore.state}")
-                                                            : Container(),
-                                                        selectedStore.state != "" ? SizedBox(width: 3,)
-                                                            : Container(),
-                                                        selectedStore.pinCode != "" ? Text("${selectedStore.pinCode}")
-                                                            : Container(),
-                                                      ],
-                                                    ),
-                                                    selectedStore.telePhone != "" ? Row(
-                                                      children: [
-                                                        Text("Tel. : "),
-                                                        Text(selectedStore.telePhone),
-                                                      ],
-                                                    )
-                                                        : Container(),
-                                                  ],
+                                                padding: const EdgeInsets.only(
+                                                    left: 5.0, top: 5.0, bottom: 5.0),
+                                                child: Align(
+                                                  alignment: Alignment.centerLeft,
+                                                  child: Text("Shipping Address",
+                                                    style: TextStyle(
+                                                        fontWeight: FontWeight.bold),),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                          Positioned(
-                                              right: 15.0,
-                                              bottom: 0.0,
-                                              child: GestureDetector(
-                                                onTap: () async {},
-                                                child: Align(
-                                                  alignment: Alignment.topCenter,
+                                            dAddress.length > 0 ? Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 0.0, right: 0.0),
+                                                child: Container(
+                                                  height: 35,
+                                                  decoration: BoxDecoration(
+                                                      border: Border(
+                                                        top: BorderSide(
+                                                          width: 1,
+                                                          color: listLabelbgColor,
+                                                        ),
+                                                      )
+                                                  ),
                                                   child: Padding(
-                                                    padding: const EdgeInsets.all(
-                                                        8.0),
-                                                    child: CircleAvatar(
-                                                      radius: 10.0,
-                                                      backgroundColor: Colors
-                                                          .green,
-                                                      child: Icon(
-                                                        Icons.check,
-                                                        color: Colors.white,
-                                                        size: 17,),
+                                                    padding: const EdgeInsets.only(
+                                                        left: 8.0, right: 8.0),
+                                                    child: DropdownButton<Address>(
+                                                      isExpanded: true,
+                                                      value: selectedAddress,
+                                                      onChanged: (Address newValue) {
+                                                        selectedAddress = newValue;
+                                                        if(sameval){
+                                                          billingAddress = selectedAddress;
+                                                        }
+                                                        setState(() {});
+                                                      },
+                                                      underline: Container(),
+                                                      items: dAddress.map((
+                                                          Address taddress) {
+                                                        return new DropdownMenuItem<
+                                                            Address>(
+                                                          value: taddress,
+                                                          child: new Text("${taddress
+                                                              .title} ${taddress
+                                                              .fullName} ${taddress
+                                                              .address1}",
+                                                            style: new TextStyle(
+                                                              color: Colors.black,),
+                                                            overflow: TextOverflow
+                                                                .ellipsis,
+                                                          ),
+                                                        );
+                                                      }).toList(),
                                                     ),
                                                   ),
                                                 ),
-                                              )),
-                                        ],
-                                      )
-                                          : Container(),
-                                    ]
-                                )
-                              ),
-                            ),
-                            SizedBox(height: 5,),
-                            dAddress.length > 0 || radioItem == "Pickup from a Store Nearby"
-                                ? Padding(
-                              padding: const EdgeInsets.fromLTRB(
-                                  15.0, 10, 15.0, 0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    width: 1,
-                                    color: listLabelbgColor,
-                                  ),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Column(
-//                                crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: listbgColor,
-                                        borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(10.2),
-                                            topRight: Radius.circular(10.2)
+                                              ),
+                                            )
+                                                : Container(),
+
+                                            dAddress.length > 0 ? Stack(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets.only(
+                                                      left: 0.0, right: 0.0),
+                                                  child: Container(
+                                                    width: double.infinity,
+                                                    decoration: BoxDecoration(
+                                                        border: Border(
+                                                            top: BorderSide(
+                                                              width: 1,
+                                                              color: listLabelbgColor,
+                                                            ),
+                                                            bottom: BorderSide(
+                                                              width: 1,
+                                                              color: listLabelbgColor,
+                                                            )
+                                                        )
+                                                    ),
+                                                    child: Padding(
+                                                      padding: const EdgeInsets
+                                                          .fromLTRB(
+                                                          12.0, 8.0, 8.0, 8.0),
+                                                      child: Column(
+                                                        mainAxisAlignment: MainAxisAlignment
+                                                            .start,
+                                                        crossAxisAlignment: CrossAxisAlignment
+                                                            .start,
+                                                        children: [
+                                                          Row(
+                                                            children: [
+                                                              selectedAddress.title != "" ? Text( "${selectedAddress.title}",
+                                                                style: TextStyle(fontWeight: FontWeight.bold),)
+                                                                  : Container(),
+                                                              selectedAddress.title != "" ? SizedBox(width: 3,)
+                                                                  : Container(),
+                                                              selectedAddress.fullName != "" ? Text("${selectedAddress.fullName}",
+                                                                style: TextStyle(fontWeight: FontWeight.bold),)
+                                                                  : Container(),
+                                                            ],
+                                                          ),
+                                                          Row(
+                                                            children: [
+                                                              selectedAddress.address1 != "" ? Text("${selectedAddress.address1}")
+                                                                  : Container(),
+                                                              selectedAddress.address1 != "" ? SizedBox(width: 3,)
+                                                                  : Container(),
+                                                              selectedAddress.address2 != "" ? Text("${selectedAddress.address2}")
+                                                                  : Container(),
+                                                            ],
+                                                          ),
+                                                          selectedAddress.address3 != "" ? Row(
+                                                            children: [
+                                                              Text("${selectedAddress.address3}"),
+                                                              selectedAddress.address3 != "" ? SizedBox(width: 3,)
+                                                                  : Container(),
+//                                                    Text("${selectedAddress.pinCode}"),
+                                                            ],
+                                                          )
+                                                              : Container(),
+                                                          selectedAddress.city != "" || selectedAddress.state != "" ? Row(
+                                                            children: [
+                                                              selectedAddress.city != null && selectedAddress.city != "" ? Text("${selectedAddress.city}")
+                                                                  : Container(),
+                                                              selectedAddress.city != null && selectedAddress.city != "" ? SizedBox(width: 3,)
+                                                                  : Container(),
+                                                              selectedAddress.state != null && selectedAddress.state != "" ? Text("${selectedAddress.state}")
+                                                                  : Container(),
+                                                            ],
+                                                          ) : Container(),
+                                                          Row(
+                                                            children: [
+                                                              selectedAddress.country != "" ? Text("${selectedAddress.country}")
+                                                                  : Container(),
+                                                              selectedAddress.country != "" ? SizedBox(width: 3,)
+                                                                  : Container(),
+                                                              selectedAddress.pinCode != "" ? Text("${selectedAddress.pinCode}")
+                                                                  : Container(),
+                                                            ],
+                                                          ),
+                                                          selectedAddress.mobileNo != "" ? Row(
+                                                            children: [
+                                                              Text("Mobile No. : "),
+                                                              Text(selectedAddress.mobileNo),
+                                                            ],
+                                                          )
+                                                              : Container(),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Positioned(
+                                                    right: 15.0,
+                                                    bottom: 0.0,
+                                                    child: GestureDetector(
+                                                      onTap: () async {},
+                                                      child: Align(
+                                                        alignment: Alignment.topCenter,
+                                                        child: Padding(
+                                                          padding: const EdgeInsets.all(
+                                                              8.0),
+                                                          child: CircleAvatar(
+                                                            radius: 10.0,
+                                                            backgroundColor: Colors
+                                                                .green,
+                                                            child: Icon(
+                                                              Icons.check,
+                                                              color: Colors.white,
+                                                              size: 17,),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    )),
+                                              ],
+                                            )
+                                                : Container(),
+                                            enableNewAddress == "A" ? Container(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.fromLTRB(
+                                                      8.0, 3.0, 8.0, 3.0),
+                                                  child: Material(
+                                                    child: InkWell(
+                                                      onTap: () async {
+                                                        var result = await Navigator
+                                                            .push(
+                                                            context, MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                AddressEntryPage()));
+                                                        if (result != null &&
+                                                            result != false) {
+                                                          AddnewAddress("S",
+                                                              result); //Shipping Address
+                                                        }
+                                                      },
+                                                      child: Card(
+                                                        color: listbgColor,
+                                                        //Color(0xFFEEEEEE),
+                                                        child: Padding(
+                                                          padding: const EdgeInsets
+                                                              .fromLTRB(
+                                                              8.0, 10.0, 8.0, 10.0),
+                                                          child: Row(
+                                                            mainAxisAlignment: MainAxisAlignment
+                                                                .center,
+                                                            children: [
+                                                              Text(
+                                                                " + Add New Address ",
+                                                                style: TextStyle(
+                                                                    fontSize: 17),),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                )
+                                            )
+                                                : Container(),
+                                          ],
                                         ),
                                       ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 5.0, top: 5.0, bottom: 5.0),
-                                        child: Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Text("Billing Address",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),),
+                                    )
+                                        : Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          15.0, 10, 15, 0),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                                width: 1.0,
+                                                color: listLabelbgColor
+                                            ),
+                                            borderRadius: BorderRadius.circular(10)
                                         ),
+                                        child: Column(
+                                            children: [
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                  color: listbgColor,
+                                                  borderRadius: BorderRadius.only(
+                                                      topLeft: Radius.circular(10.2),
+                                                      topRight: Radius.circular(10.2)
+                                                  ),
+                                                ),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.only(
+                                                      left: 5.0, top: 5.0, bottom: 5.0),
+                                                  child: Align(
+                                                    alignment: Alignment.centerLeft,
+                                                    child: Text("Chose Your Store",
+                                                      style: TextStyle(fontWeight: FontWeight.bold),),
+                                                  ),
+                                                ),
+                                              ),
+                                              Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: Padding(
+                                                  padding: const EdgeInsets.only(
+                                                      left: 0.0, right: 0.0),
+                                                  child: Container(
+                                                    height: 35,
+                                                    decoration: BoxDecoration(
+                                                        border: Border(
+                                                          top: BorderSide(
+                                                            width: 1,
+                                                            color: listLabelbgColor,
+                                                          ),
+                                                        )
+                                                    ),
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.only(
+                                                          left: 8.0, right: 8.0),
+                                                      child: DropdownButton<Store>(
+                                                        isExpanded: true,
+                                                        value: selectedStore,
+                                                        onChanged: (Store newValue) {
+                                                          selectedStore = newValue;
+
+                                                          setState(() {});
+                                                        },
+                                                        underline: Container(),
+                                                        items: storeList.map((
+                                                            Store taddress) {
+                                                          return new DropdownMenuItem<
+                                                              Store>(
+                                                            value: taddress,
+                                                            child: new Text("${taddress
+                                                                .storeCode} ${taddress
+                                                                .address1} ${taddress
+                                                                .address1}",
+                                                              style: new TextStyle(
+                                                                color: Colors.black,),
+                                                              overflow: TextOverflow
+                                                                  .ellipsis,
+                                                            ),
+                                                          );
+                                                        }).toList(),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              selectedStore != null ? Stack(
+                                                children: [
+                                                  Padding(
+                                                    padding: const EdgeInsets.only(
+                                                        left: 0.0, right: 0.0),
+                                                    child: Container(
+                                                      width: double.infinity,
+                                                      decoration: BoxDecoration(
+                                                          border: Border(
+                                                              top: BorderSide(
+                                                                width: 1,
+                                                                color: listLabelbgColor,
+                                                              ),
+                                                              bottom: BorderSide(
+                                                                width: 1,
+                                                                color: listLabelbgColor,
+                                                              )
+                                                          )
+                                                      ),
+                                                      child: Padding(
+                                                        padding: const EdgeInsets
+                                                            .fromLTRB(
+                                                            12.0, 8.0, 8.0, 8.0),
+                                                        child: Column(
+                                                          mainAxisAlignment: MainAxisAlignment
+                                                              .start,
+                                                          crossAxisAlignment: CrossAxisAlignment
+                                                              .start,
+                                                          children: [
+                                                            Row(
+                                                              children: [
+                                                                selectedStore.storeCode != "" ? Text( "${selectedStore.storeCode}",
+                                                                  style: TextStyle(fontWeight: FontWeight.bold),)
+                                                                    : Container(),
+                                                                selectedStore.description != "" ? SizedBox(width: 3,)
+                                                                    : Container(),
+                                                                selectedStore.description != "" ? Text("${selectedStore.description}",
+                                                                  style: TextStyle(fontWeight: FontWeight.bold),)
+                                                                    : Container(),
+                                                              ],
+                                                            ),
+                                                            Row(
+                                                              children: [
+                                                                selectedStore.address1 != "" ? Text("${selectedStore.address1}")
+                                                                    : Container(),
+                                                              ],
+                                                            ),
+                                                            selectedStore.address2 != "" ? Row(
+                                                              children: [
+                                                                Text("${selectedStore.address2}"),
+                                                              ],
+                                                            )
+                                                                : Container(),
+                                                            selectedStore.address3 != "" ? Row(
+                                                              children: [
+                                                                Text("${selectedStore.address3}"),
+                                                                selectedStore.address3 != "" ? SizedBox(width: 3,)
+                                                                    : Container(),
+                                                              ],
+                                                            )
+                                                                : Container(),
+                                                            Row(
+                                                              children: [
+                                                                selectedStore.state != "" ? Text("${selectedStore.state}")
+                                                                    : Container(),
+                                                                selectedStore.state != "" ? SizedBox(width: 3,)
+                                                                    : Container(),
+                                                                selectedStore.pinCode != "" ? Text("${selectedStore.pinCode}")
+                                                                    : Container(),
+                                                              ],
+                                                            ),
+                                                            selectedStore.telePhone != "" ? Row(
+                                                              children: [
+                                                                Text("Tel. : "),
+                                                                Text(selectedStore.telePhone),
+                                                              ],
+                                                            )
+                                                                : Container(),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Positioned(
+                                                      right: 15.0,
+                                                      bottom: 0.0,
+                                                      child: GestureDetector(
+                                                        onTap: () async {},
+                                                        child: Align(
+                                                          alignment: Alignment.topCenter,
+                                                          child: Padding(
+                                                            padding: const EdgeInsets.all(
+                                                                8.0),
+                                                            child: CircleAvatar(
+                                                              radius: 10.0,
+                                                              backgroundColor: Colors
+                                                                  .green,
+                                                              child: Icon(
+                                                                Icons.check,
+                                                                color: Colors.white,
+                                                                size: 17,),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      )),
+                                                ],
+                                              )
+                                                  : Container(),
+                                            ]
+                                        )
                                       ),
                                     ),
-                                    radioItem == "Deliver at the Shipping Address" ?
-                                    Container(
-                                      height: 35,
-                                      decoration: BoxDecoration(
-                                          border: Border(
-                                            top: BorderSide(
-                                              width: 1,
-                                              color: listLabelbgColor,
+                                    SizedBox(height: 5,),
+                                    dAddress.length > 0 || radioItem == "Pickup from a Store Nearby"
+                                        ? Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          15.0, 10, 15.0, 0),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            width: 1,
+                                            color: listLabelbgColor,
+                                          ),
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        child: Column(
+//                                crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                color: listbgColor,
+                                                borderRadius: BorderRadius.only(
+                                                    topLeft: Radius.circular(10.2),
+                                                    topRight: Radius.circular(10.2)
+                                                ),
+                                              ),
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 5.0, top: 5.0, bottom: 5.0),
+                                                child: Align(
+                                                  alignment: Alignment.centerLeft,
+                                                  child: Text("Billing Address",
+                                                    style: TextStyle(
+                                                        fontWeight: FontWeight.bold),),
+                                                ),
+                                              ),
                                             ),
-                                          )
-                                      ),
-                                      child: GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              if (sameval) {
-                                                sameval = false;
-                                                getBillingAddress();
-                                              }
-                                              else {
-                                                sameval = true;
-                                                getBillingAddress();
-                                              }
-                                            });
-                                          },
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.max,
-                                            children: [
-                                              Checkbox(
-                                                  value: sameval,
-                                                  onChanged: (bool val) {
+                                            radioItem == "Deliver at the Shipping Address" ?
+                                            Container(
+                                              height: 35,
+                                              decoration: BoxDecoration(
+                                                  border: Border(
+                                                    top: BorderSide(
+                                                      width: 1,
+                                                      color: listLabelbgColor,
+                                                    ),
+                                                  )
+                                              ),
+                                              child: GestureDetector(
+                                                  onTap: () {
                                                     setState(() {
                                                       if (sameval) {
                                                         sameval = false;
@@ -874,259 +875,285 @@ class _addressPage extends State<AddressPage> {
                                                         getBillingAddress();
                                                       }
                                                     });
-                                                  }
-                                              ),
-                                              Text("Same as shipping address",),
-                                            ],
-                                          )
-                                      ),
-                                    )
-                                        : Container(),
-
-                                    (!sameval ||radioItem == "Pickup from a Store Nearby") && bAddress.length > 0 ? Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 0.0, right: 0.0),
-                                        child: Container(
-                                          height: 35,
-                                          decoration: BoxDecoration(
-                                              border: Border(
-                                                top: BorderSide(
-                                                  width: 1,
-                                                  color: listLabelbgColor,
-                                                ),
-                                              )
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 8.0, right: 8.0),
-                                            child: DropdownButton<Address>(
-                                              isExpanded: true,
-                                              value: billingAddress,
-                                              onChanged: (Address newValue) {
-                                                billingAddress = newValue;
-                                                setState(() {});
-                                              },
-                                              underline: Container(),
-                                              items: bAddress.map((
-                                                  Address taddress) {
-                                                return new DropdownMenuItem<Address>(
-                                                  value: taddress,
-                                                  child: new Text("${taddress
-                                                      .title} ${taddress
-                                                      .fullName} ${taddress
-                                                      .address1}",
-                                                    style: new TextStyle(
-                                                      color: Colors.black,),
-                                                    overflow: TextOverflow
-                                                        .ellipsis,
-                                                  ),
-                                                );
-                                              }).toList(),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                        : Container(),
-                                    billingAddress != null ? Stack(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 0.0, right: 0.0),
-                                          child: Container(
-                                            width: double.infinity,
-                                            decoration: BoxDecoration(
-                                                border: Border(
-                                                    top: BorderSide(
-                                                      width: 1,
-                                                      color: listLabelbgColor,
-                                                    ),
-                                                    bottom: BorderSide(
-                                                      width: 1,
-                                                      color: listLabelbgColor,
-                                                    )
-                                                )
-                                            ),
-                                            child: Padding(
-                                              padding: const EdgeInsets
-                                                  .fromLTRB(
-                                                  12.0, 8.0, 8.0, 8.0),
-                                              child: Column(
-                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      billingAddress.title != "" ? Text("${billingAddress.title}",
-                                                        style: TextStyle(fontWeight: FontWeight.bold),)
-                                                          : Container(),
-                                                      billingAddress.title != "" ? SizedBox(width: 3,)
-                                                          : Container(),
-                                                      billingAddress.fullName != "" ? Text("${billingAddress.fullName}",
-                                                        style: TextStyle(fontWeight: FontWeight.bold),)
-                                                          : Container(),
-                                                    ],
-                                                  ),
-                                                  Row(
-                                                    children: [
-                                                      billingAddress.address1 != "" ? Text("${billingAddress.address1}")
-                                                          : Container(),
-                                                      billingAddress.address1 != "" ? SizedBox(width: 3,)
-                                                          : Container(),
-                                                      billingAddress.address2 != "" ? Text("${billingAddress.address2}")
-                                                          : Container(),
-                                                    ],
-                                                  ),
-                                                  billingAddress.address3 != "" ? Row(
-                                                    children: [
-                                                      Text("${billingAddress.address3}"),
-                                                      billingAddress.address3 != "" ? SizedBox(width: 3,)
-                                                          : Container(),
-//                                                    Text("${selectedAddress.pinCode}"),
-                                                    ],
-                                                  )
-                                                      : Container(),
-                                                  billingAddress.city != null || billingAddress.state != "" ? Row(
-                                                    children: [
-                                                      billingAddress.city != null && billingAddress.city != "" ? Text("${billingAddress.city}")
-                                                          : Container(),
-                                                      billingAddress.city != null && billingAddress.city != "" ? SizedBox(width: 3,)
-                                                          : Container(),
-                                                      billingAddress.state != null && billingAddress .state != "" ? Text("${billingAddress.state}")
-                                                          : Container(),
-                                                    ],
-                                                  )
-                                                      : Container(),
-                                                  Row(
-                                                    children: [
-                                                      billingAddress.country != "" ? Text("${billingAddress.country}")
-                                                          : Container(),
-                                                      billingAddress.country !="" ? SizedBox(width: 3,)
-                                                          : Container(),
-                                                      billingAddress.country !="" ? Text("${billingAddress.pinCode}")
-                                                          : Container(),
-                                                    ],
-                                                  ),
-                                                  billingAddress.mobileNo != "" ? Row(
-                                                    children: [
-                                                      Text("Mobile No. : "),
-                                                      Text(billingAddress.mobileNo),
-                                                    ],
-                                                  )
-                                                      : Container(),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Positioned(
-                                            right: 15.0,
-                                            top: 0.0,
-                                            child: GestureDetector(
-                                              onTap: () async {
-                                                var result = await Navigator
-                                                    .push(
-                                                    context, MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        AddressEntryPage(
-                                                          addressdt: billingAddress,)));
-                                                if (result != null &&
-                                                    result != false) {
-                                                  AddnewAddress("B",
-                                                      result); //Billing Address
-                                                }
-                                              },
-                                              child: Align(
-                                                alignment: Alignment.topCenter,
-                                                child: Padding(
-                                                    padding: const EdgeInsets
-                                                        .all(8.0),
-                                                    child: Text("Edit",
-                                                      style: TextStyle(
-                                                          color: Colors.green,
-                                                          fontWeight: FontWeight
-                                                              .bold),)
-                                                ),
-                                              ),
-                                            )),
-                                        Positioned(
-                                            right: 15.0,
-                                            bottom: 0.0,
-                                            child: GestureDetector(
-                                              onTap: () async {},
-                                              child: Align(
-                                                alignment: Alignment.topCenter,
-                                                child: Padding(
-                                                  padding: const EdgeInsets.all(
-                                                      8.0),
-                                                  child: CircleAvatar(
-                                                    radius: 10.0,
-                                                    backgroundColor: Colors
-                                                        .green,
-                                                    child: Icon(
-                                                      Icons.check,
-                                                      color: Colors.white,
-                                                      size: 17,),
-                                                  ),
-                                                ),
-                                              ),
-                                            )),
-                                      ],
-                                    )
-                                        : Container(),
-
-                                    sameval == false || radioItem == "Pickup from a Store Nearby" ? Container(
-                                        child: Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              8.0, 3.0, 8.0, 3.0),
-                                          child: Material(
-                                            child: InkWell(
-                                              onTap: () async {
-                                                var result = await Navigator
-                                                    .push(
-                                                    context, MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        AddressEntryPage()));
-                                                if (result != null &&
-                                                    result != false) {
-                                                  AddnewAddress("B", result);
-                                                }
-                                              },
-                                              child: Card(
-                                                color: listbgColor,
-                                                //Color(0xFFEEEEEE),
-                                                child: Padding(
-                                                  padding: const EdgeInsets
-                                                      .fromLTRB(
-                                                      8.0, 10.0, 8.0, 10.0),
+                                                  },
                                                   child: Row(
-                                                    mainAxisAlignment: MainAxisAlignment
-                                                        .center,
+                                                    mainAxisSize: MainAxisSize.max,
                                                     children: [
-                                                      Text(
-                                                        " + Add New Address ",
-                                                        style: TextStyle(
-                                                            fontSize: 17),),
+                                                      Checkbox(
+                                                          value: sameval,
+                                                          onChanged: (bool val) {
+                                                            setState(() {
+                                                              if (sameval) {
+                                                                sameval = false;
+                                                                getBillingAddress();
+                                                              }
+                                                              else {
+                                                                sameval = true;
+                                                                getBillingAddress();
+                                                              }
+                                                            });
+                                                          }
+                                                      ),
+                                                      Text("Same as shipping address",),
                                                     ],
+                                                  )
+                                              ),
+                                            )
+                                                : Container(),
+
+                                            (!sameval ||radioItem == "Pickup from a Store Nearby") && bAddress.length > 0 ? Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 0.0, right: 0.0),
+                                                child: Container(
+                                                  height: 35,
+                                                  decoration: BoxDecoration(
+                                                      border: Border(
+                                                        top: BorderSide(
+                                                          width: 1,
+                                                          color: listLabelbgColor,
+                                                        ),
+                                                      )
+                                                  ),
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.only(
+                                                        left: 8.0, right: 8.0),
+                                                    child: DropdownButton<Address>(
+                                                      isExpanded: true,
+                                                      value: billingAddress,
+                                                      onChanged: (Address newValue) {
+                                                        billingAddress = newValue;
+                                                        setState(() {});
+                                                      },
+                                                      underline: Container(),
+                                                      items: bAddress.map((
+                                                          Address taddress) {
+                                                        return new DropdownMenuItem<Address>(
+                                                          value: taddress,
+                                                          child: new Text("${taddress
+                                                              .title} ${taddress
+                                                              .fullName} ${taddress
+                                                              .address1}",
+                                                            style: new TextStyle(
+                                                              color: Colors.black,),
+                                                            overflow: TextOverflow
+                                                                .ellipsis,
+                                                          ),
+                                                        );
+                                                      }).toList(),
+                                                    ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                          ),
-                                        )
+                                            )
+                                                : Container(),
+                                            billingAddress != null ? Stack(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets.only(
+                                                      left: 0.0, right: 0.0),
+                                                  child: Container(
+                                                    width: double.infinity,
+                                                    decoration: BoxDecoration(
+                                                        border: Border(
+                                                            top: BorderSide(
+                                                              width: 1,
+                                                              color: listLabelbgColor,
+                                                            ),
+                                                            bottom: BorderSide(
+                                                              width: 1,
+                                                              color: listLabelbgColor,
+                                                            )
+                                                        )
+                                                    ),
+                                                    child: Padding(
+                                                      padding: const EdgeInsets
+                                                          .fromLTRB(
+                                                          12.0, 8.0, 8.0, 8.0),
+                                                      child: Column(
+                                                        mainAxisAlignment: MainAxisAlignment.start,
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          Row(
+                                                            children: [
+                                                              billingAddress.title != "" ? Text("${billingAddress.title}",
+                                                                style: TextStyle(fontWeight: FontWeight.bold),)
+                                                                  : Container(),
+                                                              billingAddress.title != "" ? SizedBox(width: 3,)
+                                                                  : Container(),
+                                                              billingAddress.fullName != "" ? Text("${billingAddress.fullName}",
+                                                                style: TextStyle(fontWeight: FontWeight.bold),)
+                                                                  : Container(),
+                                                            ],
+                                                          ),
+                                                          Row(
+                                                            children: [
+                                                              billingAddress.address1 != "" ? Text("${billingAddress.address1}")
+                                                                  : Container(),
+                                                              billingAddress.address1 != "" ? SizedBox(width: 3,)
+                                                                  : Container(),
+                                                              billingAddress.address2 != "" ? Text("${billingAddress.address2}")
+                                                                  : Container(),
+                                                            ],
+                                                          ),
+                                                          billingAddress.address3 != "" ? Row(
+                                                            children: [
+                                                              Text("${billingAddress.address3}"),
+                                                              billingAddress.address3 != "" ? SizedBox(width: 3,)
+                                                                  : Container(),
+//                                                    Text("${selectedAddress.pinCode}"),
+                                                            ],
+                                                          )
+                                                              : Container(),
+                                                          billingAddress.city != null || billingAddress.state != "" ? Row(
+                                                            children: [
+                                                              billingAddress.city != null && billingAddress.city != "" ? Text("${billingAddress.city}")
+                                                                  : Container(),
+                                                              billingAddress.city != null && billingAddress.city != "" ? SizedBox(width: 3,)
+                                                                  : Container(),
+                                                              billingAddress.state != null && billingAddress .state != "" ? Text("${billingAddress.state}")
+                                                                  : Container(),
+                                                            ],
+                                                          )
+                                                              : Container(),
+                                                          Row(
+                                                            children: [
+                                                              billingAddress.country != "" ? Text("${billingAddress.country}")
+                                                                  : Container(),
+                                                              billingAddress.country !="" ? SizedBox(width: 3,)
+                                                                  : Container(),
+                                                              billingAddress.country !="" ? Text("${billingAddress.pinCode}")
+                                                                  : Container(),
+                                                            ],
+                                                          ),
+                                                          billingAddress.mobileNo != "" ? Row(
+                                                            children: [
+                                                              Text("Mobile No. : "),
+                                                              Text(billingAddress.mobileNo),
+                                                            ],
+                                                          )
+                                                              : Container(),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Positioned(
+                                                    right: 15.0,
+                                                    top: 0.0,
+                                                    child: GestureDetector(
+                                                      onTap: () async {
+                                                        var result = await Navigator
+                                                            .push(
+                                                            context, MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                AddressEntryPage(
+                                                                  addressdt: billingAddress,)));
+                                                        if (result != null &&
+                                                            result != false) {
+                                                          AddnewAddress("B",
+                                                              result); //Billing Address
+                                                        }
+                                                      },
+                                                      child: Align(
+                                                        alignment: Alignment.topCenter,
+                                                        child: Padding(
+                                                            padding: const EdgeInsets
+                                                                .all(8.0),
+                                                            child: Text("Edit",
+                                                              style: TextStyle(
+                                                                  color: Colors.green,
+                                                                  fontWeight: FontWeight
+                                                                      .bold),)
+                                                        ),
+                                                      ),
+                                                    )),
+                                                Positioned(
+                                                    right: 15.0,
+                                                    bottom: 0.0,
+                                                    child: GestureDetector(
+                                                      onTap: () async {},
+                                                      child: Align(
+                                                        alignment: Alignment.topCenter,
+                                                        child: Padding(
+                                                          padding: const EdgeInsets.all(
+                                                              8.0),
+                                                          child: CircleAvatar(
+                                                            radius: 10.0,
+                                                            backgroundColor: Colors
+                                                                .green,
+                                                            child: Icon(
+                                                              Icons.check,
+                                                              color: Colors.white,
+                                                              size: 17,),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    )),
+                                              ],
+                                            )
+                                                : Container(),
+
+                                            sameval == false || radioItem == "Pickup from a Store Nearby" ? Container(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.fromLTRB(
+                                                      8.0, 3.0, 8.0, 3.0),
+                                                  child: Material(
+                                                    child: InkWell(
+                                                      onTap: () async {
+                                                        var result = await Navigator
+                                                            .push(
+                                                            context, MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                AddressEntryPage()));
+                                                        if (result != null &&
+                                                            result != false) {
+                                                          AddnewAddress("B", result);
+                                                        }
+                                                      },
+                                                      child: Card(
+                                                        color: listbgColor,
+                                                        //Color(0xFFEEEEEE),
+                                                        child: Padding(
+                                                          padding: const EdgeInsets
+                                                              .fromLTRB(
+                                                              8.0, 10.0, 8.0, 10.0),
+                                                          child: Row(
+                                                            mainAxisAlignment: MainAxisAlignment
+                                                                .center,
+                                                            children: [
+                                                              Text(
+                                                                " + Add New Address ",
+                                                                style: TextStyle(
+                                                                    fontSize: 17),),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                )
+                                            )
+                                                : Container(),
+
+                                          ],
+                                        ),
+                                      ),
                                     )
                                         : Container(),
-
+                                    SizedBox(height: 5,)
                                   ],
                                 ),
                               ),
-                            )
-                                : Container(),
-                            SizedBox(height: 5,)
+                            ),
                           ],
                         ),
+                      ),
+                    ),
+                    Flexible(
+                      child: Container(
+                        color: webRightContainerColor,
                       ),
                     ),
                   ],
@@ -1204,6 +1231,7 @@ class AddressEntryPage extends StatefulWidget{
 }
 class _addressEntryPage extends State<AddressEntryPage>{
   DataService dataService = DataService();
+  Commonfn cfobj = Commonfn();
   final _keyLoader = new GlobalKey<FormState>();
   String _errorText;
   String _dropdownTitleValue;
@@ -1363,6 +1391,10 @@ class _addressEntryPage extends State<AddressEntryPage>{
     final screenSize = MediaQuery
         .of(context)
         .size;
+    screenWidth = screenSize.width;
+    if(kIsWeb){
+      screenWidth =  cfobj.ScreenWidth(screenSize.width);
+    }
     return MaterialApp(
         title: 'Address',
         theme: MasterScreen.themeData(context),
@@ -1398,22 +1430,254 @@ class _addressEntryPage extends State<AddressEntryPage>{
 
                       ),
                     ),
-                  Container(
-                    constraints: BoxConstraints(minWidth: 300, maxWidth: 450),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(10.0,10.0,10.0,8.0),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(height: 1,),
-                              Row(
-                                children: [
-                                  SizedBox(
-                                    width: 80,
-                                    child: Container(
-                                      height: 48,
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Container(
+                          color: webLeftContainerColor,
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: Container(
+                          constraints: BoxConstraints(minWidth: 250, maxWidth: screenWidth),
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(10.0,10.0,10.0,8.0),
+                            child: SingleChildScrollView(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(height: 1,),
+                                    Row(
+                                      children: [
+                                        SizedBox(
+                                          width: 80,
+                                          child: Container(
+                                            height: 48,
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                              border: Border.all(
+                                                width: 1,
+                                                color: BoxBorderColor,
+                                              ),
+                                              color: Colors.white70,
+                                            ),
+
+                                            child: DropdownButtonHideUnderline(
+                                              child: Column(
+                                                children: [
+                                                  InputDecorator(
+                                                    decoration: InputDecoration(
+                                                      isDense: true,
+                                                      filled: false,
+//                                        hintText: 'Title',
+                                                      labelText: 'Title ',
+                                                      errorText: _errorText,
+                                                      fillColor:  Colors.white70,
+                                                border: InputBorder.none,
+//                                        focusedBorder: InputBorder.none,
+//                                        enabledBorder: InputBorder.none,
+//                                        errorBorder: InputBorder.none,
+
+                                                      contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 0, right: 0),
+                                                    ),
+                                                    isEmpty: _dropdownTitleValue == null,
+                                                    child: new DropdownButton<String>(
+                                                      value: _dropdownTitleValue,
+                                                      isDense: true,
+                                                      dropdownColor: Colors.white,
+                                                      focusColor: Colors.white,
+                                                      onChanged: (String newValue) {
+                                                        setState(() {
+                                                          _dropdownTitleValue = newValue;
+                                                        });
+                                                      },
+                                                      items: titlelist.map((String value) {
+                                                        return DropdownMenuItem<String>(
+                                                          value: value,
+                                                          child: Text(value),
+                                                        );
+                                                      }).toList(),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: 10,),
+                                        Flexible(
+                                          child: TextField(
+                                            controller: txtFirstName,
+                                            textCapitalization: TextCapitalization.characters,
+                                            autocorrect: true,
+                                            decoration: InputDecoration(
+                                              isDense: true,
+//                                      hintText: 'Full Name',
+                                              labelText: "Full Name",
+                                              prefixIcon: Icon(Icons.person),
+                                              hintStyle: TextStyle(color: Colors.grey),
+                                              filled: true,
+                                              fillColor:  Colors.white70,
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                                borderSide: BorderSide(color: BoxBorderColor, width: 1),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                                borderSide: BorderSide(color:  BoxBorderColor, width: 1),
+                                              ),
+                                              contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 0, right: 0),
+                                            ),),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 9.0,),
+                                    TextField(
+                                      controller: txtMobileno,
+                                      autocorrect: true,
+                                      keyboardType: TextInputType.number,
+                                      decoration: InputDecoration(
+                                        isDense: true,
+//                                hintText: 'Mobile No*',
+                                        labelText: "Mobile No*",
+                                        hintStyle: TextStyle(color: Colors.grey),
+                                        filled: true,
+                                        fillColor:  Colors.white70,
+                                        prefixIcon: Icon(Icons.mobile_screen_share),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                          borderSide: BorderSide(color: BoxBorderColor, width: 1),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                          borderSide: BorderSide(color:  BoxBorderColor, width: 1),
+                                        ),
+                                        contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 0, right: 0),
+                                      ),
+                                    ),
+                                    SizedBox(height: 9.0,),
+                                    TextField(
+                                      controller: txtAddress1,
+                                      autocorrect: true,
+                                      decoration: InputDecoration(
+                                        isDense: true,
+//                                hintText: 'Address*',
+                                        labelText: "Address*",
+                                        hintStyle: TextStyle(color: Colors.grey),
+                                        filled: true,
+                                        fillColor:  Colors.white70,
+                                        prefixIcon: Icon(Icons.location_on),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                          borderSide: BorderSide(color: BoxBorderColor, width: 1),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                          borderSide: BorderSide(color:  BoxBorderColor, width: 1),
+                                        ),
+                                        contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 0, right: 0),
+                                      ),
+                                    ),
+                                    SizedBox(height: 9.0,),
+                                    TextField(
+                                      controller: txtAddress2,
+                                      autocorrect: true,
+                                      decoration: InputDecoration(
+                                        isDense: true,
+//                                hintText: 'Address',
+                                        labelText: "Address",
+                                        hintStyle: TextStyle(color: Colors.grey),
+                                        filled: true,
+                                        fillColor:  Colors.white70,
+                                        prefixIcon: Icon(Icons.contact_mail, color: Colors.transparent,),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                          borderSide: BorderSide(color: BoxBorderColor, width: 1),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                          borderSide: BorderSide(color:  BoxBorderColor, width: 1),
+                                        ),
+                                        contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 0, right: 0),
+                                      ),
+                                    ),
+                                    SizedBox(height: 9.0,),
+                                    TextField(
+                                      controller: txtAddress3,
+                                      autocorrect: true,
+                                      decoration: InputDecoration(
+                                        isDense: true,
+//                                hintText: 'Address',
+                                        labelText: "Address",
+                                        hintStyle: TextStyle(color: Colors.grey),
+                                        filled: true,
+                                        fillColor:  Colors.white70,
+                                        prefixIcon: Icon(Icons.contact_mail, color: Colors.transparent,),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                          borderSide: BorderSide(color: BoxBorderColor, width: 1),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                          borderSide: BorderSide(color:  BoxBorderColor, width: 1),
+                                        ),
+                                        contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 0, right: 0),
+                                      ),
+                                    ),
+                                    SizedBox(height: 9.0,),
+                                    TextField(
+                                      controller: txtPincode,
+                                      autocorrect: true,
+                                      keyboardType: TextInputType.number,
+                                      decoration: InputDecoration(
+                                        isDense: true,
+//                                hintText: 'Postal Code*',
+                                        labelText: "Postal Code*",
+                                        hintStyle: TextStyle(color: Colors.grey),
+                                        filled: true,
+                                        fillColor:  Colors.white70,
+                                        prefixIcon: Icon(Icons.contact_mail, color: Colors.transparent,),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                          borderSide: BorderSide(color: BoxBorderColor, width: 1),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                          borderSide: BorderSide(color:  BoxBorderColor, width: 1),
+                                        ),
+                                        contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 0, right: 0),
+                                      ),
+                                    ),
+                                    SizedBox(height: 9.0,),
+                                    /*
+                                    TextField(
+                                      controller: txtCity,
+                                      autocorrect: true,
+                                      decoration: InputDecoration(
+                                        isDense: true,
+//                                hintText: 'City',
+                                        labelText: "City",
+                                        hintStyle: TextStyle(color: Colors.grey),
+                                        filled: true,
+                                        fillColor:  Colors.white70,
+                                        prefixIcon: Icon(Icons.location_city,),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                          borderSide: BorderSide(color: BoxBorderColor, width: 1),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                          borderSide: BorderSide(color:  BoxBorderColor, width: 1),
+                                        ),
+                                        contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 0, right: 0),
+                                      ),
+                                    ),
+                                    SizedBox(height: 9.0,),
+                                    */
+                                    Container(
+//                              height: 48,
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                                         border: Border.all(
@@ -1431,31 +1695,35 @@ class _addressEntryPage extends State<AddressEntryPage>{
                                                 isDense: true,
                                                 filled: false,
 //                                        hintText: 'Title',
-                                                labelText: 'Title ',
+                                                labelText: 'Country ',
                                                 errorText: _errorText,
                                                 fillColor:  Colors.white70,
-                                          border: InputBorder.none,
-//                                        focusedBorder: InputBorder.none,
-//                                        enabledBorder: InputBorder.none,
-//                                        errorBorder: InputBorder.none,
-
+                                                border: InputBorder.none,
+                                                prefixIcon: Icon(Icons.location_city, color: Colors.transparent,),
                                                 contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 0, right: 0),
                                               ),
-                                              isEmpty: _dropdownTitleValue == null,
-                                              child: new DropdownButton<String>(
-                                                value: _dropdownTitleValue,
+                                              isEmpty: _dropdownCountryValue == null,
+                                              child: new DropdownButton<Country>(
+                                                value: _dropdownCountryValue,
                                                 isDense: true,
                                                 dropdownColor: Colors.white,
                                                 focusColor: Colors.white,
-                                                onChanged: (String newValue) {
+                                                onChanged: (Country newValue) {
+//                                            selectedState = new List<StateList>();
+                                                  citylist = new List<City>();
+//                                            _dropdownStateValue = new StateList();
                                                   setState(() {
-                                                    _dropdownTitleValue = newValue;
+                                                    _dropdownCountryValue = newValue;
+                                                  });
+                                                  setState(() {
+                                                    getSelectedState(_dropdownCountryValue.country);
                                                   });
                                                 },
-                                                items: titlelist.map((String value) {
-                                                  return DropdownMenuItem<String>(
+
+                                                items: countrylist.map((Country value) {
+                                                  return DropdownMenuItem<Country>(
                                                     value: value,
-                                                    child: Text(value),
+                                                    child: Text(value.country),
                                                   );
                                                 }).toList(),
                                               ),
@@ -1464,344 +1732,125 @@ class _addressEntryPage extends State<AddressEntryPage>{
                                         ),
                                       ),
                                     ),
-                                  ),
-                                  SizedBox(width: 10,),
-                                  Flexible(
-                                    child: TextField(
-                                      controller: txtFirstName,
-                                      textCapitalization: TextCapitalization.characters,
-                                      autocorrect: true,
-                                      decoration: InputDecoration(
-                                        isDense: true,
-//                                      hintText: 'Full Name',
-                                        labelText: "Full Name",
-                                        prefixIcon: Icon(Icons.person),
-                                        hintStyle: TextStyle(color: Colors.grey),
-                                        filled: true,
-                                        fillColor:  Colors.white70,
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                          borderSide: BorderSide(color: BoxBorderColor, width: 1),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                          borderSide: BorderSide(color:  BoxBorderColor, width: 1),
-                                        ),
-                                        contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 0, right: 0),
-                                      ),),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 9.0,),
-                              TextField(
-                                controller: txtMobileno,
-                                autocorrect: true,
-                                keyboardType: TextInputType.number,
-                                decoration: InputDecoration(
-                                  isDense: true,
-//                                hintText: 'Mobile No*',
-                                  labelText: "Mobile No*",
-                                  hintStyle: TextStyle(color: Colors.grey),
-                                  filled: true,
-                                  fillColor:  Colors.white70,
-                                  prefixIcon: Icon(Icons.mobile_screen_share),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color: BoxBorderColor, width: 1),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color:  BoxBorderColor, width: 1),
-                                  ),
-                                  contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 0, right: 0),
-                                ),
-                              ),
-                              SizedBox(height: 9.0,),
-                              TextField(
-                                controller: txtAddress1,
-                                autocorrect: true,
-                                decoration: InputDecoration(
-                                  isDense: true,
-//                                hintText: 'Address*',
-                                  labelText: "Address*",
-                                  hintStyle: TextStyle(color: Colors.grey),
-                                  filled: true,
-                                  fillColor:  Colors.white70,
-                                  prefixIcon: Icon(Icons.location_on),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color: BoxBorderColor, width: 1),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color:  BoxBorderColor, width: 1),
-                                  ),
-                                  contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 0, right: 0),
-                                ),
-                              ),
-                              SizedBox(height: 9.0,),
-                              TextField(
-                                controller: txtAddress2,
-                                autocorrect: true,
-                                decoration: InputDecoration(
-                                  isDense: true,
-//                                hintText: 'Address',
-                                  labelText: "Address",
-                                  hintStyle: TextStyle(color: Colors.grey),
-                                  filled: true,
-                                  fillColor:  Colors.white70,
-                                  prefixIcon: Icon(Icons.contact_mail, color: Colors.transparent,),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color: BoxBorderColor, width: 1),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color:  BoxBorderColor, width: 1),
-                                  ),
-                                  contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 0, right: 0),
-                                ),
-                              ),
-                              SizedBox(height: 9.0,),
-                              TextField(
-                                controller: txtAddress3,
-                                autocorrect: true,
-                                decoration: InputDecoration(
-                                  isDense: true,
-//                                hintText: 'Address',
-                                  labelText: "Address",
-                                  hintStyle: TextStyle(color: Colors.grey),
-                                  filled: true,
-                                  fillColor:  Colors.white70,
-                                  prefixIcon: Icon(Icons.contact_mail, color: Colors.transparent,),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color: BoxBorderColor, width: 1),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color:  BoxBorderColor, width: 1),
-                                  ),
-                                  contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 0, right: 0),
-                                ),
-                              ),
-                              SizedBox(height: 9.0,),
-                              TextField(
-                                controller: txtPincode,
-                                autocorrect: true,
-                                keyboardType: TextInputType.number,
-                                decoration: InputDecoration(
-                                  isDense: true,
-//                                hintText: 'Postal Code*',
-                                  labelText: "Postal Code*",
-                                  hintStyle: TextStyle(color: Colors.grey),
-                                  filled: true,
-                                  fillColor:  Colors.white70,
-                                  prefixIcon: Icon(Icons.contact_mail, color: Colors.transparent,),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color: BoxBorderColor, width: 1),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color:  BoxBorderColor, width: 1),
-                                  ),
-                                  contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 0, right: 0),
-                                ),
-                              ),
-                              SizedBox(height: 9.0,),
-                              /*
-                              TextField(
-                                controller: txtCity,
-                                autocorrect: true,
-                                decoration: InputDecoration(
-                                  isDense: true,
-//                                hintText: 'City',
-                                  labelText: "City",
-                                  hintStyle: TextStyle(color: Colors.grey),
-                                  filled: true,
-                                  fillColor:  Colors.white70,
-                                  prefixIcon: Icon(Icons.location_city,),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color: BoxBorderColor, width: 1),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                    borderSide: BorderSide(color:  BoxBorderColor, width: 1),
-                                  ),
-                                  contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 0, right: 0),
-                                ),
-                              ),
-                              SizedBox(height: 9.0,),
-                              */
-                              Container(
+                                    SizedBox(height: 9.0,),
+                                    Container(
 //                              height: 48,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: BoxBorderColor,
-                                  ),
-                                  color: Colors.white70,
-                                ),
-
-                                child: DropdownButtonHideUnderline(
-                                  child: Column(
-                                    children: [
-                                      InputDecorator(
-                                        decoration: InputDecoration(
-                                          isDense: true,
-                                          filled: false,
-//                                        hintText: 'Title',
-                                          labelText: 'Country ',
-                                          errorText: _errorText,
-                                          fillColor:  Colors.white70,
-                                          border: InputBorder.none,
-                                          prefixIcon: Icon(Icons.location_city, color: Colors.transparent,),
-                                          contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 0, right: 0),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                        border: Border.all(
+                                          width: 1,
+                                          color: BoxBorderColor,
                                         ),
-                                        isEmpty: _dropdownCountryValue == null,
-                                        child: new DropdownButton<Country>(
-                                          value: _dropdownCountryValue,
-                                          isDense: true,
-                                          dropdownColor: Colors.white,
-                                          focusColor: Colors.white,
-                                          onChanged: (Country newValue) {
-//                                            selectedState = new List<StateList>();
-                                            citylist = new List<City>();
-//                                            _dropdownStateValue = new StateList();
-                                            setState(() {
-                                              _dropdownCountryValue = newValue;
-                                            });
-                                            setState(() {
-                                              getSelectedState(_dropdownCountryValue.country);
-                                            });
-                                          },
+                                        color: Colors.white70,
+                                      ),
 
-                                          items: countrylist.map((Country value) {
-                                            return DropdownMenuItem<Country>(
-                                              value: value,
-                                              child: Text(value.country),
-                                            );
-                                          }).toList(),
+                                      child: DropdownButtonHideUnderline(
+                                        child: Column(
+                                          children: [
+                                            InputDecorator(
+                                              decoration: InputDecoration(
+                                                isDense: true,
+                                                filled: false,
+//                                        hintText: 'Title',
+                                                labelText: 'State',
+                                                errorText: _errorText,
+                                                fillColor:  Colors.white70,
+                                                border: InputBorder.none,
+                                                prefixIcon: Icon(Icons.location_city, color: Colors.transparent,),
+                                                contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 0, right: 0),
+                                              ),
+                                              isEmpty: _dropdownStateValue == null,
+                                              child: selectedState != null && selectedState.length>0 ? new DropdownButton<StateList>(
+                                                value: _dropdownStateValue,
+                                                isDense: true,
+                                                dropdownColor: Colors.white,
+                                                focusColor: Colors.white,
+                                                onChanged: (StateList newValue) {
+                                                  _dropdownStateValue = newValue;
+                                                  citylist =new List<City>();
+                                                  setState(() {
+                                                    getCity(_dropdownCountryValue.country, _dropdownStateValue.state);
+                                                  });
+                                                },
+                                                items: selectedState.map((StateList value) {
+                                                  return DropdownMenuItem<StateList>(
+                                                    value: value,
+                                                    child: Text(value.state),
+                                                  );
+                                                }).toList(),
+                                              )
+                                                  : Container(),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                ),
+                                    )
+                                    ,
+                                    SizedBox(height: 9.0,),
+                                    Container(
+//                              height: 48,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                        border: Border.all(
+                                          width: 1,
+                                          color: BoxBorderColor,
+                                        ),
+                                        color: Colors.white70,
+                                      ),
+
+                                      child: DropdownButtonHideUnderline(
+                                        child: Column(
+                                          children: [
+                                            InputDecorator(
+                                              decoration: InputDecoration(
+                                                isDense: true,
+                                                filled: false,
+//                                        hintText: 'Title',
+                                                labelText: 'City',
+                                                errorText: _errorText,
+                                                fillColor:  Colors.white70,
+                                                border: InputBorder.none,
+                                                prefixIcon: Icon(Icons.location_city, color: Colors.transparent,),
+                                                contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 0, right: 0),
+                                              ),
+                                              isEmpty: _dropdownCityValue == null,
+                                              child: citylist.length>0 ? new DropdownButton<City>(
+                                                value: _dropdownCityValue,
+                                                isDense: true,
+                                                dropdownColor: Colors.white,
+                                                focusColor: Colors.white,
+                                                onChanged: (City newValue) {
+                                                  setState(() {
+                                                    _dropdownCityValue = newValue;
+                                                  });
+                                                },
+                                                items: citylist.map((City value) {
+                                                  return DropdownMenuItem<City>(
+                                                    value: value,
+                                                    child: Text(value.city),
+                                                  );
+                                                }).toList(),
+                                              )
+                                                  : Container(),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                        ,
+                                    SizedBox(height: 15.0,),
+                                  ]
                               ),
-                              SizedBox(height: 9.0,),
-                              Container(
-//                              height: 48,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: BoxBorderColor,
-                                  ),
-                                  color: Colors.white70,
-                                ),
-
-                                child: DropdownButtonHideUnderline(
-                                  child: Column(
-                                    children: [
-                                      InputDecorator(
-                                        decoration: InputDecoration(
-                                          isDense: true,
-                                          filled: false,
-//                                        hintText: 'Title',
-                                          labelText: 'State',
-                                          errorText: _errorText,
-                                          fillColor:  Colors.white70,
-                                          border: InputBorder.none,
-                                          prefixIcon: Icon(Icons.location_city, color: Colors.transparent,),
-                                          contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 0, right: 0),
-                                        ),
-                                        isEmpty: _dropdownStateValue == null,
-                                        child: selectedState != null && selectedState.length>0 ? new DropdownButton<StateList>(
-                                          value: _dropdownStateValue,
-                                          isDense: true,
-                                          dropdownColor: Colors.white,
-                                          focusColor: Colors.white,
-                                          onChanged: (StateList newValue) {
-                                            _dropdownStateValue = newValue;
-                                            citylist =new List<City>();
-                                            setState(() {
-                                              getCity(_dropdownCountryValue.country, _dropdownStateValue.state);
-                                            });
-                                          },
-                                          items: selectedState.map((StateList value) {
-                                            return DropdownMenuItem<StateList>(
-                                              value: value,
-                                              child: Text(value.state),
-                                            );
-                                          }).toList(),
-                                        )
-                                            : Container(),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )
-                              ,
-                              SizedBox(height: 9.0,),
-                              Container(
-//                              height: 48,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: BoxBorderColor,
-                                  ),
-                                  color: Colors.white70,
-                                ),
-
-                                child: DropdownButtonHideUnderline(
-                                  child: Column(
-                                    children: [
-                                      InputDecorator(
-                                        decoration: InputDecoration(
-                                          isDense: true,
-                                          filled: false,
-//                                        hintText: 'Title',
-                                          labelText: 'City',
-                                          errorText: _errorText,
-                                          fillColor:  Colors.white70,
-                                          border: InputBorder.none,
-                                          prefixIcon: Icon(Icons.location_city, color: Colors.transparent,),
-                                          contentPadding: EdgeInsets.only(left: 15, bottom: 0, top: 0, right: 0),
-                                        ),
-                                        isEmpty: _dropdownCityValue == null,
-                                        child: citylist.length>0 ? new DropdownButton<City>(
-                                          value: _dropdownCityValue,
-                                          isDense: true,
-                                          dropdownColor: Colors.white,
-                                          focusColor: Colors.white,
-                                          onChanged: (City newValue) {
-                                            setState(() {
-                                              _dropdownCityValue = newValue;
-                                            });
-                                          },
-                                          items: citylist.map((City value) {
-                                            return DropdownMenuItem<City>(
-                                              value: value,
-                                              child: Text(value.city),
-                                            );
-                                          }).toList(),
-                                        )
-                                            : Container(),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )
-                                  ,
-                              SizedBox(height: 15.0,),
-                            ]
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                      Flexible(
+                        child: Container(
+                          color: webRightContainerColor,
+                        ),
+                      ),
+                    ],
                   ),
                   ]
                 )

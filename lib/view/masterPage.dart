@@ -92,6 +92,7 @@ class MasterPage extends StatefulWidget{
 
 class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   DataService dataService = DataService();
+  Commonfn cfobj = Commonfn();
   GoldRateWedgit objGoldRate = new GoldRateWedgit();
   CartNotification objCartNote = new CartNotification();
 
@@ -162,16 +163,15 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
       }
     }
   }
-
+  List<Color> _colors = [webLeftContainerColor, Colors.white];
+  List<double> _stops = [0.0, 0.7];
   void LoadCart(List<Cart> cartdt) {
     double itemWidth = 200;
-    final screenSize = MediaQuery
-        .of(context)
-        .size;
+
     if (cartdt.length > 1)
-      itemWidth = (screenSize.width / 2) - 20;
+      itemWidth = (screenWidth / 2) - 20;
     else
-      itemWidth = screenSize.width - 40;
+      itemWidth = screenWidth - 40;
     if (cartCount > 0) {
       showCartNotification = true;
       showGeneralDialog(
@@ -189,167 +189,203 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
 //                dialogContext context;
             return Material(
               type: MaterialType.transparency,
-              child: Container(
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
+              child: Row(
+                children: [
+                  Flexible(
                     child: Container(
-                      //width: MediaQuery.of(context).size.width - 10,
-                      height: 310,
-                      padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
-                      color: Colors.white,
-                      child: Stack(
-                        children: [
-                          Column(
-                            children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text("Hello ${customerdata.firstName}",
-                                    style: TextStyle(fontSize: 16,
-                                        fontStyle: FontStyle.italic),)
-                                ],
-                              ),
-                              SizedBox(height: 10,),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text("Your cart is waiting",
-                                    style: TextStyle(fontSize: 18,
-                                        color: Color(0xFF80CBC4)),)
-                                ],
-                              ),
-                              SizedBox(height: 10,),
-                              Container(
-                                height: 170,
-                                child: ScrollablePositionedList.builder(
-                                  itemScrollController: _scrollControllerCartlist,
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: cartdt.length,
-                                  itemBuilder: (BuildContext context,
-                                      int index) =>
-                                      Container(
-                                        width: itemWidth,
-                                        child: Container(
-                                          height: 150,
-                                          child: Card(
-                                            child: Padding(
-                                              padding: const EdgeInsets
-                                                  .fromLTRB(
-                                                  0.0, 0.0, 0.0, 0.0),
-                                              child: Column(
-                                                children: <Widget>[
-                                                  Row(
-                                                    mainAxisAlignment: MainAxisAlignment
-                                                        .center,
-                                                    children: <Widget>[
-                                                      _sizedContainer(
-                                                        Image(
-                                                          image: CachedNetworkImageProvider(
-                                                            cartdt[index]
-                                                                .imageFileName,
-                                                          ),
-                                                        ),
-                                                      )
-                                                    ],
-                                                  ),
-                                                  Spacer(),
-                                                  Container(
-                                                    width: (screenSize.width /
-                                                        1) - 50,
-//                                            color: listLabelbgColor,
-                                                    child: Column(
-                                                      mainAxisAlignment: MainAxisAlignment
-                                                          .center,
-                                                      children: <Widget>[
-                                                        SizedBox(height: 2,),
-                                                        Text(
-                                                            "$currencysymbol${formatterint
-                                                                .format(
-                                                                cartdt[index]
-                                                                    .totalPrice)}",
-                                                            style: TextStyle(
-                                                                fontWeight: FontWeight
-                                                                    .bold)),
-                                                        Center(child: Text(
-                                                          '${cartdt[index]
-                                                              .description}',
-                                                          softWrap: true,)),
-                                                        SizedBox(height: 2,),
-                                                        //Spacer(),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  SizedBox(height: 5,)
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                ),
-                              ),
-                              Spacer(),
-                              Container(
-                                height: 40,
-                                child: RaisedButton(
-                                  shape: new RoundedRectangleBorder(
-                                    borderRadius: new BorderRadius.circular(
-                                        10.0),
-                                    side: BorderSide(color: Color(0xFF88A9BB)),
-                                  ),
-                                  color: Color(0xFF517295),
-                                  padding: const EdgeInsets.fromLTRB(
-                                      50.0, 0, 50, 0),
-                                  child: Text(
-                                    "GO TO CART",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  onPressed: () async {
-                                    Navigator.pop(context);
-                                    Navigator.push(context, MaterialPageRoute(
-                                      builder: (context) =>
-                                          CartPage(
-                                            masterScreenFormKey: _formKeyReset,
-                                            pSource: "S",),));
-                                  },
-                                ),
-                              ),
-                              SizedBox(height: 8,)
-                            ],
-                          ),
-                          Positioned(
-                              right: 0.0,
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Align(
-                                  alignment: Alignment.topCenter,
-                                  child: CircleAvatar(
-                                    radius: 14.0,
-                                    backgroundColor: Colors.red,
-                                    child: Icon(
-                                        Icons.close, color: Colors.white),
-                                  ),
-                                ),
-                              )),
-                        ],
+//                      color: Colors.transparent,
+                      decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: _colors,
+                            stops: _stops,
+                          )
                       ),
                     ),
                   ),
-                ),
+                  Container(
+                    constraints: BoxConstraints(minWidth: 250, maxWidth: screenWidth),
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          //width: MediaQuery.of(context).size.width - 10,
+                          height: 310,
+                          padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+                          color: Colors.white,
+                          child: Stack(
+                            children: [
+                              Column(
+                                children: [
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text("Hello ${customerdata.firstName}",
+                                        style: TextStyle(fontSize: 16,
+                                            fontStyle: FontStyle.italic),)
+                                    ],
+                                  ),
+                                  SizedBox(height: 10,),
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text("Your cart is waiting",
+                                        style: TextStyle(fontSize: 18,
+                                            color: Color(0xFF80CBC4)),)
+                                    ],
+                                  ),
+                                  SizedBox(height: 10,),
+                                  Container(
+                                    height: 170,
+                                    child: ScrollablePositionedList.builder(
+                                      itemScrollController: _scrollControllerCartlist,
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: cartdt.length,
+                                      itemBuilder: (BuildContext context,
+                                          int index) =>
+                                          Container(
+                                            width: itemWidth,
+                                            child: Container(
+                                              height: 150,
+                                              child: Card(
+                                                child: Padding(
+                                                  padding: const EdgeInsets
+                                                      .fromLTRB(
+                                                      0.0, 0.0, 0.0, 0.0),
+                                                  child: Column(
+                                                    children: <Widget>[
+                                                      Row(
+                                                        mainAxisAlignment: MainAxisAlignment
+                                                            .center,
+                                                        children: <Widget>[
+                                                          _sizedContainer(
+                                                            Image(
+                                                              image: CachedNetworkImageProvider(
+                                                                cartdt[index]
+                                                                    .imageFileName,
+                                                              ),
+                                                            ),
+                                                          )
+                                                        ],
+                                                      ),
+                                                      Spacer(),
+                                                      Container(
+                                                        width: (screenWidth /
+                                                            1) - 50,
+//                                            color: listLabelbgColor,
+                                                        child: Column(
+                                                          mainAxisAlignment: MainAxisAlignment
+                                                              .center,
+                                                          children: <Widget>[
+                                                            SizedBox(height: 2,),
+                                                            Text(
+                                                                "$currencysymbol${formatterint
+                                                                    .format(
+                                                                    cartdt[index]
+                                                                        .totalPrice)}",
+                                                                style: TextStyle(
+                                                                    fontWeight: FontWeight
+                                                                        .bold)),
+                                                            Center(child: Text(
+                                                              '${cartdt[index]
+                                                                  .description}',
+                                                              softWrap: true,)),
+                                                            SizedBox(height: 2,),
+                                                            //Spacer(),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      SizedBox(height: 5,)
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                    ),
+                                  ),
+                                  Spacer(),
+                                  Container(
+                                    height: 40,
+                                    child: RaisedButton(
+                                      shape: new RoundedRectangleBorder(
+                                        borderRadius: new BorderRadius.circular(
+                                            10.0),
+                                        side: BorderSide(color: Color(0xFF88A9BB)),
+                                      ),
+                                      color: Color(0xFF517295),
+                                      padding: const EdgeInsets.fromLTRB(
+                                          50.0, 0, 50, 0),
+                                      child: Text(
+                                        "GO TO CART",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      onPressed: () async {
+                                        Navigator.pop(context);
+                                        Navigator.push(context, MaterialPageRoute(
+                                          builder: (context) =>
+                                              CartPage(
+                                                masterScreenFormKey: _formKeyReset,
+                                                pSource: "S",),));
+                                      },
+                                    ),
+                                  ),
+                                  SizedBox(height: 8,)
+                                ],
+                              ),
+                              Positioned(
+                                  right: 0.0,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Align(
+                                      alignment: Alignment.topCenter,
+                                      child: CircleAvatar(
+                                        radius: 14.0,
+                                        backgroundColor: Colors.red,
+                                        child: Icon(
+                                            Icons.close, color: Colors.white),
+                                      ),
+                                    ),
+                                  )),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Flexible(
+                    child: Container(
+//                      color: Colors.transparent,
+                      decoration: BoxDecoration(
+                        // Box decoration takes a gradient
+                        gradient: LinearGradient(
+                          // Where the linear gradient begins and ends
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          // Add one stop for each color. Stops should increase from 0 to 1
+                          stops: [0, 1],
+                          colors: [
+                            // Colors are easy thanks to Flutter's Colors class.
+                            Colors.white,
+                            webRightContainerColor,
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             );
           });
@@ -461,10 +497,6 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   }
 
   void _showPopupMenu() async {
-    double screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
     await showMenu(
       context: context,
       position: RelativeRect.fromLTRB(100, kIsWeb ? 55 : 80, 50, 100),
@@ -559,20 +591,17 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   }
 
   Widget BannerImage(BuildContext context) {
-    double screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
+
     double _height = 70;
 
     if (screenWidth > 1600)
-      _height = 400;
+      _height = 300;
     else if (screenWidth >= 1300)
-      _height = 300;
+      _height = 200;
     else if (screenWidth >= 1000)
-      _height = 400;
+      _height = 200;
     else if (screenWidth >= 700)
-      _height = 300;
+      _height = 200;
     else if (screenWidth >= 500)
       _height = 200;
     else if (screenWidth >= 400)
@@ -599,8 +628,9 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
           items: dDt.map((item) =>
               Container(
                 child: Center(
-                    child: Image.network(item.imageFileName, fit: BoxFit.cover,
-                      width: screenWidth - 30,)
+                    child: Image.network(item.imageFileName, fit: !kIsWeb ? BoxFit.cover : BoxFit.fill,
+                      width: screenWidth - 30,
+                    )
                 ),
               )
           ).toList(),
@@ -737,22 +767,23 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     return itemHeight;
   }
 
-  int GridItemCount(double screenwidth) {
+  int GridItemCount(double tscreenwidth) {
     int itemCount = 0,
         a = 0;
-    if (screenwidth <= 550)
+    tscreenwidth = tscreenwidth - (tscreenwidth-screenWidth);
+    if (tscreenwidth <= 550)
       itemCount = 2;
-    else if (screenwidth <= 750)
+    else if (tscreenwidth <= 750)
       itemCount = 3;
-    else if (screenwidth <= 850)
+    else if (tscreenwidth <= 850)
       itemCount = 4;
-    else if (screenwidth <= 1050)
+    else if (tscreenwidth <= 1050)
       itemCount = 5;
-    else if (screenwidth <= 1200)
+    else if (tscreenwidth <= 1200)
       itemCount = 6;
-    else if (screenwidth <= 1450)
+    else if (tscreenwidth <= 1450)
       itemCount = 7;
-    else if (screenwidth <= 1600)
+    else if (tscreenwidth <= 1600)
       itemCount = 8;
     else
       itemCount = 10;
@@ -760,13 +791,12 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     return itemCount;
   }
 
+
   Widget TopSellingListitem(DesignCode item) {
-    final screenSize = MediaQuery
-        .of(context)
-        .size;
-    int count = GridItemCount(screenSize.width);
+
+    int count = GridItemCount(screenWidth);
     return Container(
-        width: screenSize.width / count - 4,
+        width: screenWidth / count - 4,
         //color: Colors.grey,
         child: Card(
             shape: RoundedRectangleBorder(
@@ -987,18 +1017,15 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   }
 
   Widget CategoryGriditem(Group item) {
-    final screenSize = MediaQuery
-        .of(context)
-        .size;
-    int count = GridItemCount(screenSize.width);
+    int count = GridItemCount(screenWidth);
     return Container(
-        width: screenSize.width / count - 4,
+        width: screenWidth / count - 4,
         //color: Colors.grey,
         child: Container(
             decoration: BoxDecoration(
               color: Colors.white,
               border: Border.all(
-                color: Color(0xFFe2e8ec),
+                color: Color(0xFFe2e8ec),//e2e8ec
                 width: 1,
               ),
               //borderRadius: BorderRadius.circular(12),
@@ -1066,10 +1093,6 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   }
 
   Widget HorizontalMenuHomeWedget(BuildContext context) {
-    final screenSize = MediaQuery
-        .of(context)
-        .size;
-
     return new TabBar(
       isScrollable: true,
       controller: _tabController,
@@ -1138,21 +1161,79 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   Widget mainContainer(int itemCount, double itemheight, double screenwidth) {
     if (menuSelected == 0) {
       return Flexible(
-        child: homeWidget(itemCount, itemheight, screenwidth),
+        child: Row(
+//          mainAxisSize: MainAxisSize.max,
+//          crossAxisAlignment: CrossAxisAlignment.stretch,
+//          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Flexible(
+              child: Container(
+                color: webLeftContainerColor,
+              ),
+            ),
+            Align(
+              alignment: Alignment.topCenter,
+              child: Container(
+                constraints: BoxConstraints(minWidth: 250, maxWidth: screenWidth),
+              //Flexible(
+                child: homeWidget(itemCount, itemheight, screenwidth),
+              ),
+            ),
+            Flexible(
+              child: Container(
+                color: webRightContainerColor,
+              ),
+            ),
+          ],
+        ),
       );
     }
     else if (menuSelected == 1) {
       return Flexible(
-        child: categoryWidget(itemCount, itemheight, screenwidth),
+        child: Row(
+          children: [
+            Flexible(
+              child: Container(
+                color: webLeftContainerColor,
+              ),
+            ),
+            Align(
+              alignment: Alignment.topCenter,
+              child: Container(
+                  constraints: BoxConstraints(minWidth: 250, maxWidth: screenWidth),
+                  child: categoryWidget(itemCount, itemheight, screenwidth)),
+            ),
+            Flexible(
+              child: Container(
+                color: webRightContainerColor,
+              ),
+            ),
+          ],
+        ),
       );
     }
     else if (menuSelected == 2) {
       return Flexible(
-        child: topSellersWidget(itemCount, itemheight, screenwidth),
+        child: Row(
+          children: [
+            kIsWeb ? Expanded(
+              child: Container(
+                color: webLeftContainerColor,
+              ),
+            ) : Container(),
+            Container(
+                constraints: BoxConstraints(minWidth: 250, maxWidth: screenWidth),
+                child: topSellersWidget(itemCount, itemheight, screenwidth)),
+            kIsWeb ? Expanded(
+              child: Container(
+                color: webRightContainerColor,
+              ),
+            ) : Container(),
+          ],
+        ),
       );
     }
   }
-
   Widget homeWidget(int itemCount, double itemheight, double screenwidth) {
     return Container(
       child: CustomScrollView(
@@ -1721,9 +1802,14 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     final screenSize = MediaQuery
         .of(context)
         .size;
+    screenWidth = screenSize.width;
+    if(kIsWeb){
+      screenWidth = cfobj.ScreenWidth(screenSize.width);
+    }
 
-    int itemCount = GridItemCount(screenSize.width);
-    double itemheight = GridItemHeight(screenSize.height, screenSize.width);
+
+    int itemCount = GridItemCount(screenWidth);
+    double itemheight = GridItemHeight(screenSize.height, screenWidth);
 
     return MaterialApp(
       title: "Home",
@@ -1743,7 +1829,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                       titMessage != "" ? titleMessage() : Container(),
                       titleBar(context, scaffoldKey, _keyGoldRate, _formKeyReset),
 
-                      mainContainer(itemCount, itemheight, screenSize.width),
+                      mainContainer(itemCount, itemheight, screenWidth),
                     ],
                   )
 
