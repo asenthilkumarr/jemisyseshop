@@ -31,7 +31,7 @@ String fontName = "Loto";
 
 String userID = "";
 String userName = "";
-String password = "";
+//String password = "";
 bool isLogin = false;
 String udid = "";
 int cartCount = 0;

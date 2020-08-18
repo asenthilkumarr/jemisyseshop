@@ -692,7 +692,6 @@ Widget getPage(){
                 }
                 else if (request.url.startsWith(paymentSuccessurl)) {
                   print(request.url);
-
                 }
 //                print('allowing navigation to $request');
                 return NavigationDecision.navigate;

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
@@ -29,7 +30,12 @@ class _ProfilePage extends State<ProfilePage>{
   TextEditingController txtuserid = TextEditingController();
   TextEditingController txtpassword = TextEditingController();
   final GlobalKey<State> _keyLoaderLogin = new GlobalKey<State>();
-
+  GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: <String>[
+      'email',
+      'https://www.googleapis.com/auth/contacts.readonly',
+    ],
+  );
   String ShowRetypePassword() {
     if (PasswordEnter == "Y") {
       return 'Y';
@@ -74,8 +80,10 @@ void signOut() async{
   isLogin=false;
   cartCount = 0;
   customerdata = new Customer();
+  _handleSignOut();
   Navigator.pop(context,false);
 }
+  Future<void> _handleSignOut() => _googleSignIn.disconnect();
 
   @override
   void initState() {

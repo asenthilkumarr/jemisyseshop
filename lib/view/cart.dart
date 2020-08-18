@@ -279,13 +279,14 @@ class _cartPage extends State<CartPage> {
 
                             ],
                           )
-                              : dt.isSizeCanChange == true && dt.itemCode != "" ? Row(
+                              : dt.isSizeCanChange == true && dt.itemCode != ""
+                              ? Row(
                             children: [
                               Text("Size :"),
                               Text(dt.jewelSize)
                             ],
                           )
-                          : Container(),
+                              : Container(),
                         ],
                       ),
                       SizedBox(height: 10,),
@@ -409,23 +410,38 @@ class _cartPage extends State<CartPage> {
       ),
     );
   }
-  void proceedToOrder() async{
-    if (source == "S" && itemCount>0) {
+
+  void proceedToOrder() async {
+    if (source == "S" && itemCount > 0) {
       var status = await dataService.getCheckStockOnline(customerdata.eMail);
-      if(status.status == 1 && status.returnStatus == "OK"){
+      if (status.status == 1 && status.returnStatus == "OK") {
         Navigator.push(context, MaterialPageRoute(
             builder: (context) =>
                 AddressPage(itemCount: itemCount,
-                  totalAmount: sumValue,itemList: cartlist,)));
+                  totalAmount: sumValue, itemList: cartlist,)));
       }
-      else{
+      else {
         await Dialogs.AlertMessage(context, status.returnStatus);
       }
     }
-    else if(itemCount==0) {
-      await Dialogs.AlertMessage(context, "Cart cannot be blank, please check.");
+    else if (source == "H" && itemCount > 0) {
+      var status = await dataService.getCheckStockOnline(customerdata.eMail);
+      if (status.status == 1 && status.returnStatus == "OK") {
+        Navigator.push(context, MaterialPageRoute(
+            builder: (context) =>
+                Appointment(itemCount: itemCount,
+                  totalAmount: sumValue, itemList: cartlist,)));
+      }
+      else {
+        await Dialogs.AlertMessage(context, status.returnStatus);
+      }
+    }
+    else if (itemCount == 0) {
+      await Dialogs.AlertMessage(
+          context, "Cart cannot be blank, please check.");
     }
   }
+
   @override
   void initState() {
     super.initState();
@@ -448,8 +464,8 @@ class _cartPage extends State<CartPage> {
         .of(context)
         .size;
     screenWidth = screenSize.width;
-    if(kIsWeb){
-      screenWidth =  cfobj.ScreenWidth(screenSize.width);
+    if (kIsWeb) {
+      screenWidth = cfobj.ScreenWidth(screenSize.width);
     }
 
     return MaterialApp(
@@ -474,193 +490,259 @@ class _cartPage extends State<CartPage> {
 //                },
 //              ),
 //            ],
-          backgroundColor: Color(0xFFFF8752),
+          backgroundColor: primary1Color,
           centerTitle: true,
         ),
         body: SafeArea(
-            child: Row(
-              children: [
-                Flexible(
-                  child: Container(
-                    color: webLeftContainerColor,
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: Container(
-                    constraints: BoxConstraints(minWidth: 250, maxWidth: screenWidth),
-                    child: Column(
-                      children: [
-                        Container(
-                          color: Color(0xFF517295),
-                          height: 45,
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 0.0),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Expanded(
-                                  flex: 1,
-                                  child: Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(left: 8.0),
-                                        child: Text("Items ($itemCount)",
-                                          style: TextStyle(
-                                              color: Colors.white, fontSize: 17),),
-                                      )),
-                                ),
-                                Expanded(
-                                  flex: 1,
-                                  child: Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(right: 8.0),
-                                        child: Text(
-                                            "$currencysymbol${formatterint.format(
-                                                sumValue)}", style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 17,
-                                            fontWeight: FontWeight.bold)),
-                                      )),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Flexible(
-                          child: SingleChildScrollView(
-                            child: Column(
-                              children: [
-                                for(var i = 0; i < cartlist.length; i++)
-                                  CartList(cartlist[i], i),
-                                sumValue != 0 ? Container(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 20.0, right: 20.0, top: 30.0, bottom: 30),
-                                    child: Column(
-                                      children: [
-                                        Text("Summary", style: TextStyle(fontSize: 20.0,
-                                            fontWeight: FontWeight.bold),),
-                                        SizedBox(height: 15,),
-                                        Row(
-//                                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                                          children: [
-                                            Expanded(
-                                                child: Text("Sub Total")),
-                                            Expanded(
-                                              child: Align(
-                                                  alignment: Alignment.centerRight,
-                                                  child: Text(
-                                                    "$currencysymbol${formatterint
-                                                        .format(sumValue)}",
-                                                    style: TextStyle(
-                                                        fontWeight: FontWeight.bold),)),
-                                            )
-                                          ],
-                                        ),
-                                        SizedBox(height: 5,),
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                                child: Text("Shipping Charge")),
-                                            Expanded(
-                                              child: Align(
-                                                  alignment: Alignment.centerRight,
-                                                  child: shippingCharge != 0 ? Text(
-                                                      "$currencysymbol${formatterint
-                                                          .format(shippingCharge)}")
-                                                      : Text("Free")),
-                                            )
-                                          ],
-                                        ),
-                                        SizedBox(height: 5,),
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                                child: Text("Shipping Insurance")),
-                                            Expanded(
-                                              child: Align(
-                                                  alignment: Alignment.centerRight,
-                                                  child: shippingInsurance != 0 ? Text(
-                                                      "$currencysymbol${formatterint
-                                                          .format(shippingInsurance)}")
-                                                      : Text("Free")),
-                                            )
-                                          ],
-                                        ),
-                                        SizedBox(height: 5,),
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                                child: Text("Grand Total")),
-                                            Expanded(
-                                              child: Align(
-                                                  alignment: Alignment.centerRight,
-                                                  child: Text(
-                                                      "$currencysymbol${formatterint
-                                                          .format(sumValue)}",
-                                                      style: TextStyle(
-                                                          fontWeight: FontWeight
-                                                              .bold))),
-                                            )
-                                          ],
-                                        ),
-                                        SizedBox(height: 25,),
-                                      ],
-                                    ),
-                                  ),
-                                ) : Container(),
-                              ],
-                            ),
-
-                          ),
-                        ),
-                      ],
+            child: Stack(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment(-0.4, -0.8),
+                          stops: [0.0, 0.5, 0.5, 1],
+                          colors: [
+                            Color(0xfffff7f3), //red
+                            Color(0xffffffff), //red
+                            Color(0xffffffff), //orange
+                            Color(0xffffffff), //orange
+                          ],
+                          tileMode: TileMode.repeated
+                      ),
 
                     ),
                   ),
-                ),
-                Flexible(
-                  child: Container(
-                    color: webRightContainerColor,
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Container(
+                          color: webLeftContainerColor,
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: Container(
+                          constraints: BoxConstraints(
+                              minWidth: 250, maxWidth: screenWidth),
+                          child: Column(
+                            children: [
+                              Container(
+                                color: Color(0xFF517295),
+                                height: 45,
+                                child: Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                      8.0, 0.0, 8.0,
+                                      0.0),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment
+                                        .stretch,
+                                    children: [
+                                      Expanded(
+                                        flex: 1,
+                                        child: Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 8.0),
+                                              child: Text("Items ($itemCount)",
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 17),),
+                                            )),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Align(
+                                            alignment: Alignment.centerRight,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 8.0),
+                                              child: Text(
+                                                  "$currencysymbol${formatterint
+                                                      .format(
+                                                      sumValue)}",
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 17,
+                                                      fontWeight: FontWeight
+                                                          .bold)),
+                                            )),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Flexible(
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    children: [
+                                      for(var i = 0; i < cartlist.length; i++)
+                                        CartList(cartlist[i], i),
+                                      sumValue != 0 ? Container(
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 20.0,
+                                              right: 20.0,
+                                              top: 30.0,
+                                              bottom: 30),
+                                          child: Column(
+                                            children: [
+                                              Text("Summary",
+                                                style: TextStyle(fontSize: 20.0,
+                                                    fontWeight: FontWeight
+                                                        .bold),),
+                                              SizedBox(height: 15,),
+                                              Row(
+//                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                                children: [
+                                                  Expanded(
+                                                      child: Text("Sub Total")),
+                                                  Expanded(
+                                                    child: Align(
+                                                        alignment: Alignment
+                                                            .centerRight,
+                                                        child: Text(
+                                                          "$currencysymbol${formatterint
+                                                              .format(
+                                                              sumValue)}",
+                                                          style: TextStyle(
+                                                              fontWeight: FontWeight
+                                                                  .bold),)),
+                                                  )
+                                                ],
+                                              ),
+                                              SizedBox(height: 5,),
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                      child: Text(
+                                                          "Shipping Charge")),
+                                                  Expanded(
+                                                    child: Align(
+                                                        alignment: Alignment
+                                                            .centerRight,
+                                                        child: shippingCharge !=
+                                                            0
+                                                            ? Text(
+                                                            "$currencysymbol${formatterint
+                                                                .format(
+                                                                shippingCharge)}")
+                                                            : Text("Free")),
+                                                  )
+                                                ],
+                                              ),
+                                              SizedBox(height: 5,),
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                      child: Text(
+                                                          "Shipping Insurance")),
+                                                  Expanded(
+                                                    child: Align(
+                                                        alignment: Alignment
+                                                            .centerRight,
+                                                        child: shippingInsurance !=
+                                                            0
+                                                            ? Text(
+                                                            "$currencysymbol${formatterint
+                                                                .format(
+                                                                shippingInsurance)}")
+                                                            : Text("Free")),
+                                                  )
+                                                ],
+                                              ),
+                                              SizedBox(height: 5,),
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                      child: Text(
+                                                          "Grand Total")),
+                                                  Expanded(
+                                                    child: Align(
+                                                        alignment: Alignment
+                                                            .centerRight,
+                                                        child: Text(
+                                                            "$currencysymbol${formatterint
+                                                                .format(
+                                                                sumValue)}",
+                                                            style: TextStyle(
+                                                                fontWeight: FontWeight
+                                                                    .bold))),
+                                                  )
+                                                ],
+                                              ),
+                                              SizedBox(height: 25,),
+                                            ],
+                                          ),
+                                        ),
+                                      ) : Container(),
+                                    ],
+                                  ),
+
+                                ),
+                              ),
+                            ],
+
+                          ),
+                        ),
+                      ),
+                      Flexible(
+                        child: Container(
+                          color: webRightContainerColor,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
+                ]
             )
         ),
         bottomNavigationBar: source != "W" ? BottomAppBar(
             child: Container(
               height: 50,
               child: Padding(
-                padding: const EdgeInsets.only(left: 1.0, right: 1.0),
+                padding: const EdgeInsets.only(left: 0.0, right: 0.0),
                 child: new Row(
                     mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Expanded(
-                        child: SizedBox(
-                          height: 50,
-                          child: RaisedButton(
-                            color: Color(0xFF517295),
-                            padding: const EdgeInsets.fromLTRB(
-                                0.0, 0.0, 0.0, 0.0),
-                            child: Padding(
-                              padding: const EdgeInsets.all(0.0),
-                              child: Text(
-                                source == "S"
-                                    ? "PLACE ORDER"
-                                    : "Make an appointment",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15, fontWeight: FontWeight.bold,
+                      Flexible(
+                        child: Container(
+                          color: webLeftContainerColor,
+                        ),
+                      ),
+                      Container(
+                        constraints: BoxConstraints(minWidth: 250, maxWidth: screenWidth),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Expanded(
+                              child: RaisedButton(
+                                color: Color(0xFF517295),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(0.0),
+                                  child: Text(
+                                    source == "S"
+                                        ? "PLACE ORDER"
+                                        : "Make an appointment",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 15, fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
+                                onPressed: () async {
+                                  proceedToOrder();
+                                },
                               ),
                             ),
-                            onPressed: () async {
-                              proceedToOrder();
-                            },
-                          ),
+                          ],
+                        ),
+                      ),
+                      Flexible(
+                        child: Container(
+                          color: webRightContainerColor,
                         ),
                       ),
                     ]

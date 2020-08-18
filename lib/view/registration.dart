@@ -2,6 +2,7 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
@@ -13,6 +14,10 @@ import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
 import 'login.dart';
 
 class Registration extends StatefulWidget{
+  final String pemail;
+  final String pdisplayName;
+  Registration({this.pemail, this.pdisplayName});
+
   @override
   _Registration createState() => _Registration();
 }
@@ -32,6 +37,28 @@ class _Registration extends State<Registration>{
   TextEditingController txtRefferdEmail = TextEditingController();
   TextEditingController txtReenterPassword = TextEditingController();
 
+  final GlobalKey<State> _keyLoaderLogin = new GlobalKey<State>();
+
+  GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: <String>[
+      'email',
+      'https://www.googleapis.com/auth/contacts.readonly',
+    ],
+  );
+  Future<void> _handleSignIn() async {
+    try {
+      await _googleSignIn.signIn();
+
+      if(_googleSignIn.currentUser != null){
+        txtFirstName.text = _googleSignIn.currentUser.displayName.toUpperCase();
+        txtEmail.text = _googleSignIn.currentUser.email;
+        setState(() {
+        });
+      }
+    } catch (error) {
+      print(error);
+    }
+  }
   String Checknull() {
     if(txtFirstName.text == null || txtFirstName.text == '')  {
       return 'First Name cannot be blank. Please check.';
@@ -118,6 +145,10 @@ class _Registration extends State<Registration>{
   void initState() {
 
     super.initState();
+    if(widget.pemail != null){
+      txtEmail.text = widget.pemail;
+      txtFirstName.text = widget.pdisplayName.toUpperCase();
+    }
     ShowRetypePassword();
   }
 
@@ -497,7 +528,7 @@ class _Registration extends State<Registration>{
                           ),
                           SizedBox(width: 5,),
                           Expanded(
-                            child: GoogleSignInButton(onPressed: () {}, darkMode: true,
+                            child: GoogleSignInButton(onPressed: _handleSignIn, darkMode: true,
                               textStyle: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, fontFamily: "Roboto",color: Colors.white),
                               text: 'Google',
                             ),

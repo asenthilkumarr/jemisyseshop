@@ -41,7 +41,7 @@ class MasterScreen extends StatelessWidget {
   static ThemeData themeData(BuildContext context){
     return ThemeData(
       brightness: brightness1,
-      primaryColor: Color(0xFFFF8752),
+      primaryColor: primary1Color,
       accentColor: accent1Color,
       textTheme: fontName.toUpperCase() == "LATO" ? GoogleFonts.latoTextTheme(
         Theme
@@ -151,7 +151,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
       var dt = await dataService.getCustomer(param);
       if (dt.returnStatus != null && dt.returnStatus == 'OK') {
         userID = dt.eMail.toString();
-        password = await Commonfn.getPassword();
+//        password = await Commonfn.getPassword();
         userName = dt.firstName.toString().toUpperCase();
         isLogin = true;
         var cartdt = await dataService.getCart(userID, "S");

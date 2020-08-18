@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "808220891961-hc3ebb54qdv5qi1l0rvjlh8qffihe6do.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jemisys.jemisyseshop",
+            "certificate_hash": "e101c65841a04bca725aee228acb63d4792dedda"
+          }
+        },
+        {
           "client_id": "808220891961-i0c4stobfr839rdc5bgonsnedg7prsis.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -30,6 +38,13 @@
             {
               "client_id": "808220891961-i0c4stobfr839rdc5bgonsnedg7prsis.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "808220891961-1picj41po4f99a3va728v0ijtd56nanp.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jemisys.JEMiSyseShop"
+              }
             }
           ]
         }
@@ -59,6 +74,13 @@
             {
               "client_id": "808220891961-i0c4stobfr839rdc5bgonsnedg7prsis.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "808220891961-1picj41po4f99a3va728v0ijtd56nanp.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jemisys.JEMiSyseShop"
+              }
             }
           ]
         }

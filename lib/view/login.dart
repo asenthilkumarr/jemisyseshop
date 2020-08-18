@@ -1,8 +1,10 @@
 import 'dart:convert';
-
-//import 'package:firebase_auth/firebase_auth.dart';
+//import 'dart:convert' as JSON;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/common.dart';
@@ -30,6 +32,9 @@ class _LoginPage extends State<LoginPage>{
   TextEditingController txtpassword = TextEditingController();
   final GlobalKey<State> _keyLoaderLogin = new GlobalKey<State>();
   DataService dataService = DataService();
+
+  Map userProfile;
+  final FacebookLogin _facebookLogin = FacebookLogin();
 
   GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: <String>[
@@ -86,12 +91,138 @@ class _LoginPage extends State<LoginPage>{
   }
   Future<void> _handleSignIn() async {
     try {
+//      _handleSignOut();
       await _googleSignIn.signIn();
+      setState(() {
+
+      });
+      if(_googleSignIn.currentUser != null){
+        Customer param = Customer();
+        param.eMail = _googleSignIn.currentUser.email;
+
+        Dialogs.showLoadingDialog(context, _keyLoaderLogin); //invoking go
+        var dt = await dataService.getCustomer(param);
+        if (dt != null && dt.returnStatus != null && dt.returnStatus == 'OK') {
+          userID = dt.eMail.toString();
+          userName = dt.firstName.toString().toUpperCase();
+          isLogin = true;
+          var cartdt = await dataService.getCart(userID, "S");
+          cartCount = cartdt.length;
+          widget.masterScreenFormKey?.currentState?.reset();
+
+          Navigator.of(_keyLoaderLogin.currentContext, rootNavigator: true)
+              .pop(); //close the dialoge
+          Navigator.pop(context, dt.eMail);
+        }
+        else if(dt == null){
+          Navigator.of(_keyLoaderLogin.currentContext, rootNavigator: true)
+              .pop(); //close the dialoge
+          _UpdateCustomer();
+//          objcf.showInfoFlushbar(context, "eMail does not exists. Want to register?", 'Failed to login!');
+        }
+        else {
+          Navigator.of(_keyLoaderLogin.currentContext, rootNavigator: true)
+              .pop(); //close the dialoge
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => Registration()),);
+        }
+      }
     } catch (error) {
       print(error);
     }
   }
   Future<void> _handleSignOut() => _googleSignIn.disconnect();
+
+  Future<Null> _login() async {
+    final FacebookLoginResult result =
+    await _facebookLogin.logIn(["email"]);
+    print("-----------------------------AAAAAAAAAAAAA-------------------------");
+    print(result.status);
+    print("-----------------------------AAAAAAAAAAAAA-------------------------");
+    switch (result.status) {
+      case FacebookLoginStatus.loggedIn:
+        final FacebookAccessToken accessToken = result.accessToken;
+//        _showMessage('''
+//         Logged in!
+//
+//         Token: ${accessToken.token}
+//         User id: ${accessToken.userId}
+//         Expires: ${accessToken.expires}
+//         Permissions: ${accessToken.permissions}
+//         Declined permissions: ${accessToken.declinedPermissions}
+//         ''');
+        break;
+      case FacebookLoginStatus.cancelledByUser:
+        setState(() => isLogin = false );
+        break;
+      case FacebookLoginStatus.error:
+        setState(() => isLogin = false );
+        break;
+    }
+  }
+  /*
+  _loginWithFB() async{
+    final FacebookLoginResult result =
+    await facebookSignIn.logIn(['email']);
+
+    switch (result.status) {
+      case FacebookLoginStatus.loggedIn:
+        final token = result.accessToken.token;
+        final graphResponse = await http.get('https://graph.facebook.com/v2.12/me?fields=name,picture,email&access_token=${token}');
+        final profile = json.decode(graphResponse.body);
+        print(profile);
+        setState(() {
+          userProfile = profile;
+          isLogin = true;
+        });
+        break;
+
+      case FacebookLoginStatus.cancelledByUser:
+        setState(() => isLogin = false );
+        break;
+      case FacebookLoginStatus.error:
+        setState(() => isLogin = false );
+        break;
+    }
+  }
+*/
+  Future<String> _UpdateCustomer() async {
+    String res = "Faild";
+    if (_googleSignIn.currentUser != null) {
+      Customer param = Customer();
+      param.eMail = _googleSignIn.currentUser.email;
+      param.firstName = _googleSignIn.currentUser.displayName.toUpperCase();
+      param.lastName = "";
+      param.dOB = "";
+      param.mode = "I";
+
+      var dt = await dataService.updateCustomer(param);
+
+      if (dt.returnStatus != null && dt.returnStatus == 'OK') {
+        userID = dt.eMail.toString();
+        userName = dt.firstName.toString().toUpperCase();
+        isLogin = true;
+
+        if (isBackendJEMiSys == "Y") {
+          await dataService.updateMember("I", param);
+        }
+        customerdata = param;
+        Navigator.pop(context, false);
+        res = 'OK';
+      }
+      else {
+        userID = "";
+        isLogin = false;
+      }
+    }
+    //SharedPreferences prefs =  await SharedPreferences.getInstance();
+
+    return res;
+  }
+
   Widget _buildBody() {
     if (_currentUser != null) {
       return Column(
@@ -150,7 +281,7 @@ class _LoginPage extends State<LoginPage>{
     return '';
   }
 
-  Future<String> checkLogin() async {
+  Future<String> checkLogin(String tuserID, String tpassword, bool isSocialAurth) async {
     Commonfn objcf = new Commonfn();
     String res = "Failed";
     FocusScope.of(context).requestFocus(FocusNode());
@@ -160,23 +291,24 @@ class _LoginPage extends State<LoginPage>{
       userID = "";
       isLogin = false;
     }
-    else if (txtuserid.text != null && txtuserid.text != '' &&
-        txtpassword.text != null && txtpassword.text != '') {
+    else if (tuserID != null && tuserID != '' &&
+        tpassword != null && tpassword != '') {
       Customer param = Customer();
-      param.eMail = txtuserid.text.trim();
-      param.password = txtpassword.text.trim();
+      param.eMail = tuserID.trim();
+      param.password = tpassword.trim();
 
       Dialogs.showLoadingDialog(context, _keyLoaderLogin); //invoking go
       var dt = await dataService.getCustomer(param);
       if (dt != null && dt.returnStatus != null && dt.returnStatus == 'OK') {
         userID = dt.eMail.toString();
-        password = txtpassword.text.trim();
+//        password = txtpassword.text.trim();
         userName = dt.firstName.toString().toUpperCase();
         isLogin = true;
         var cartdt = await dataService.getCart(userID, "S");
         cartCount = cartdt.length;
         widget.masterScreenFormKey?.currentState?.reset();
-        Commonfn.saveUser(txtuserid.text, txtpassword.text, true);
+        if(!isSocialAurth)
+          Commonfn.saveUser(tuserID, tpassword, true);
 
         Navigator.of(_keyLoaderLogin.currentContext, rootNavigator: true)
             .pop(); //close the dialoge
@@ -236,11 +368,12 @@ class _LoginPage extends State<LoginPage>{
             backgroundColor: Color(0xFFFF8752),
             centerTitle: true,
           ),
+          /*
             body: ConstrainedBox(
               constraints: const BoxConstraints.expand(),
               child: _buildBody(),
             )
-          /*
+            */
           body: SafeArea(
             child: SingleChildScrollView(
               child: Center(
@@ -395,7 +528,7 @@ class _LoginPage extends State<LoginPage>{
                                                 ],
                                               ),
                                               onPressed: () {
-                                                checkLogin();
+                                                checkLogin(txtuserid.text, txtpassword.text, true);
                                               },
                                             ),
                                           ),
@@ -437,16 +570,14 @@ class _LoginPage extends State<LoginPage>{
                                         mainAxisAlignment: MainAxisAlignment.start,
                                         children: <Widget>[
                                           Expanded(
-                                            child: FacebookSignInButton(onPressed: () {},
+                                            child: FacebookSignInButton(onPressed: _login,
                                               textStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white),
                                               text: 'Facebook',
                                             ),
                                           ),
                                           SizedBox(width: 3,),
                                           Expanded(
-                                            child: GoogleSignInButton(onPressed: () {
-
-                                            }, darkMode: true,
+                                            child: GoogleSignInButton(onPressed: _handleSignIn, darkMode: true,
                                               textStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white),
                                               text: 'Google',
                                             ),
@@ -530,7 +661,6 @@ class _LoginPage extends State<LoginPage>{
               ),
             ),
           ),
-          */
         ));
   }
 }
