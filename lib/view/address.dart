@@ -37,7 +37,7 @@ class _addressPage extends State<AddressPage> {
   // Group Value for Radio Button.
   int id = 1;
   bool sameval = true,
-      newBilla = false;
+      newBilla = false, buttonVisable = true;
   String enableNewAddress = "A",
       title = "Mr.";
 
@@ -142,6 +142,13 @@ class _addressPage extends State<AddressPage> {
           context, "Billing address cannot be blank, please check");
       isNull = true;
     }
+    if(isNull){
+      buttonVisable = true;
+      setState(() {
+
+      });
+    }
+
     return isNull;
   }
   void UpdatePayment() async{
@@ -1180,36 +1187,45 @@ class _addressPage extends State<AddressPage> {
                         constraints: BoxConstraints(minWidth: 250, maxWidth: screenWidth),
                         child: Row(
                           mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             Expanded(
-                              child: RaisedButton(
-                                color: Color(0xFF517295),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(0.0),
-                                  child: Text(
-                                    "Continue",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15, fontWeight: FontWeight.bold,
+                              child: Visibility(
+                                visible: buttonVisable,
+                                child: RaisedButton(
+                                  color: Color(0xFF517295),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(0.0),
+                                    child: Text(
+                                      "Continue",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 15, fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
+                                  onPressed: () async {
+                                    buttonVisable = false;
+                                    setState(() {
+
+                                    });
+                                    var status = await CheckNull();
+                                    if (!status) {
+                                      if(paymentGateway != ""){
+                                        Navigator.push(context, MaterialPageRoute(
+                                            builder: (context) =>
+                                                PaymentPage(itemCount: itemCount,
+                                                  totalAmount: sumValue,
+                                                  sAddress: selectedAddress,
+                                                  dAddress: billingAddress, itemList: widget.itemList,dstoreCode: dstoreCode,)));
+                                      }
+                                      else{
+                                        UpdatePayment();
+                                      }
+                                    }
+                                  },
                                 ),
-                                onPressed: () async {
-                                  var status = await CheckNull();
-                                  if (!status) {
-                                    if(paymentGateway != ""){
-                                      Navigator.push(context, MaterialPageRoute(
-                                          builder: (context) =>
-                                              PaymentPage(itemCount: itemCount,
-                                                totalAmount: sumValue,
-                                                sAddress: selectedAddress,
-                                                dAddress: billingAddress, itemList: widget.itemList,dstoreCode: dstoreCode,)));
-                                    }
-                                    else{
-                                      UpdatePayment();
-                                    }
-                                  }
-                                },
                               ),
                             ),
                           ],
@@ -1953,6 +1969,8 @@ class _appointment extends State<Appointment> {
 
   List<Address> dAddress = [];
   Address selectedAddress;
+  
+  bool buttonVisable = true; 
 
   final DateFormat formatterDate = DateFormat('dd-MM-yyyy');
   final DateFormat formatterTime = DateFormat.jm();
@@ -2042,6 +2060,45 @@ class _appointment extends State<Appointment> {
     setState(() {
 
     });
+  }
+  void UpdateOrder() async{
+    Paymentfn objcf = new Paymentfn();
+    OrderData param = new OrderData();
+    FocusScope.of(context).requestFocus(FocusNode());
+    param.eMail = userID;
+    param.totalAmount = widget.totalAmount;
+    param.discount = 0;
+    param.netAmount = widget.totalAmount;
+    param.shippingAddress = selectedAddress;
+    param.billingAddress = new Address();
+    param.dstoreCode = null;
+    param.deliveryMode = "H";//Shipping
+    param.payMode1 = null;
+    param.payMode1_Amt = 0;
+    param.payMode1_Ref = null;
+    param.payMode2 = null;
+    param.payMode2_Amt = 0;
+    param.payMode2_Ref = null;
+    param.payMode3 = null;
+    param.payMode3_Amt = 0;
+    param.payMode3_Ref = null;
+    param.mode = "I";
+    objcf.updateOrder(param, widget.itemList, null, context);
+  }
+  Future<bool> CheckNull() async {
+    bool isNull = false;
+    if(selectedAddress == null){
+      isNull = true;
+      await Dialogs.AlertMessage(
+          context, "Shipping address cannot be blank, please check");
+    }
+    if(isNull){
+      buttonVisable = true;
+      setState(() {
+
+      });
+    }
+    return isNull;
   }
   void loadDefault() async{
     getDeliveryAddress();
@@ -2447,13 +2504,13 @@ class _appointment extends State<Appointment> {
                         child: Row(
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             Expanded(
-                              child: RaisedButton(
-                                color: Color(0xFF517295),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(0.0),
+                              child: Visibility(
+                                visible: buttonVisable,
+                                child: RaisedButton(
+                                  color: Color(0xFF517295),
                                   child: Text(
                                     "Confirm",
                                     style: TextStyle(
@@ -2461,10 +2518,17 @@ class _appointment extends State<Appointment> {
                                       fontSize: 15, fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                ),
-                                onPressed: () async {
+                                  onPressed: () async {
+                                    buttonVisable = false;
+                                    setState(() {
 
-                                },
+                                    });
+                                    var status = await CheckNull();
+                                    if (!status) {
+                                      UpdateOrder();
+                                    }
+                                  },
+                                ),
                               ),
                             ),
                           ],

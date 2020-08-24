@@ -629,12 +629,14 @@ class Customer{
   double pointsAvailable;
   double pointsDollor;
   String mode;
+  String udid;
 //  DateTime createdDate;
   String returnStatus;
   Address address;
 
   Customer({this.eMail, this.referralEmail, this.password, this.title, this.firstName, this.lastName, this.gender,
-    this.dOB, this.mobileNumber, this.pointsAvailable, this.pointsDollor, this.mode,  this.returnStatus, this.address});
+    this.dOB, this.mobileNumber, this.pointsAvailable, this.pointsDollor, this.address,  this.returnStatus, this.mode,
+  this.udid});
 
   factory Customer.fromJson(Map<String, dynamic> json){
     return Customer(
@@ -650,6 +652,7 @@ class Customer{
       pointsAvailable: double.parse(json['pointsAvailable'].toString()),
       pointsDollor: double.parse(json['pointsDollor'].toString()),
       returnStatus: json['returnStatus'],
+      udid: json['udid'],
       address: json['address'] != null ? Address.fromJson(json['address']) : null,
     );
   }
@@ -663,6 +666,7 @@ class Customer{
     'gender':gender,
     'dOB':dOB,
     'mobileNumber':mobileNumber,
+    'udid':udid,
     'mode':mode,
   };
 }

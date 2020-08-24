@@ -4,9 +4,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
-
+import 'package:flutter_udid/flutter_udid.dart';
 import 'data/dataService.dart';
 import 'model/dataObject.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 void main() {
   runApp(MaterialApp(
@@ -134,7 +135,9 @@ class splashScreen extends State<SplashScreen>{
       paymentGateway = dt[0].paymentGateway;
       aboutusUrl = dt[0].aboutusUrl;
     }
-
+    if(!kIsWeb){
+      udid = await FlutterUdid.udid;
+    }
     setState(() {
     });
     return dt;
@@ -143,6 +146,7 @@ class splashScreen extends State<SplashScreen>{
   @override
   void initState() {
     super.initState();
+
     Timer(
       Duration(seconds: 2),route,
     );

@@ -195,9 +195,11 @@ class Commonfn{
 class Paymentfn{
   Future<String> updateOrder(OrderData param, List<Cart> itemList, GlobalKey<FormState> _masterScreenFormKey, BuildContext context) async{
     DataService dataService = DataService();
-    String returnmag = "ERROR";
+    String returnmag = "ERROR", orderSource = "";
     var status = await dataService.getCheckStockOnline(customerdata.eMail);
     if(status.status == 1 && status.returnStatus == "OK"){
+      if(param.deliveryMode=="H")
+        orderSource = "HT";
       var result = await dataService.updateOrder(param);
       if(result.status == 1){
         if(isERPandEShopOnSameServer == false && isBackendJEMiSys == "Y"){
@@ -206,7 +208,7 @@ class Paymentfn{
         await sendmail("", result.value, "eCORDER", context);
         returnmag = "OK";
         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-            OrderPage(itemlist: itemList, masterScreenFormKey: _masterScreenFormKey,)), (Route<dynamic> route) => false);
+            OrderPage(itemlist: itemList, source: orderSource, masterScreenFormKey: _masterScreenFormKey,)), (Route<dynamic> route) => false);
 
 //        await Dialogs.AlertMessage(context, "Order Completed");
 //        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>

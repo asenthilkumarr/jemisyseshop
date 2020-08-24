@@ -139,9 +139,6 @@ class _LoginPage extends State<LoginPage>{
   Future<Null> _login() async {
     final FacebookLoginResult result =
     await _facebookLogin.logIn(["email"]);
-    print("-----------------------------AAAAAAAAAAAAA-------------------------");
-    print(result.status);
-    print("-----------------------------AAAAAAAAAAAAA-------------------------");
     switch (result.status) {
       case FacebookLoginStatus.loggedIn:
         final FacebookAccessToken accessToken = result.accessToken;
@@ -197,6 +194,7 @@ class _LoginPage extends State<LoginPage>{
       param.firstName = _googleSignIn.currentUser.displayName.toUpperCase();
       param.lastName = "";
       param.dOB = "";
+      param.udid = udid;
       param.mode = "I";
 
       var dt = await dataService.updateCustomer(param);
@@ -296,6 +294,7 @@ class _LoginPage extends State<LoginPage>{
       Customer param = Customer();
       param.eMail = tuserID.trim();
       param.password = tpassword.trim();
+      param.udid = udid;
 
       Dialogs.showLoadingDialog(context, _keyLoaderLogin); //invoking go
       var dt = await dataService.getCustomer(param);

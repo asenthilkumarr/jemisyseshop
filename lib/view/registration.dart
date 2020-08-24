@@ -106,6 +106,7 @@ class _Registration extends State<Registration>{
       param.gender = _isRow == true ? "M" : "F";
       param.dOB = "";
       param.mobileNumber = txtMobileNumber.text.trim();
+      param.udid = udid;
       param.mode = "I";
 
       var dt = await dataService.updateCustomer(param);

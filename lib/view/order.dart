@@ -181,7 +181,8 @@ class _orderPage extends State<OrderPage> {
         onWillPop: () => onWillPop(),
         child: Scaffold(
           appBar: AppBar(
-            title: Text("Order Summary", style: TextStyle(color: Colors.white),),
+            title: Text(widget.source == "HT" ? "Home Try-On" : "Order Summary",
+              style: TextStyle(color: Colors.white),),
             leading: IconButton(
                 icon: Icon(Icons.arrow_back, color: Colors.white,),
                 onPressed: () {
@@ -261,8 +262,9 @@ class _orderPage extends State<OrderPage> {
                                                       style: TextStyle(fontSize: 18, color: Colors.green),
                                                       children: [
                                                         TextSpan(
-                                                          text: widget.source != "IP" ? " Thank you, your order has been placed."
-                                                              : " Thank you, your payment updated successfully.",
+                                                          text: widget.source == "IP" ? " Thank you, your payment updated successfully."
+                                                              : widget.source == "HT" ? " Thank you, your request has been placed."
+                                                              : " Thank you, your order updated successfully.",
                                                         ),
                                                       ],
                                                     ),
