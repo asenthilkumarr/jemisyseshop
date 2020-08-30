@@ -52,13 +52,16 @@ dependencies:
 #  flutter_web: any
 #  flutter_web_ui: any
 
-  get_mac: ^0.0.1
   firebase_ml_vision: ^0.9.3+8
   firebase_storage: ^3.1.6
   firebase_messaging: ^5.1.2
   firebase_auth: ^0.16.1
   google_sign_in: ^4.5.1
   flutter_facebook_login: ^3.0.0
+  agora_rtc_engine: 1.0.5
+  permission_handler: ^3.0.0
+  wakelock: ^0.1.4+2
+  flutter_local_notifications: ^1.4.2
 
 dev_dependencies:
   flutter_test:

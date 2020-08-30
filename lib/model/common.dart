@@ -3,18 +3,21 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get_mac/get_mac.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_udid/flutter_udid.dart';
 import 'package:intl/intl.dart';
 import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/model/dialogs.dart';
 import 'package:jemisyseshop/view/order.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final String apiurl = 'http://51.79.160.233/JEMiSyseShopAPI/api/';
 final String apiurlERP = 'http://51.79.160.233/JEMiSyseShopAPI/api/';
 final String imageDefaultUrl = 'http://51.79.160.233/JEMiSyseShopImage/';
 final String emailapiurl = "http://51.79.160.233/SMSeMailAppsToolAPI/";
+final String notificationsUrl = "http://51.79.160.233/JEMiSysNotificationsAPI/api/";
 
 final String paymenturl = "http://51.79.160.233/JEMiSyseShopAPI/api/Payment";
 final String paymentBackurl = "http://51.79.160.233/JEMiSyseShopAPI/api/PaymentBack";
@@ -22,6 +25,11 @@ final String paymentSuccessurl = "http://51.79.160.233/JEMiSyseShopAPI/api/Payme
 final String paymentSuccessurl2 = "http://localhost/Payment/SuccessMessage.html";
 
 final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
+final agora_APP_ID = '7fa9aeb8265e4400933c6ea397c0625c';
+FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
+NotificationAppLaunchDetails notificationAppLaunchDetails;
+String gProgramName = '';
+String gDeviceID = '';
 
 String imgFolderName = "";
 String imageUrl = "";
@@ -34,6 +42,7 @@ String userName = "";
 //String password = "";
 bool isLogin = false;
 String udid = "";
+String loginMethod = "L";
 int cartCount = 0;
 Customer customerdata;
 
@@ -51,6 +60,7 @@ int gBalanceAmount = 0;
 String titMessage = "";
 double screenWidth = 300;
 double screenMainContentWidth = 700;
+int homeScreen = 1;
 
 String currencysymbol = "\$";
 String currencyCode = "\$";
@@ -69,31 +79,33 @@ final formatterint = new NumberFormat('#,##0', 'en_US');
 Color menubgColor = Color(0xFFFFF1F1);
 Color menuitembgColor = Color(0xFF170904);
 
-class Message {
-  final String title;
-  final String body;
-  final String screen;
-  const Message({
-    @required this.title,
-    @required this.body,
-    @required this.screen,
-  });
-}
-
 final List<Country2> country = [
   Country2('Singapore', 'SG', 'SGD', 'assets/SG.png'),
 ];
 
+class ReminderNotification {
+  final int id;
+  final String title;
+  final String body;
+  final String payload;
+
+  ReminderNotification({
+    @required this.id,
+    @required this.title,
+    @required this.body,
+    @required this.payload,
+  });
+}
+
 Future<String> GetMacAddress() async {
-  String platformVersion;
-  // Platform messages may fail, so we use a try/catch PlatformException.
+  String identifier;
   try {
-    platformVersion = await GetMac.macAddress;
+    identifier = await FlutterUdid.udid;
   } on PlatformException {
-    platformVersion = 'Failed';
+    print('Failed to get platform version');
   }
 
-  return platformVersion;
+  return identifier;
 }
 
 class Commonfn{
@@ -146,11 +158,12 @@ class Commonfn{
 
     }
   }
-  static void saveUser(String userID, String password, bool isLogin) async{
+  static void saveUser(String userID, String password, bool isLogin, String loginMethod) async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString("userID", userID);
     await prefs.setString("password", password);
     await prefs.setBool("isLogin", isLogin);
+    await prefs.setString("loginMethod", loginMethod);
   }
   static Future<String> getUserID() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -167,7 +180,11 @@ class Commonfn{
     bool isLogin = await prefs.getBool('isLogin');
     return isLogin;
   }
-
+  static Future<String> getLoginMethod() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String loginMethod = await prefs.getString('loginMethod');
+    return loginMethod;
+  }
   double ScreenWidth(double tscreenwidth) {
     double sWidth = 0,
         a = 0;
@@ -190,13 +207,19 @@ class Commonfn{
 
     return sWidth;
   }
+  static void handleCameraAndMic() async {
+    await PermissionHandler().requestPermissions(
+      [PermissionGroup.camera, PermissionGroup.microphone],
+    );
+  }
 }
 
 class Paymentfn{
-  Future<String> updateOrder(OrderData param, List<Cart> itemList, GlobalKey<FormState> _masterScreenFormKey, BuildContext context) async{
+  Future<String> updateOrder(OrderData param, List<Cart> itemList, GlobalKey<FormState> _masterScreenFormKey, BuildContext context, GlobalKey _keyLoader) async{
     DataService dataService = DataService();
     String returnmag = "ERROR", orderSource = "";
-    var status = await dataService.getCheckStockOnline(customerdata.eMail);
+    Dialogs.showLoadingDialog(context, _keyLoader);
+    var status = await dataService.getCheckStockOnline(customerdata.eMail, param.deliveryMode);
     if(status.status == 1 && status.returnStatus == "OK"){
       if(param.deliveryMode=="H")
         orderSource = "HT";
@@ -207,6 +230,9 @@ class Paymentfn{
         }
         await sendmail("", result.value, "eCORDER", context);
         returnmag = "OK";
+        Navigator.of(
+            _keyLoader.currentContext, rootNavigator: true)
+            .pop(); //close the dialoge
         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
             OrderPage(itemlist: itemList, source: orderSource, masterScreenFormKey: _masterScreenFormKey,)), (Route<dynamic> route) => false);
 
@@ -215,10 +241,16 @@ class Paymentfn{
 //            MasterScreen(currentIndex: 0, ky: null,)), (Route<dynamic> route) => false);
       }
       else{
+        Navigator.of(
+            _keyLoader.currentContext, rootNavigator: true)
+            .pop(); //close the dialoge
         await Dialogs.AlertMessage(context, result.errorMessage);
       }
     }
     else{
+      Navigator.of(
+          _keyLoader.currentContext, rootNavigator: true)
+          .pop(); //close the dialoge
       await Dialogs.AlertMessage(context, status.returnStatus);
     }
     return returnmag;
@@ -228,16 +260,13 @@ class Paymentfn{
     DataService dataService = DataService();
     final _keyLoader = new GlobalKey<FormState>();
     String res = "Faild";
-    //SharedPreferences prefs =  await SharedPreferences.getInstance();
-//    Dialogs.showLoadingDialog(context, _keyLoader); //invoking go
+
     SendEmail param = SendEmail();
     param.docno = docNo;
     param.mailTo=  userID;
     param.doctype= docType;
     param.vipname = userName;
     param.storeCode = storeCode;
-    print(param.toParam());
-    print("------------------------------------------------------------AAAAAAAAAAAA------------------------------------");
     var dt2 = await dataService.sendEmailtoCustomer(param);
 //    await Navigator.of(
 //        _keyLoader.currentContext, rootNavigator: true)

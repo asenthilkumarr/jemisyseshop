@@ -110,15 +110,20 @@ class splashScreen extends State<SplashScreen>{
   DataService dataService = DataService();
   List<Setting> sDT = List<Setting>();
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
-
   route() async{
     if (_keyLoader.currentWidget != null) {
       Navigator.of(_keyLoader.currentContext,rootNavigator: true).pop();//close the dialoge
     }
-
-    Navigator.pushReplacement(context, MaterialPageRoute(
-        builder: (context) => MasterScreen(currentIndex: 0, key: null,)
-    ));
+    if(homeScreen == 1){
+      Navigator.pushReplacement(context, MaterialPageRoute(
+          builder: (context) => MasterScreen(currentIndex: 0, key: null,),
+      ));
+    }
+    else if(homeScreen == 2){
+      Navigator.pushReplacement(context, MaterialPageRoute(
+          builder: (context) => MasterPage2(currentIndex: 0, key: null,)
+      ));
+    }
   }
 
   Future<List<Setting>> getSetting() async {
@@ -134,6 +139,7 @@ class splashScreen extends State<SplashScreen>{
       isERPandEShopOnSameServer = dt[0].isERPandEShopOnSameServer;
       paymentGateway = dt[0].paymentGateway;
       aboutusUrl = dt[0].aboutusUrl;
+      homeScreen = dt[0].mainScreen;
     }
     if(!kIsWeb){
       udid = await FlutterUdid.udid;
@@ -152,8 +158,6 @@ class splashScreen extends State<SplashScreen>{
     );
 
     //Future.delayed(Duration.zero, () => Dialogs.showLoadingOnlyDialog(context, _keyLoader));
-
-
   }
 
   @override
@@ -187,4 +191,14 @@ class splashScreen extends State<SplashScreen>{
     );
     //return
   }
+}
+
+class RoutingData {
+  final String route;
+  final Map<String, String> _queryParameters;
+  RoutingData({
+    this.route,
+    Map<String, String> queryParameters,
+  }) : _queryParameters = queryParameters;
+  operator [](String key) => _queryParameters[key];
 }

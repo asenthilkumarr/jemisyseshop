@@ -347,16 +347,18 @@ class DefaultData {
   String docType;
   String title;
   String imageFileName;
+  String imageFileName2;
   String procedureName;
 
   DefaultData(
-      { this.docType, this.title, this.imageFileName, this.procedureName});
+      { this.docType, this.title, this.imageFileName, this.imageFileName2, this.procedureName});
 
   factory DefaultData.fromJson(Map<String, dynamic> json) {
     return DefaultData(
       docType: json['docType'],
       title: json['title'],
       imageFileName: bannerimageUrl + json['imageFileName'],
+      imageFileName2: bannerimageUrl + json['imageFileName2'],
       procedureName: json['procedureName'],
     );
   }
@@ -394,25 +396,32 @@ class Setting {
   String paymode_Nets;
   String paymode_Points;
   String paymode_Voucher;
+  int mainScreen;
+  int secondScreen;
+  int thirdScreen;
 
-  Setting({ this.appName, this.currCode, this.currSymbol, this.startupImageName, this.imageFolderName, this.fontName, this.message, this.isERPandEShopOnSameServer, this.isBackendJEMiSys, this.paymentGateway,
-  this.aboutusUrl, this.contactCompanyName, this.contactName, this.contactNumber, this.contactEmail, this.contactAddress,
-  this.contactInstagram, this.contactFacebook, this.contactTwitter, this.paymode_CC, this.paymode_Nets, this.paymode_Points, this.paymode_Voucher});
+  Setting(
+      { this.appName, this.currCode, this.currSymbol, this.startupImageName, this.imageFolderName, this.fontName, this.message, this.isERPandEShopOnSameServer, this.isBackendJEMiSys, this.paymentGateway,
+        this.aboutusUrl, this.contactCompanyName, this.contactName, this.contactNumber, this.contactEmail, this.contactAddress,
+        this.contactInstagram, this.contactFacebook, this.contactTwitter, this.paymode_CC, this.paymode_Nets, this.paymode_Points, this.paymode_Voucher,
+        this.mainScreen, this.secondScreen, this.thirdScreen});
 
   factory Setting.fromJson(Map<String, dynamic> json) {
     imgFolderName = json['imageFolderName'];
-    imageUrl = imageDefaultUrl + imgFolderName+"/JewelImages/";
-    startupimageUrl = imageDefaultUrl + imgFolderName+"/Startup/";
-    bannerimageUrl = imageDefaultUrl + imgFolderName+"/Banner/";
+    imageUrl = imageDefaultUrl + imgFolderName + "/JewelImages/";
+    startupimageUrl = imageDefaultUrl + imgFolderName + "/Startup/";
+    bannerimageUrl = imageDefaultUrl + imgFolderName + "/Banner/";
     return Setting(
         appName: json['appName'],
         currCode: json['currCode'],
         currSymbol: json['currSymbol'],
         message: json['message'],
-        startupImageName: startupimageUrl+json['startupImageName'],
+        startupImageName: startupimageUrl + json['startupImageName'],
         imageFolderName: json['imageFolderName'],
         fontName: json['fontName'],
-        isERPandEShopOnSameServer: json['isERPandEShopOnSameServer'] == "0" ? false : true,
+        isERPandEShopOnSameServer: json['isERPandEShopOnSameServer'] == "0"
+            ? false
+            : true,
         isBackendJEMiSys: json['isBackendJEMiSys'],
         paymentGateway: json['paymentGateway'],
         aboutusUrl: json['aboutusUrl'],
@@ -427,7 +436,10 @@ class Setting {
         paymode_CC: json['paymode_CC'],
         paymode_Nets: json['paymode_Nets'],
         paymode_Points: json['paymode_Points'],
-        paymode_Voucher: json['paymode_Voucher']
+        paymode_Voucher: json['paymode_Voucher'],
+        mainScreen: json['mainScreen'],
+        secondScreen: json['secondScreen'],
+        thirdScreen: json['thirdScreen']
     );
   }
 }
@@ -572,12 +584,20 @@ class ProductParam {
 class Group {
   String groupName;
   String imageFileName;
+  String imageFileName2;
+  String imageFileName3;
+  String imageFileName4;
+  String imageFileName5;
   int orderOfDisplay;
-  Group({this.groupName, this.imageFileName, this.orderOfDisplay});
+  Group({this.groupName, this.imageFileName, this.imageFileName2, this.imageFileName3, this.imageFileName4, this.imageFileName5, this.orderOfDisplay});
 
   Map<String, dynamic> toJson() => {
     'groupName': groupName,
     'imageFileName': imageFileName,
+    'imageFileName2': imageFileName2,
+    'imageFileName3': imageFileName3,
+    'imageFileName4': imageFileName4,
+    'imageFileName5': imageFileName5,
     'orderOfDisplay': orderOfDisplay == null ? 0 : orderOfDisplay,
   };
 
@@ -585,7 +605,11 @@ class Group {
     return Group(
       groupName: json['groupName'],
       imageFileName: imageUrl + json['imageFileName'],
-      orderOfDisplay: json['orderOfDisplay']
+        imageFileName2: imageUrl + json['imageFileName2'],
+        imageFileName3: imageUrl + json['imageFileName3'],
+        imageFileName4: imageUrl + json['imageFileName4'],
+        imageFileName5: imageUrl + json['imageFileName5'],
+        orderOfDisplay: json['orderOfDisplay']
     );
   }
 }
@@ -630,13 +654,14 @@ class Customer{
   double pointsDollor;
   String mode;
   String udid;
+  String loginMethod;
 //  DateTime createdDate;
   String returnStatus;
   Address address;
 
   Customer({this.eMail, this.referralEmail, this.password, this.title, this.firstName, this.lastName, this.gender,
     this.dOB, this.mobileNumber, this.pointsAvailable, this.pointsDollor, this.address,  this.returnStatus, this.mode,
-  this.udid});
+  this.udid, this.loginMethod});
 
   factory Customer.fromJson(Map<String, dynamic> json){
     return Customer(
@@ -649,11 +674,12 @@ class Customer{
       gender: json['gender'],
       dOB: json['dOB'] != "" ? json['dOB'] : null,
       mobileNumber: json['mobileNumber'],
+      address: json['address'] != null ? Address.fromJson(json['address']) : null,
       pointsAvailable: double.parse(json['pointsAvailable'].toString()),
       pointsDollor: double.parse(json['pointsDollor'].toString()),
-      returnStatus: json['returnStatus'],
       udid: json['udid'],
-      address: json['address'] != null ? Address.fromJson(json['address']) : null,
+      loginMethod: json['loginMethod'],
+      returnStatus: json['returnStatus'],
     );
   }
 
@@ -667,6 +693,7 @@ class Customer{
     'dOB':dOB,
     'mobileNumber':mobileNumber,
     'udid':udid,
+    'loginMethod':loginMethod,
     'mode':mode,
   };
 }
@@ -808,7 +835,7 @@ class FCM_UpdateToken{
   Map<String, dynamic> toParam() =>{
     'deviceId':deviceId,
     'eMail':eMail,
-    'token':token
+    'token':token,
   };
 }
 class SendEmail {
@@ -879,4 +906,46 @@ class Country2{
   String currency;
   String imageUrl;
   Country2(this.name, this.shortCode, this.currency, this.imageUrl);
+}
+
+class FCMParam {
+  String restricted_package_name;
+  String to;
+  String registration_ids;
+  String body;
+  String title;
+  String image;
+  String screen;
+  String click_action;
+  int time_to_live;
+  String tag;
+  String color;
+  String channelName;
+  String isScheduled;
+  DateTime scheduledTime;
+  String scheduledTitle;
+  String scheduledBody;
+
+  FCMParam({ this.registration_ids, this.to, this.restricted_package_name, this.body, this.title,
+    this.image, this.screen, this.click_action, this.time_to_live, this.tag, this.color,
+    this.channelName, this.isScheduled, this.scheduledTime, this.scheduledTitle, this.scheduledBody});
+
+  Map<String, dynamic> toParam() =>{
+    'restricted_package_name':restricted_package_name,
+    'to':to,
+    'registration_ids':registration_ids,
+    'title':title,
+    'body':body,
+    'image':image,
+    'screen':screen,
+    'click_action':click_action,
+    'time_to_live':time_to_live,
+    'tag':tag,
+    'color':color,
+    'channelName':channelName,
+    'isScheduled':isScheduled,
+    'scheduledTime':scheduledTime,
+    'scheduledTitle':scheduledTitle,
+    'scheduledBody':scheduledBody
+  };
 }

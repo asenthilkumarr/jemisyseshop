@@ -150,7 +150,7 @@ class _myTransactionPage extends State<MyTransactionPage> {
                                                                   Spacer(),
                                                                   orderH[i].invoiceNo != null && orderH[i].invoiceNo != '' ? Text("INVOICING DONE", style: TextStyle(color: Colors.redAccent),)
                                                                       : orderH[i].shipRefNo != null && orderH[i].invoiceNo != '' ? Text("SHIPPING DONE", style: TextStyle(color: Colors.redAccent),)
-                                                                      : Text("ORDER TAKEN", style: TextStyle(color: Colors.redAccent),),
+                                                                      : Text(orderH[i].orderType == "H" ? "Home Try-On" : "ORDER TAKEN", style: TextStyle(color: Colors.redAccent),),
 //                                                              Text(formatdate.format(orderH[i].orderDate)),
                                                                 ],
                                                               )),

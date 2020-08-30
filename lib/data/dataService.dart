@@ -82,10 +82,10 @@ class DataService {
       return result;
     }
   }
-  Future<ReturnResponse> getCheckStockOnline(String eMail) async {
+  Future<ReturnResponse> getCheckStockOnline(String eMail, String orderType) async {
     ReturnResponse result = new ReturnResponse();
     http.Response response = await http.get(
-      apiurlERP + "Product/GetCheckStockOnline?eMail="+eMail,
+      apiurlERP + "Product/GetCheckStockOnline?eMail="+eMail+"&orderType="+orderType,
       headers: userheaders,
     );
     if (response.statusCode == 200) {
@@ -99,7 +99,6 @@ class DataService {
   }
   Future<ReturnResponse> updateOrder(OrderData param) async {
     ReturnResponse result = new ReturnResponse();
-    print(json.encode(param.toParam()));
     http.Response response = await http.post(
         apiurl + "Order/UpdateOrder",
         headers: userheaders,
@@ -311,43 +310,6 @@ class DataService {
       return result;
     }
   }
-  Future<List<Setting>> getSetting() async {
-    List<Setting> result = [];
-    http.Response response = await http.get(
-      apiurl + "Setting/GetSetting",
-      headers: userheaders,
-    );
-    if (response.statusCode == 200) {
-      var data = jsonDecode(response.body);
-      for (Map i in data) {
-        var iRow = Setting.fromJson(i);
-        result.add(iRow);
-      }
-      return result;
-    }
-    else {
-      return result;
-    }
-  }
-  Future<List<DefaultData>> getDefaultData(DefaultDataParam param) async {
-    List<DefaultData> result = [];
-    http.Response response = await http.post(
-      apiurl + "Setting/GetDefaultData",
-      headers: userheaders,
-        body: json.encode(param.toParam())
-    );
-    if (response.statusCode == 200) {
-      var data = jsonDecode(response.body);
-      for (Map i in data) {
-        var iRow = DefaultData.fromJson(i);
-        result.add(iRow);
-      }
-      return result;
-    }
-    else {
-      return result;
-    }
-  }
   Future<List<Product>> getProductDetails(ProductParam param) async {
     List<Product> result = [];
     http.Response response = await http.post(
@@ -537,7 +499,6 @@ class DataService {
           headers: {"Content-type": "application/json"},
           body: sparam
       );
-      print(response.body);
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         result = SendEmail.fromJson(data);
@@ -574,10 +535,12 @@ class DataService {
   Future<String> FCM_RegisterToken(String eMailParam) async {
     FCM_UpdateToken param = FCM_UpdateToken();
     param.token = await firebaseMessaging.getToken();
-    param.deviceId = await GetMacAddress();
+    gDeviceID = await GetMacAddress();
+    param.deviceId = gDeviceID;
     param.eMail = eMailParam;
+    if (eMailParam != "" || eMailParam != "") firebaseMessaging.subscribeToTopic(gDeviceID);
     http.Response response = await http.post(
-      apiurl + "FCM/UpdateToken",
+      notificationsUrl + "FCM/UpdateToken",
       headers: userheaders,
       body: json.encode(param.toParam()),
     );
@@ -586,6 +549,62 @@ class DataService {
     }
     else {
       return "Error";
+    }
+  }
+  Future<List<Setting>> getSetting() async {
+    List<Setting> result = [];
+    http.Response response = await http.get(
+      apiurl + "Setting/GetSetting",
+      headers: userheaders,
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      for (Map i in data) {
+        var iRow = Setting.fromJson(i);
+        result.add(iRow);
+      }
+      return result;
+    }
+    else {
+      return result;
+    }
+  }
+  Future<List<DefaultData>> getDefaultData(DefaultDataParam param) async {
+    List<DefaultData> result = [];
+    http.Response response = await http.post(
+        apiurl + "Setting/GetDefaultData",
+        headers: userheaders,
+        body: json.encode(param.toParam())
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      for (Map i in data) {
+        var iRow = DefaultData.fromJson(i);
+        result.add(iRow);
+      }
+      return result;
+    }
+    else {
+      return result;
+    }
+  }
+
+  Future<String> FCMSendPushNotifications(FCMParam param) async {
+    http.Response response = await http.post(
+        notificationsUrl + "FCM/SendNotification",
+        body: json.encode(param.toParam()),
+        encoding: Encoding.getByName('utf-8'),
+        headers: userheaders);
+    //print(response.body.toString());
+    //print(json.encode(data));
+    if (response.statusCode == 200) {
+      // on success do sth
+      print('test ok push CFM');
+      return "Notifications sent successfully!";
+    } else {
+      print(' CFM error');
+      // on failure do sth
+      return "ERROR sending notifications!";
     }
   }
 

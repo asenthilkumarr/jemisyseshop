@@ -155,8 +155,18 @@ class _orderPage extends State<OrderPage> {
   static const snackBarDuration = Duration(seconds: 3);
   DateTime backButtonPressTime;
   Future<bool> onWillPop() async {
-        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-            MasterScreen(currentIndex: 0, key: null,)), (Route<dynamic> route) => false);
+    if (homeScreen == 1) {
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) =>
+              MasterScreen(currentIndex: 0, key: null,)), (
+          Route<dynamic> route) => false);
+    }
+    else if (homeScreen == 2) {
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) =>
+              MasterPage2(currentIndex: 0, key: null,)), (
+          Route<dynamic> route) => false);
+    }
     return false;
   }
 
@@ -164,6 +174,7 @@ class _orderPage extends State<OrderPage> {
     super.initState();
     loadDefault();
   }
+
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery
@@ -186,9 +197,18 @@ class _orderPage extends State<OrderPage> {
             leading: IconButton(
                 icon: Icon(Icons.arrow_back, color: Colors.white,),
                 onPressed: () {
-//                Navigator.pop(context);
-                  Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-                      MasterScreen(currentIndex: 0, key: null,)), (Route<dynamic> route) => false);
+                  if (homeScreen == 1) {
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (context) =>
+                            MasterScreen(currentIndex: 0, key: null,)), (
+                        Route<dynamic> route) => false);
+                  }
+                  else if (homeScreen == 2) {
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (context) =>
+                            MasterPage2(currentIndex: 0, key: null,)), (
+                        Route<dynamic> route) => false);
+                  }
                 }
             ),
             backgroundColor: primary1Color,
@@ -281,8 +301,24 @@ class _orderPage extends State<OrderPage> {
                                           right: 0.0,
                                           child: GestureDetector(
                                             onTap: () async {
-                                              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-                                                  MasterScreen(currentIndex: 0, key: null,)), (Route<dynamic> route) => false);
+                                              if(homeScreen == 1) {
+                                                Navigator.of(context)
+                                                    .pushAndRemoveUntil(
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            MasterScreen(
+                                                              currentIndex: 0,
+                                                              key: null,)), (Route<dynamic> route) => false);
+                                              }
+                                              if(homeScreen == 2) {
+                                                Navigator.of(context)
+                                                    .pushAndRemoveUntil(
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            MasterPage2(
+                                                              currentIndex: 0,
+                                                              key: null,)), (Route<dynamic> route) => false);
+                                              }
 //                                            Navigator.of(context).pop();
                                             },
                                             child: Align(

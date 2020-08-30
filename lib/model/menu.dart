@@ -157,26 +157,26 @@ class menuItemWedget extends State<MenuItemWedget> {
                   color: Color(0xFFEBEAF6),
                   child: Padding(
                     padding: const EdgeInsets.only(left:15.0, top: 15, right: 15.0, bottom: 15),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 17.0,
-                          backgroundColor: buttonColor,
-                          child: Text("${userName[0]}", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold,),),
-                        ),
-                        SizedBox(width: 15,),
-                        Text(userName,),
-                        Spacer(),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () async {
-                              widget.scaffoldKey.currentState.openEndDrawer();
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ProfilePage()),);
-                            },
+                    child: InkWell(
+                      onTap: () async {
+                        widget.scaffoldKey.currentState.openEndDrawer();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ProfilePage()),);
+                      },
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 17.0,
+                            backgroundColor: buttonColor,
+                            child: Text("${userName[0]}", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold,),),
+                          ),
+                          SizedBox(width: 15,),
+                          Text(userName,),
+                          Spacer(),
+                          Align(
+                            alignment: Alignment.centerRight,
                             child: CircleAvatar(
                               radius: 15.0,
                               backgroundColor: Colors
@@ -187,8 +187,8 @@ class menuItemWedget extends State<MenuItemWedget> {
                                 size: 23,),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 )
@@ -379,17 +379,39 @@ class menuItemWedget extends State<MenuItemWedget> {
                         ) : Container(),
 
                         ListTile(
-                            title: Text('Test'),
+                            title: Text('Home 1'),
                             onTap: () async {
                               widget.scaffoldKey.currentState.openEndDrawer();
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Test()),);
-
-                              print("-------AAAAAAAAAAAA----------AAAAAAAAAAAAAAAAAAA--------AAAAAAAAAA----------");
+                              homeScreen = 1;
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(builder: (context) =>
+                                      MasterScreen(
+                                        currentIndex: 0, key: null,)), (
+                                  Route<dynamic> route) => false);
                             }
                         ),
+                        ListTile(
+                            title: Text('Home 2'),
+                            onTap: () async {
+                              widget.scaffoldKey.currentState.openEndDrawer();
+                              homeScreen = 2;
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(builder: (context) =>
+                                      MasterPage2(
+                                        currentIndex: 0, key: null,)), (
+                                  Route<dynamic> route) => false);
+                            }
+                        ),
+                        // ListTile(
+                        //     title: Text('Test'),
+                        //     onTap: () async {
+                        //       widget.scaffoldKey.currentState.openEndDrawer();
+                        //       await Navigator.push(
+                        //         context,
+                        //         MaterialPageRoute(
+                        //             builder: (context) => CarouselDemo()),);
+                        //     }
+                        // ),
 
                         GestureDetector(
                           onTap: (){

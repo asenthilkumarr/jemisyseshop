@@ -106,18 +106,20 @@ class _LoginPage extends State<LoginPage>{
           userID = dt.eMail.toString();
           userName = dt.firstName.toString().toUpperCase();
           isLogin = true;
+          loginMethod="G";
           var cartdt = await dataService.getCart(userID, "S");
           cartCount = cartdt.length;
           widget.masterScreenFormKey?.currentState?.reset();
+          Commonfn.saveUser(_googleSignIn.currentUser.email, "", true, loginMethod);
 
           Navigator.of(_keyLoaderLogin.currentContext, rootNavigator: true)
               .pop(); //close the dialoge
           Navigator.pop(context, dt.eMail);
         }
         else if(dt == null){
+          _UpdateCustomerGoogle();
           Navigator.of(_keyLoaderLogin.currentContext, rootNavigator: true)
               .pop(); //close the dialoge
-          _UpdateCustomer();
 //          objcf.showInfoFlushbar(context, "eMail does not exists. Want to register?", 'Failed to login!');
         }
         else {
@@ -186,7 +188,7 @@ class _LoginPage extends State<LoginPage>{
     }
   }
 */
-  Future<String> _UpdateCustomer() async {
+  Future<String> _UpdateCustomerGoogle() async {
     String res = "Faild";
     if (_googleSignIn.currentUser != null) {
       Customer param = Customer();
@@ -195,6 +197,7 @@ class _LoginPage extends State<LoginPage>{
       param.lastName = "";
       param.dOB = "";
       param.udid = udid;
+      param.loginMethod = "G";
       param.mode = "I";
 
       var dt = await dataService.updateCustomer(param);
@@ -203,7 +206,8 @@ class _LoginPage extends State<LoginPage>{
         userID = dt.eMail.toString();
         userName = dt.firstName.toString().toUpperCase();
         isLogin = true;
-
+        loginMethod = "G";
+        Commonfn.saveUser(_googleSignIn.currentUser.email, "", true, loginMethod);
         if (isBackendJEMiSys == "Y") {
           await dataService.updateMember("I", param);
         }
@@ -268,14 +272,12 @@ class _LoginPage extends State<LoginPage>{
   }
 
   String Checknull() {
-
     if  (txtuserid.text == null || txtuserid.text == '') {
       return 'Please enter your Email.';
     }
     if  (txtpassword.text == null || txtpassword.text == '') {
       return 'Please enter your password.';
     }
-
     return '';
   }
 
@@ -294,7 +296,8 @@ class _LoginPage extends State<LoginPage>{
       Customer param = Customer();
       param.eMail = tuserID.trim();
       param.password = tpassword.trim();
-      param.udid = udid;
+      param.udid = "";
+      param.loginMethod = "L";
 
       Dialogs.showLoadingDialog(context, _keyLoaderLogin); //invoking go
       var dt = await dataService.getCustomer(param);
@@ -303,11 +306,11 @@ class _LoginPage extends State<LoginPage>{
 //        password = txtpassword.text.trim();
         userName = dt.firstName.toString().toUpperCase();
         isLogin = true;
+        loginMethod = "L";
         var cartdt = await dataService.getCart(userID, "S");
         cartCount = cartdt.length;
         widget.masterScreenFormKey?.currentState?.reset();
-        if(!isSocialAurth)
-          Commonfn.saveUser(tuserID, tpassword, true);
+        Commonfn.saveUser(tuserID, tpassword, true, loginMethod);
 
         Navigator.of(_keyLoaderLogin.currentContext, rootNavigator: true)
             .pop(); //close the dialoge
@@ -317,7 +320,7 @@ class _LoginPage extends State<LoginPage>{
       else if(dt == null){
         Navigator.of(_keyLoaderLogin.currentContext, rootNavigator: true)
             .pop(); //close the dialoge
-        objcf.showInfoFlushbar(context, "eMail does not exists. Want to register?", 'Failed to login!');
+        objcf.showInfoFlushbar(context, "eMail does not exists. Want to register?"+ dt.returnStatus, 'Failed to login!');
       }
       else {
         Navigator.of(_keyLoaderLogin.currentContext, rootNavigator: true)
@@ -329,7 +332,7 @@ class _LoginPage extends State<LoginPage>{
   }
   void loadDefault() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if(await prefs.getString('userID') != null){
+    if(await prefs.getString('userID') != null && await prefs.getString('loginMethod') != null && await prefs.getString('loginMethod') == "L"){
       txtuserid.text = await Commonfn.getUserID();
     }
   }

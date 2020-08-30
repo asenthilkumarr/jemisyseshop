@@ -26,20 +26,25 @@ class PaymentPage extends StatefulWidget{
   final String source;
   final OrderOutstanding outstandingitem;
   final String dstoreCode;
-  PaymentPage({this.itemCount, this.totalAmount, this.sAddress, this.dAddress, this.itemList, this.source, this.outstandingitem, this.dstoreCode});
+  final GlobalKey<FormState> masterScreenFormKey;
+  PaymentPage({this.itemCount, this.totalAmount, this.sAddress, this.dAddress, this.itemList, this.source, this.outstandingitem, this.dstoreCode,
+  this.masterScreenFormKey});
   @override
   _paymentPage createState() => _paymentPage();
 }
 class _paymentPage extends State<PaymentPage> {
   DataService dataService = DataService();
+  final GlobalKey _keyLoader = new GlobalKey();
+  final GlobalKey _keyLoader2 = new GlobalKey();
 
   double sumValue = 0.0;
-  double voucherRedeemamount = 0;
+  double voucherRedeemamount = 0,totalAmount = 0;
   int itemCount = 0;
   double totaldollortoRedeem = 0;
   double redeemValue = 0;
   int id = 1, vouchercnt = 0;
-  String radioItem = 'Master / VISA Card';
+  String radioItem = 'Master / VISA Card', paymode_Points="", paymode_Voucher="";
+  OrderData param=new OrderData();
 
   List<Voucher> redeemVouchers = [];
   List<RadioButtonListValue> fList = [
@@ -77,6 +82,13 @@ class _paymentPage extends State<PaymentPage> {
     await getCustomer();
     var voucherlist = await _fetchVoucherList();
     vouchercnt = voucherlist.length;
+
+    var dt = await dataService.getSetting();
+    if (dt.length > 0) {
+      paymode_Points = dt[0].paymode_Points;
+      paymode_Voucher = dt[0].paymode_Voucher;
+    }
+
     setState(() {
 
     });
@@ -117,6 +129,53 @@ class _paymentPage extends State<PaymentPage> {
   Future<List<Voucher>> _fetchVoucherList() async {
     var dt = await dataService.getVouchers(userID);
     return dt;
+  }
+  void UpdatePayment(String payMode) async{
+    String voucherNo = "";
+    double voucherAmount = 0;
+    Dialogs.showLoadingDialog(context, _keyLoader2);
+    if (widget.itemList != null) {
+      for (var i = 0; i < widget.itemList.length; i++) {
+        totalAmount += widget.itemList[i].totalPrice;
+      }
+    }
+    if(redeemVouchers.length>0){
+      for(int i=0;i<redeemVouchers.length;i++){
+        if(voucherNo!= "") voucherNo += ";";
+        voucherAmount += redeemVouchers[i].voucherValue;
+        voucherNo += redeemVouchers[i].refNo;
+      }
+    }
+    var dt = await dataService.getSetting();
+    if (dt.length > 0) {
+      paymode_Points = dt[0].paymode_Points;
+      paymode_Voucher = dt[0].paymode_Voucher;
+    }
+    Navigator.of(
+        _keyLoader2.currentContext, rootNavigator: true)
+        .pop(); //close the dialoge
+    if(widget.source==null){
+      Paymentfn objcf = new Paymentfn();
+      param.eMail = userID;
+      param.totalAmount = totalAmount;
+      param.discount = 0;
+      param.netAmount = totalAmount;
+      param.deliveryMode = "S";
+      param.shippingAddress = widget.sAddress;
+      param.billingAddress = widget.dAddress;
+      param.dstoreCode = widget.dstoreCode;
+      param.payMode1 = null;
+      param.payMode1_Amt = 0;
+      param.payMode1_Ref = null;
+      param.payMode2 = redeemValue != 0 ? paymode_Points : null;
+      param.payMode2_Amt = redeemValue;
+      param.payMode2_Ref = null;
+      param.payMode3 = voucherAmount> 0 ? paymode_Voucher : null;
+      param.payMode3_Amt = voucherAmount;
+      param.payMode3_Ref = voucherNo;
+      param.mode = "I";
+      objcf.updateOrder(param, widget.itemList, null, context, _keyLoader);
+    }
   }
   @override
   void initState() {
@@ -231,7 +290,7 @@ class _paymentPage extends State<PaymentPage> {
                                             List<Voucher> getV = await Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                  builder: (context) => VoucherList()),);
+                                                  builder: (context) => VoucherList()));
                                             applyVoucher(getV);
                                           },
                                           child: Row(
@@ -431,79 +490,82 @@ class _paymentPage extends State<PaymentPage> {
                               ),
                             ),
                             onPressed: () async {
-                              if(!kIsWeb) {
-                                print(kIsWeb);
-                                print("------------------------------------------------------------------------------"+radioItem);
-                                if (radioItem == 'Master / VISA Card') {
-                                  Navigator.push(context, MaterialPageRoute(
-                                      builder: (context) =>
-                                          PaymentDetailPage(
-                                            redeemVoucher: redeemVouchers,
-                                            itemCount: itemCount,
-                                            totalAmount: sumValue,
-                                            redeemAmount: redeemValue,
-                                            payMode: "VISA / MASTER",
-                                            sAddress: widget.sAddress,
-                                            dAddress: widget.dAddress,
-                                            itemList: widget.itemList,
-                                            source: widget.source,
-                                            outstandingitem: widget
-                                                .outstandingitem,
-                                            dstoreCode: widget.dstoreCode,)));
+                              if(paymentGateway != "") {
+                                if (!kIsWeb) {
+                                  if (radioItem == 'Master / VISA Card') {
+                                    Navigator.push(context, MaterialPageRoute(
+                                        builder: (context) =>
+                                            PaymentDetailPage(
+                                              redeemVoucher: redeemVouchers,
+                                              itemCount: itemCount,
+                                              totalAmount: sumValue,
+                                              redeemAmount: redeemValue,
+                                              payMode: "VISA / MASTER",
+                                              sAddress: widget.sAddress,
+                                              dAddress: widget.dAddress,
+                                              itemList: widget.itemList,
+                                              source: widget.source,
+                                              outstandingitem: widget
+                                                  .outstandingitem,
+                                              dstoreCode: widget.dstoreCode,)));
+                                  }
+                                  else {
+                                    Navigator.push(context, MaterialPageRoute(
+                                        builder: (context) =>
+                                            PaymentDetailPage(
+                                              redeemVoucher: redeemVouchers,
+                                              itemCount: itemCount,
+                                              totalAmount: sumValue,
+                                              redeemAmount: redeemValue,
+                                              payMode: "NETS",
+                                              sAddress: widget.sAddress,
+                                              dAddress: widget.dAddress,
+                                              itemList: widget.itemList,
+                                              source: widget.source,
+                                              outstandingitem: widget
+                                                  .outstandingitem,
+                                              dstoreCode: widget.dstoreCode,)));
+                                  }
                                 }
                                 else {
-                                  Navigator.push(context, MaterialPageRoute(
-                                      builder: (context) =>
-                                          PaymentDetailPage(
-                                            redeemVoucher: redeemVouchers,
-                                            itemCount: itemCount,
-                                            totalAmount: sumValue,
-                                            redeemAmount: redeemValue,
-                                            payMode: "NETS",
-                                            sAddress: widget.sAddress,
-                                            dAddress: widget.dAddress,
-                                            itemList: widget.itemList,
-                                            source: widget.source,
-                                            outstandingitem: widget
-                                                .outstandingitem,
-                                            dstoreCode: widget.dstoreCode,)));
+                                  if (radioItem == 'Master / VISA Card') {
+                                    Navigator.push(context, MaterialPageRoute(
+                                        builder: (context) =>
+                                            PaymentDetailPage2(
+                                              redeemVoucher: redeemVouchers,
+                                              itemCount: itemCount,
+                                              totalAmount: sumValue,
+                                              redeemAmount: redeemValue,
+                                              payMode: "VISA / MASTER",
+                                              sAddress: widget.sAddress,
+                                              dAddress: widget.dAddress,
+                                              itemList: widget.itemList,
+                                              source: widget.source,
+                                              outstandingitem: widget
+                                                  .outstandingitem,
+                                              dstoreCode: widget.dstoreCode,)));
+                                  }
+                                  else {
+                                    Navigator.push(context, MaterialPageRoute(
+                                        builder: (context) =>
+                                            PaymentDetailPage2(
+                                              redeemVoucher: redeemVouchers,
+                                              itemCount: itemCount,
+                                              totalAmount: sumValue,
+                                              redeemAmount: redeemValue,
+                                              payMode: "NETS",
+                                              sAddress: widget.sAddress,
+                                              dAddress: widget.dAddress,
+                                              itemList: widget.itemList,
+                                              source: widget.source,
+                                              outstandingitem: widget
+                                                  .outstandingitem,
+                                              dstoreCode: widget.dstoreCode,)));
+                                  }
                                 }
                               }
                               else{
-                                if (radioItem == 'Master / VISA Card') {
-                                  Navigator.push(context, MaterialPageRoute(
-                                      builder: (context) =>
-                                          PaymentDetailPage2(
-                                            redeemVoucher: redeemVouchers,
-                                            itemCount: itemCount,
-                                            totalAmount: sumValue,
-                                            redeemAmount: redeemValue,
-                                            payMode: "VISA / MASTER",
-                                            sAddress: widget.sAddress,
-                                            dAddress: widget.dAddress,
-                                            itemList: widget.itemList,
-                                            source: widget.source,
-                                            outstandingitem: widget
-                                                .outstandingitem,
-                                            dstoreCode: widget.dstoreCode,)));
-                                }
-                                else {
-                                  Navigator.push(context, MaterialPageRoute(
-                                      builder: (context) =>
-                                          PaymentDetailPage2(
-                                            redeemVoucher: redeemVouchers,
-                                            itemCount: itemCount,
-                                            totalAmount: sumValue,
-                                            redeemAmount: redeemValue,
-                                            payMode: "NETS",
-                                            sAddress: widget.sAddress,
-                                            dAddress: widget.dAddress,
-                                            itemList: widget.itemList,
-                                            source: widget.source,
-                                            outstandingitem: widget
-                                                .outstandingitem,
-                                            dstoreCode: widget.dstoreCode,)));
-                                }
+                                UpdatePayment("");
                               }
                             },
                           ),
@@ -542,6 +604,7 @@ class _paymentDetailPage extends State<PaymentDetailPage> {
   Completer<WebViewController>();
 
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
+  final GlobalKey _keyLoader2 = new GlobalKey();
   final GlobalKey<State> keyview = new GlobalKey<State>();
   double totalAmount = 0;
   OrderData param=new OrderData();
@@ -551,6 +614,7 @@ class _paymentDetailPage extends State<PaymentDetailPage> {
   bool isOrderCreated = false, _isLoadingPage;
 
   Future<void> loadDefault() async {
+    // Dialogs.showLoadingDialog(context, _keyLoader2);
     if (widget.itemList != null) {
       for (var i = 0; i < widget.itemList.length; i++) {
         totalAmount += widget.itemList[i].totalPrice;
@@ -564,6 +628,9 @@ class _paymentDetailPage extends State<PaymentDetailPage> {
       paymode_Voucher = dt[0].paymode_Voucher;
     }
     pNo = await dataService.getPaymentNextNo();
+    // Navigator.of(
+    //     _keyLoader2.currentContext, rootNavigator: true)
+    //     .pop(); //close the dialoge
     srcUrl = paymenturl + "?paymentMode=VM&orderID="+pNo+"&payType=S&amount="+widget.totalAmount.toString()+"&currency="+currencyCode;
     setState(() {
 
@@ -600,7 +667,7 @@ class _paymentDetailPage extends State<PaymentDetailPage> {
       param.payMode3_Amt = voucherAmount;
       param.payMode3_Ref = voucherNo;
       param.mode = "I";
-      objcf.updateOrder(param, widget.itemList, null, context);
+      objcf.updateOrder(param, widget.itemList, null, context, _keyLoader);
     }
     else if(widget.source == "IP"){
       Paymentfn objpf = new Paymentfn();
@@ -614,6 +681,7 @@ class _paymentDetailPage extends State<PaymentDetailPage> {
       var result = await dataService.updateOrderOutstanding(param);
       if(result.status == 1){
         await objpf.sendmail(widget.outstandingitem.storeCode, widget.outstandingitem.refNo, widget.outstandingitem.docType, context);
+
         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
             OrderPage(source: "IP",)), (Route<dynamic> route) => false);
       }
@@ -623,30 +691,11 @@ class _paymentDetailPage extends State<PaymentDetailPage> {
   @override
   void initState(){
     super.initState();
-    srcUrl = paymenturl;
-    _isLoadingPage = true;
-    setState(() {
-
-    });
     loadDefault();
   }
-  /*
-Widget getPage(){
-    _webViewPlugin = new EasyWebView(
-        src: srcUrl,
 
-        onLoaded: (){
-          turl = _webViewPlugin.src;
-          print("-----------------------------------------------------------------------------------------");
-          print(turl);
-          print("====================AAAAAAA================================================================");
-        });
-    return _webViewPlugin;
-}
-   */
   @override
   Widget build(BuildContext context) {
-//    return getPage();
 
     return WillPopScope(
         onWillPop: () async => false,
@@ -779,7 +828,7 @@ class PaymentDetailPage2 extends StatefulWidget{
 class _paymentDetailPage2 extends State<PaymentDetailPage2> {
   DataService dataService = DataService();
   OrderData param=new OrderData();
-//  final _keyLoader = new GlobalKey<FormState>();
+  final _keyLoader = new GlobalKey<FormState>();
 
   var sX = 0.0;
   var sY = 0.0;
@@ -845,7 +894,7 @@ class _paymentDetailPage2 extends State<PaymentDetailPage2> {
       param.payMode3_Amt = voucherAmount;
       param.payMode3_Ref = voucherNo;
       param.mode = "I";
-      objcf.updateOrder(param, widget.itemList, null, context);
+      objcf.updateOrder(param, widget.itemList, null, context, _keyLoader);
     }
     else if(widget.source == "IP"){
       Paymentfn objpf = new Paymentfn();
@@ -856,12 +905,19 @@ class _paymentDetailPage2 extends State<PaymentDetailPage2> {
       param.amount = widget.totalAmount;
       param.payMode = paymode_CC;
       param.reff = pNo;
+      Dialogs.showLoadingDialog(context, _keyLoader);
       var result = await dataService.updateOrderOutstanding(param);
       if(result.status == 1){
         await objpf.sendmail(widget.outstandingitem.storeCode, widget.outstandingitem.refNo, widget.outstandingitem.docType, context);
+        Navigator.of(
+            _keyLoader.currentContext, rootNavigator: true)
+            .pop(); //close the dialoge
         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
             OrderPage(source: "IP",)), (Route<dynamic> route) => false);
       }
+      Navigator.of(
+          _keyLoader.currentContext, rootNavigator: true)
+          .pop(); //close the dialoge
     }
   }
 
@@ -886,7 +942,7 @@ class _paymentDetailPage2 extends State<PaymentDetailPage2> {
       param.payMode3_Amt = 0;
       param.payMode3_Ref = null;
       param.mode = "I";
-      objcf.updateOrder(param, widget.itemList, null, context);
+      objcf.updateOrder(param, widget.itemList, null, context, _keyLoader);
     }
     else if(widget.source == "IP"){
       Paymentfn objpf = new Paymentfn();

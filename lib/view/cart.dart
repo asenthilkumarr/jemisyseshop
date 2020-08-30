@@ -6,6 +6,7 @@ import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/model/dialogs.dart';
 import 'package:jemisyseshop/style.dart';
+import 'package:jemisyseshop/view/appointment.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
 import 'package:jemisyseshop/view/productDetails.dart';
 import 'package:jemisyseshop/view/address.dart';
@@ -413,19 +414,19 @@ class _cartPage extends State<CartPage> {
 
   void proceedToOrder() async {
     if (source == "S" && itemCount > 0) {
-      var status = await dataService.getCheckStockOnline(customerdata.eMail);
+      var status = await dataService.getCheckStockOnline(customerdata.eMail, source);
       if (status.status == 1 && status.returnStatus == "OK") {
         Navigator.push(context, MaterialPageRoute(
             builder: (context) =>
                 AddressPage(itemCount: itemCount,
-                  totalAmount: sumValue, itemList: cartlist,)));
+                  totalAmount: sumValue, itemList: cartlist,masterScreenFormKey: widget.masterScreenFormKey,)));
       }
       else {
         await Dialogs.AlertMessage(context, status.returnStatus);
       }
     }
     else if (source == "H" && itemCount > 0) {
-      var status = await dataService.getCheckStockOnline(customerdata.eMail);
+      var status = await dataService.getCheckStockOnline(customerdata.eMail, source);
       if (status.status == 1 && status.returnStatus == "OK") {
         Navigator.push(context, MaterialPageRoute(
             builder: (context) =>

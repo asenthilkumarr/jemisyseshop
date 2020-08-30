@@ -107,6 +107,7 @@ class _Registration extends State<Registration>{
       param.dOB = "";
       param.mobileNumber = txtMobileNumber.text.trim();
       param.udid = udid;
+      param.loginMethod = "L";
       param.mode = "I";
 
       var dt = await dataService.updateCustomer(param);

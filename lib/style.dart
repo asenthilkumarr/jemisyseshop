@@ -6,6 +6,7 @@ const String FontNameDefault = 'Montserrat';
 
 const Brightness brightness1 = Brightness.light;
 const Color primary1Color = Color(0xFFFF8752);//Colors.redAccent;
+const Color homeTitleColor = Colors.transparent;//Color(0xFFff9466);//Colors.redAccent;
 const Color accent1Color =Color(0xFF00ACC1);
 const Color pagetitle1Color = Color(0xFFFB4309);//FB4309
 const Color pageColortop = Color(0xFFFF3D00);//Color(0xFFFF3D00);

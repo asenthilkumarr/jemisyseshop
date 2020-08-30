@@ -1,19 +1,21 @@
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:jemisyseshop/model/menu.dart';
 import 'package:jemisyseshop/style.dart';
 import 'package:jemisyseshop/view/contactUs.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
 
-class MasterPage2 extends StatefulWidget{
+class MasterPageOld extends StatefulWidget{
   final int currentIndex;
-  MasterPage2({Key key, this.currentIndex}) : super(key: key);
+  MasterPageOld({Key key, this.currentIndex}) : super(key: key);
 
   @override
-  _masterPage2 createState() => _masterPage2();
+  _masterPageOld createState() => _masterPageOld();
 }
 
-class _masterPage2 extends State<MasterPage2> {
+class _masterPageOld extends State<MasterPageOld> {
   int _currentIndex = 0;
   String _Title = 'eShop';
   List<MenuItem> allDestinations=[];
@@ -35,6 +37,7 @@ class _masterPage2 extends State<MasterPage2> {
   @override
   void initState() {
     super.initState();
+
     _currentIndex = widget.currentIndex;
     pageTitle();
   }

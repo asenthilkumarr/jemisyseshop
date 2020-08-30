@@ -149,12 +149,11 @@ class _voucherList extends State<VoucherList>{
         appBar: AppBar(
           title: Text('Outstanding Orders', style: TextStyle(color: Colors.white),),
           leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.white,),
+              icon: Icon(Icons.arrow_back, color: title1Color,),
               onPressed: () {
-                Navigator.pop(context, false);
+                Navigator.pop(context, new List<Voucher>());
               }
           ),
-
           backgroundColor: Color(0xFFFF8752),
           centerTitle: true,
         ),
