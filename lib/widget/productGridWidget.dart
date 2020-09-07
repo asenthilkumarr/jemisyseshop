@@ -22,10 +22,13 @@ class ProductGridWidget extends StatelessWidget {
   ProductGridWidget({this.item, this.masterScreenFormKey});
 
   Future<void> _product_onTap(Product selItem, BuildContext context) async {
+    // Navigator.pushNamed(context, ProductDetailPage2.route+"?SKU="+ selItem.itemCode != "" ? selItem.itemCode : selItem.designCode);
     Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ProductDetailPage(product: item, title: item.itemCode, masterScreenFormKey: masterScreenFormKey,),)
+          builder: (context) => ProductDetailPage(product: item,
+            title: item.itemCode != null && item.itemCode != ""? item.itemCode : item.designCode,
+            masterScreenFormKey: masterScreenFormKey,),)
     );
   }
   @override

@@ -32,6 +32,9 @@ class _LoginPage extends State<LoginPage>{
   TextEditingController txtpassword = TextEditingController();
   final GlobalKey<State> _keyLoaderLogin = new GlobalKey<State>();
   DataService dataService = DataService();
+  static final FacebookLogin facebookSignIn = new FacebookLogin();
+
+  String _message = 'Log in/out by pressing the buttons below.';
 
   Map userProfile;
   final FacebookLogin _facebookLogin = FacebookLogin();
@@ -138,29 +141,40 @@ class _LoginPage extends State<LoginPage>{
   }
   Future<void> _handleSignOut() => _googleSignIn.disconnect();
 
-  Future<Null> _login() async {
+  Future<Null> _Facebooklogin() async {
     final FacebookLoginResult result =
-    await _facebookLogin.logIn(["email"]);
+    await facebookSignIn.logIn(['email']);
+
     switch (result.status) {
       case FacebookLoginStatus.loggedIn:
         final FacebookAccessToken accessToken = result.accessToken;
-//        _showMessage('''
-//         Logged in!
-//
-//         Token: ${accessToken.token}
-//         User id: ${accessToken.userId}
-//         Expires: ${accessToken.expires}
-//         Permissions: ${accessToken.permissions}
-//         Declined permissions: ${accessToken.declinedPermissions}
-//         ''');
+        _showMessage('''
+         Logged in!
+         
+         Token: ${accessToken.token}
+         User id: ${accessToken.userId}
+         Expires: ${accessToken.expires}
+         Permissions: ${accessToken.permissions}
+         Declined permissions: ${accessToken.declinedPermissions}
+         ''');
         break;
       case FacebookLoginStatus.cancelledByUser:
-        setState(() => isLogin = false );
+        _showMessage('Login cancelled by the user.');
         break;
       case FacebookLoginStatus.error:
-        setState(() => isLogin = false );
+        _showMessage('Something went wrong with the login process.\n'
+            'Here\'s the error Facebook gave us: ${result.errorMessage}');
         break;
     }
+  }
+
+  Future<Null> _FacebooklogOut() async {
+    await facebookSignIn.logOut();
+    _showMessage('Logged out.');
+  }
+
+  void _showMessage(String message) {
+    print(message);
   }
   /*
   _loginWithFB() async{
@@ -224,7 +238,7 @@ class _LoginPage extends State<LoginPage>{
 
     return res;
   }
-
+/*
   Widget _buildBody() {
     if (_currentUser != null) {
       return Column(
@@ -262,7 +276,7 @@ class _LoginPage extends State<LoginPage>{
       );
     }
   }
-
+*/
   String ShowRetypePassword() {
     if (PasswordEnter == "Y") {
       return 'Y';
@@ -572,7 +586,7 @@ class _LoginPage extends State<LoginPage>{
                                         mainAxisAlignment: MainAxisAlignment.start,
                                         children: <Widget>[
                                           Expanded(
-                                            child: FacebookSignInButton(onPressed: _login,
+                                            child: FacebookSignInButton(onPressed: _Facebooklogin,
                                               textStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white),
                                               text: 'Facebook',
                                             ),

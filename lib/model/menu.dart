@@ -234,7 +234,7 @@ class menuItemWedget extends State<MenuItemWedget> {
                                         children: [
                                           SizedBox(height: 12,),
 //                                Text("SHAYA", style: TextStyle(color: Colors.white, fontSize: 19, fontStyle: FontStyle.italic),),
-                                          Text(item.displayname, style: TextStyle(color: Colors.white, fontSize: 16),),
+                                          Text(item.displayname, style: TextStyle(color: Colors.white, fontSize: 15),),
                                           SizedBox(height: 12,),
                                         ],
                                       ),
@@ -285,7 +285,7 @@ class menuItemWedget extends State<MenuItemWedget> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         SizedBox(height: 12,),
-                                        Text("My Transactions", style: TextStyle(color: Colors.white, fontSize: 16),),
+                                        Text("My Transactions", style: TextStyle(color: Colors.white, fontSize: 15),),
                                         SizedBox(height: 12,),
                                       ],
                                     ),
@@ -335,7 +335,7 @@ class menuItemWedget extends State<MenuItemWedget> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         SizedBox(height: 12,),
-                                        Text("My Installment", style: TextStyle(color: Colors.white, fontSize: 16),),
+                                        Text("My Installment", style: TextStyle(color: Colors.white, fontSize: 15),),
                                         SizedBox(height: 12,),
                                       ],
                                     ),

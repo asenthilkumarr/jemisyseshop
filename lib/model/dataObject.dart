@@ -5,13 +5,24 @@ class Voucher {
   double voucherValue;
   String remarks;
   bool isSelected;
-  Voucher({this.refNo, this.voucherValue, this.remarks, this.isSelected});
+  String voucherNo;
+  String voucherName;
+  String voucherType;
+  String status;
+  DateTime expiryDate;
+  Voucher({this.refNo, this.voucherValue, this.remarks, this.isSelected,
+    this.voucherNo, this.voucherName, this.voucherType, this.status, this.expiryDate});
   factory Voucher.fromData(Map<String, dynamic> json){
     return Voucher(
-      refNo: json['refNo'],
-      voucherValue: double.parse(json['voucherValue'].toString()),
-      remarks: json['remarks'],
-      isSelected: false
+        refNo: json['refNo'],
+        voucherValue: double.parse(json['voucherValue'].toString()),
+        remarks: json['remarks'],
+        voucherNo: json['voucherNo'],
+        voucherName: json['voucherName'],
+        voucherType: json['voucherType'],
+        status: json['status'],
+        //expiryDate: json['expiryDate'].toString() != "0001-01-01T00:00:00" ? DateTime.parse(json['expiryDate']) : null,
+        isSelected: false
     );
   }
 }
@@ -869,7 +880,6 @@ class SendEmail {
     );
   }
   Map<String, dynamic> toParam() =>{
-
     'storeCode': storeCode,
     'docno':docno,
     'macid':macid,
@@ -877,7 +887,6 @@ class SendEmail {
     'doctype':doctype,
     'vipname':vipname,
     'userid':userid,
-
   };
 }
 class RadioButtonListValue {
@@ -947,5 +956,177 @@ class FCMParam {
     'scheduledTime':scheduledTime,
     'scheduledTitle':scheduledTitle,
     'scheduledBody':scheduledBody
+  };
+}
+
+class Messages {
+  int iD;
+  int parentID;
+  String fromUID;
+  String fromEmail;
+  String toUID;
+  String toEmail;
+  String message;
+  String subject;
+  String messageType;
+  String mode;
+  int status;
+  String errorMessage;
+
+  Messages({ this.iD, this.parentID, this.fromUID, this.fromEmail, this.toUID, this.toEmail, this.message, this.subject,
+    this.messageType, this.mode, this.status, this.errorMessage});
+
+  Map<String, dynamic> toParam() =>{
+    'iD':iD,
+    'fromUID':fromUID,
+    'fromEmail':fromEmail,
+    'toUID':toUID,
+    'toEmail':toEmail,
+    'message':message,
+    'subject':subject,
+    'messageType':messageType,
+    'mode':mode,
+  };
+}
+
+class AppointmentClass{
+  int iD;
+  String type;
+  String deviceID;
+  String eMail;
+  String firstName;
+  String preferredDateTime;
+  String scheduledDateTime;
+  String confirmedDateTime;
+  String salesPerson;
+  String remarks;
+  String status;
+  int calledCount;
+  String modifiedDate;
+  String returnStatus;
+  String mode;
+
+  AppointmentClass({this.type, this.deviceID, this.eMail, this.firstName, this.preferredDateTime, this.scheduledDateTime, this.confirmedDateTime,
+    this.salesPerson, this.remarks, this.status, this.calledCount, this.returnStatus,this.iD,this.mode});
+
+  factory AppointmentClass.fromJson(Map<String, dynamic> json){
+    return AppointmentClass(
+      iD: json['iD'],
+      type: json['type'],
+      deviceID: json['deviceID'],
+      eMail: json['eMail'],
+      firstName : json['firstName'],
+      preferredDateTime: json['preferredDateTime'],
+      scheduledDateTime: json['scheduledDateTime'].toString() != "0001-01-01T00:00:00" ?  json['scheduledDateTime'] : null,
+      confirmedDateTime: json['confirmedDateTime'].toString() != "0001-01-01T00:00:00" ?  json['confirmedDateTime'] : null,
+      salesPerson: json['salesPerson'],
+      remarks:json['remarks'],
+      status: json['status'],
+      // calledCount: json['calledCount'],
+      //modifiedDate: json['modifiedDate']
+    );
+  }
+
+  Map<String, dynamic> toParam() =>{
+    'iD':iD,
+    'type':type,
+    'deviceID':deviceID,
+    'eMail':eMail,
+    'preferredDateTime':preferredDateTime,
+    'scheduledDateTime':scheduledDateTime,
+    'confirmedDateTime':confirmedDateTime,
+    'salesPerson':salesPerson,
+    'remarks':remarks,
+    'status':status,
+    'mode':mode
+  };
+}
+
+class UpdateAppointmentClass{
+  int iD;
+  String type;
+  String deviceID;
+  String eMail;
+  String firstName;
+  String preferredDateTime;
+  String scheduledDateTime;
+  String confirmedDateTime;
+  String salesPerson;
+  String remarks;
+  String status;
+  String returnStatus;
+  String mode;
+
+  UpdateAppointmentClass({this.iD,this.type, this.deviceID, this.eMail, this.firstName, this.preferredDateTime, this.scheduledDateTime, this.confirmedDateTime,
+    this.salesPerson, this.remarks, this.status,this.mode,this.returnStatus});
+
+  factory UpdateAppointmentClass.fromJson(Map<String, dynamic> json){
+    return UpdateAppointmentClass(
+      returnStatus: json['returnStatus'],
+    );
+  }
+  Map<String, dynamic> toParam() =>{
+    'iD':iD,
+    'type':type,
+    'deviceID':deviceID,
+    'eMail':eMail,
+    'preferredDateTime':preferredDateTime.toString() != "0001-01-01T00:00:00" ? preferredDateTime : null,
+    'scheduledDateTime':scheduledDateTime.toString() != "0001-01-01T00:00:00" ? scheduledDateTime : null,
+    'confirmedDateTime':confirmedDateTime.toString() != "0001-01-01T00:00:00" ? confirmedDateTime : null,
+    'salesPerson':salesPerson,
+    'remarks':remarks,
+    'status':status,
+    'mode':mode
+  };
+}
+
+class GetMailContent{
+  int iD;
+  String fromUID;
+  String fromEmail;
+  String toUID;
+  String toEmail;
+  String subject;
+  String message;
+  String messageType;
+  String mode;
+  int status;
+  String value;
+  String returnStatus;
+  String errorMessage;
+  int parentID;
+  String connectionString;
+  String createdDate;
+  String imageFileName;
+
+  GetMailContent({this.iD,this.fromUID,this.fromEmail,this.toUID,this.toEmail,this.subject,
+    this.message,this.messageType,this.mode,this.status,this.value,this.returnStatus,
+    this.errorMessage,this.parentID,this.connectionString,this.createdDate,this.imageFileName});
+
+  factory GetMailContent.fromJson(Map<String, dynamic> json){
+    return GetMailContent(
+      iD: json['iD'],
+      fromUID: json['fromUID'].toString(),
+      fromEmail: json['fromEmail'].toString(),
+      toUID: json['toUID'].toString(),
+      toEmail: json['toEmail'].toString(),
+      subject: json['subject'].toString(),
+      message: json['message'].toString(),
+      messageType: json['messageType'].toString(),
+      mode: json['mode'].toString(),
+      status: json['status'],
+      value: json['value'].toString(),
+      returnStatus: json['returnStatus'].toString(),
+      errorMessage: json['errorMessage'].toString(),
+      parentID: json['parentID'],
+      connectionString: json['connectionString'].toString(),
+      createdDate: json['createdDate'],
+      imageFileName: json['imageFileName'].toString(),
+    );
+  }
+  Map<String, dynamic> toParam() =>{
+    'fromUID':fromUID,
+    'toEmail':toEmail,
+    'createdDate':createdDate,
   };
 }

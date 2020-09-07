@@ -310,6 +310,24 @@ class DataService {
       return result;
     }
   }
+  Future<List<Product>> getsSQLProduct(String sSQL) async {
+    List<Product> result = [];
+    http.Response response = await http.post(
+        apiurl + "Product/GetsSQLProduct?sSQL="+sSQL,
+        headers: userheaders,
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      for (Map i in data) {
+        var iRow = Product.fromJson(i);
+        result.add(iRow);
+      }
+      return result;
+    }
+    else {
+      return result;
+    }
+  }
   Future<List<Product>> getProductDetails(ProductParam param) async {
     List<Product> result = [];
     http.Response response = await http.post(
@@ -482,6 +500,22 @@ class DataService {
         body: json.encode(param.toParam())
     );
     if (response.statusCode == 200) {
+      if (mode == "I") {
+        FCMParam param = FCMParam();
+        param.to = "/topics/" + udid;
+        param.title = "Welcome Voucher";
+        param.body = "Dear " + userName + ", Welcome a board! We give you free voucher, Please use it before expires";
+        param.isScheduled = "no";
+        //param.image = "http://51.79.160.233/NotificationImages/voucher.jpg";
+        param.tag = "voucher";
+        param.click_action = "FLUTTER_NOTIFICATION_CLICK";
+        param.time_to_live = 300;
+        param.color = "#FF0000";
+        param.screen = "voucher";
+        param.restricted_package_name = "com.jemisys.jemisyseshop";
+        print(param.toString());
+        await FCMSendPushNotifications(param);
+      }
       result = "OK";
       return result;
     }
@@ -608,4 +642,82 @@ class DataService {
     }
   }
 
+  Future<String> UpdateMessage(Messages param) async {
+    String result;
+    http.Response response = await http.post(
+        notificationsUrl + "Message/UpdateMessage",
+        headers: userheaders,
+        body: json.encode(param.toParam())
+    );
+    if (response.statusCode == 200) {
+      result = "OK";
+      return result;
+    }
+    else {
+      return result;
+      //throw Exception('Failed to load album');
+    }
+  }
+
+  Future<List<AppointmentClass>> GetAppointment(String status, String eMail) async {
+    List<AppointmentClass> result = [];
+    http.Response response = await http.post(
+      apiurl + "Appointment/GetAppointment?status=" + status + "eMail=" + eMail,
+      headers: userheaders,
+      //body: json.encode(param.toParam())
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      for (Map i in data) {
+        var iRow = AppointmentClass.fromJson(i);
+        result.add(iRow);
+      }
+      return result;
+    }
+    else {
+      return result;
+      //throw Exception('Failed to load album');
+    }
+  }
+
+  Future<UpdateAppointmentClass> UpdateAppointmentFix(UpdateAppointmentClass param) async {
+    UpdateAppointmentClass result;
+    http.Response response = await http.post(
+      apiurl + "Appointment/UpdateAppointment",
+      headers: userheaders,
+      body: json.encode(param.toParam()),
+    );
+    // print('tttttttttttttttttttttteeeeeeeeeeeeeeee');
+    // print(json.encode(param.toParam()));
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      result = UpdateAppointmentClass.fromJson(data);
+      return result;
+    }
+    else {
+      return result;
+      //throw Exception('Failed to load album');
+    }
+  }
+
+  Future<List<GetMailContent>> GetMessage(GetMailContent param) async {
+    List<GetMailContent> result = [];
+    http.Response response = await http.post(
+        notificationsUrl + "Message/GetMessage",
+        headers: userheaders,
+        body: json.encode(param.toParam())
+      //body: sparam
+    );
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      for (Map i in data) {
+        var iRow = GetMailContent.fromJson(i);
+        result.add(iRow);
+      }
+      return result;
+    }
+    else {
+      return result;
+    }
+  }
 }

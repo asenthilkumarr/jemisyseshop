@@ -38,7 +38,10 @@ import 'package:jemisyseshop/widget/offerTagPainter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:jemisyseshop/utilities/notificationHelper.dart';
 
+import 'Message.dart';
+
 class MasterScreen extends StatelessWidget {
+
   // This widget is the root of your application.
   final int currentIndex;
   MasterScreen({Key key, this.currentIndex}) : super(key: key);
@@ -87,6 +90,7 @@ class MasterScreen extends StatelessWidget {
 }
 
 class MasterPage extends StatefulWidget{
+  static const String route = '/';
   final int currentIndex;
   MasterPage({Key key, this.currentIndex}) : super(key: key);
 
@@ -129,7 +133,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   //Country2 sCountry2;
   int menuSelected = 0;
   int submenuSelectedIndex = 0;
-  bool showCartNotification = false;
+  bool showCartNotification = true;
   CarouselController buttonCarouselController = CarouselController();
 
   static const snackBarDuration = Duration(seconds: 3);
@@ -194,7 +198,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
         isLogin = true;
         var cartdt = await dataService.getCart(userID, "S");
         cartCount = cartdt.length;
-        if (showCartNotification == true) LoadCart(cartdt);
+        if (cartdt.length > 0) LoadCart(cartdt);
         setState(() {
 
         });
@@ -828,7 +832,6 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
 
     return itemCount;
   }
-
 
   Widget TopSellingListitem(DesignCode item) {
 
@@ -1741,7 +1744,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     firebaseMessaging.configure(
         onMessage: (Map<String, dynamic> message) async {
           notification = message['notification'];
-          notificationData = message['data'];
+          notificationData = message['data'] ?? message;
           String buttonTitle = "OK";
           if (notificationData['screen'] != null) {
             if (notificationData['screen'] == "videoCall")
@@ -1817,7 +1820,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
   }
 
   void _serialiseAndNavigate(Map<String, dynamic> message) {
-    var notificationData = message['data'];
+    var notificationData = message['data'] ?? message;
     if (notificationData["isScheduled"] == "yes") {
       _scheduleNotification(message);
       Dialogs.AlertMessage(context, "Appointment confirmed and reminder added");
@@ -1833,19 +1836,22 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
               builder: (context) => VoucherDetailPage()),);
       }
       else if (notificationData['screen'] == 'videoCall') {
-        hideGoldRate = true;
-        Commonfn.handleCameraAndMic();
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CallPage(
-              channelName: notificationData['channelName'],
-              role: ClientRole.Broadcaster,
-            ),),
-        );
+        onJoin(notificationData['channelName']);
       }
       // If there's no view it'll just open the app on the first view
     }
+  }
+
+  Future<void> onJoin(String channelName) async {
+    await Commonfn.handleCameraAndMic();
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CallPage(
+          channelName: channelName,
+          role: ClientRole.Broadcaster,
+        ),),
+    );
   }
 
   @override
@@ -1881,6 +1887,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
     return MaterialApp(
       title: "Home",
       theme: MasterScreen.themeData(context),
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         key: scaffoldKey,
         drawer: Container(
@@ -1910,7 +1917,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
 
             children: <Widget>[
               SizedBox(
-                width: 50.0,
+                width: 70.0,
                 child: FlatButton(
                   color: Colors.white,
                   padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
@@ -1929,10 +1936,10 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                       Padding(
                         padding: const EdgeInsets.all(0.0),
                         child: Text(
-                          "Home",
+                          "Try @ Home",
                           style: TextStyle(
                               color: Color(0xFF656665),
-                              fontSize: 9
+                              fontSize: 8
                             //fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -1940,19 +1947,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                     ],
                   ),
                   onPressed: () async {
-                    menuSelected = 0;
-                    _tabControllerFilter.index = 0;
-                    _tabController.index = 0;
-                    _filter = "ALL";
-                    await getProduct();
-                    _scrollController.animateTo(
-                      0.0,
-                      curve: Curves.easeOut,
-                      duration: const Duration(milliseconds: 300),
-                    );
-                    setState(() {
-
-                    });
+                    _group_onTap("Home Try-On", context);
                   },
                 ),
               ),
@@ -2001,7 +1996,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                           "Contact Us",
                           style: TextStyle(
                               color: Color(0xFF656665),
-                              fontSize: 9
+                              fontSize: 8
                             //fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -2017,7 +2012,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                 ),
               ),
               SizedBox(
-                width: 70.0,
+                width: 50.0,
                 child: FlatButton(
                   color: Colors.white,
                   padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
@@ -2027,7 +2022,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(2.0, 0.0, 2.0, 0.0),
                         child: Icon(
-                          Icons.home,
+                          Icons.mail,
                           color: Colors.grey,
                           size: 24.0,
                         ),
@@ -2036,10 +2031,10 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                       Padding(
                         padding: const EdgeInsets.all(0.0),
                         child: Text(
-                          "Home Try-On",
+                          "Inbox",
                           style: TextStyle(
                               color: Color(0xFF656665),
-                              fontSize: 9
+                              fontSize: 8
                             //fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -2047,7 +2042,18 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                     ],
                   ),
                   onPressed: () {
-                    _group_onTap("Home Try-On", context);
+                    if (isLogin == false) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LoginPage()),);
+                    }
+                    else{
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => MessagePage())
+                      );
+                    }
                   },
                 ),
               ),
@@ -2074,7 +2080,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                         "Login" : "Account",
                           style: TextStyle(
                               color: Color(0xFF656665),
-                              fontSize: 9
+                              fontSize: 8
                             //fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -2124,7 +2130,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
                           "More",
                           style: TextStyle(
                               color: Color(0xFF656665),
-                              fontSize: 9
+                              fontSize: 8
                             //fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -2163,6 +2169,7 @@ class _masterPage extends State<MasterPage> with TickerProviderStateMixin {
 }
 
 class MasterPage2 extends StatefulWidget{
+  static const String route = '/';
   final int currentIndex;
   MasterPage2({Key key, this.currentIndex}) : super(key: key);
   @override
@@ -2203,7 +2210,7 @@ class _masterPage2 extends State<MasterPage2> with TickerProviderStateMixin {
   int menuSelected = 0,
       _bannercurrent = 0;
   int submenuSelectedIndex = 0;
-  bool showCartNotification = false;
+  bool showCartNotification = true;
   CarouselController buttonCarouselController = CarouselController();
 
   static const snackBarDuration = Duration(seconds: 3);
@@ -2272,7 +2279,7 @@ class _masterPage2 extends State<MasterPage2> with TickerProviderStateMixin {
         isLogin = true;
         var cartdt = await dataService.getCart(userID, "S");
         cartCount = cartdt.length;
-        if (showCartNotification == true) LoadCart(cartdt);
+        if (cartdt.length > 0) LoadCart(cartdt);
         setState(() {
 
         });
@@ -2645,6 +2652,41 @@ class _masterPage2 extends State<MasterPage2> with TickerProviderStateMixin {
     Navigator.of(_keyLoader.currentContext, rootNavigator: true)
         .pop(); //close the dialoge
     if (productdetail.length > 1) {
+      productlistParam arg = new productlistParam();
+      arg.title = productType;
+      arg.productdt = productdetail;
+      // Navigator.pushNamed(context, ProductListPage2.route+"?category="+ productType, arguments: arg);//, arguments: arg
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                ProductListPage(productdt: productdetail, title: productType,),)
+      );
+    }
+    else if (productdetail.length > 0) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) =>
+              ProductDetailPage(product: productdetail[0],
+                title: productdetail[0].designCode,),)
+      );
+    }
+//    else {
+//      Navigator.push(
+//          context,
+//          MaterialPageRoute(builder: (context) =>
+//              ProductDetailPage(product: item,
+//                title: item.designCode,),)
+//      );
+//    }
+  }
+  Future<void> getsSQLProducts(String sSQL, String productType, BuildContext context) async {
+    Dialogs.showLoadingDialog(context, _keyLoader); //invoking go
+    var productdetail = await dataService.getsSQLProduct(sSQL);
+    Navigator.of(_keyLoader.currentContext, rootNavigator: true)
+        .pop(); //close the dialoge
+    if (productdetail.length > 1) {
+      // Navigator.pushNamed(context, ProductListPage2.route+"?category="+ productType);//, arguments: arg
       Navigator.push(
           context,
           MaterialPageRoute(
@@ -2713,95 +2755,98 @@ class _masterPage2 extends State<MasterPage2> with TickerProviderStateMixin {
   }
 
   Widget BannerImage(BuildContext context) {
-    double _height = 70;
+    double _height = 250;
 
     if (screenWidth > 1600)
-      _height = 300;
+      _height = 600;
     else if (screenWidth >= 1300)
-      _height = 200;
+      _height = 550;
     else if (screenWidth >= 1000)
-      _height = 200;
+      _height = 500;
     else if (screenWidth >= 700)
-      _height = 200;
+      _height = 300;
     else if (screenWidth >= 500)
-      _height = 200;
+      _height = 250;
     else if (screenWidth >= 400)
-      _height = 120;
-    _height = 250;
+      _height = 250;
     if (dDt.length > 0) {
       return new Container(
         child: Column(
           children: [
-            Stack(
-                alignment: Alignment.center,
-                children: [
-
-                  CarouselSlider(
-                    options: CarouselOptions(
-                        autoPlay: true,
-                        height: _height,
-                        aspectRatio: 1,
-                        //16 / 9,
-                        viewportFraction: 1,
-                        //0.8,
-                        initialPage: 0,
-                        enableInfiniteScroll: true,
-                        reverse: false,
-                        autoPlayInterval: Duration(seconds: 8),
-                        //autoPlayAnimationDuration: Duration(milliseconds: 0),
-                        //autoPlayCurve: Curves.fastOutSlowIn,
-                        enlargeCenterPage: true,
+            InkWell(
+              onTap:() {
+                getsSQLProducts(dDt[_bannercurrent].procedureName, dDt[_bannercurrent].title, context);
+              },
+              child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    CarouselSlider(
+                      options: CarouselOptions(
+                          autoPlay: true,
+                          height: _height,
+                          aspectRatio: 1,
+                          //16 / 9,
+                          viewportFraction: 1,
+                          //0.8,
+                          initialPage: 0,
+                          enableInfiniteScroll: true,
+                          reverse: false,
+                          autoPlayInterval: Duration(seconds: 8),
+                          //autoPlayAnimationDuration: Duration(milliseconds: 0),
+                          //autoPlayCurve: Curves.fastOutSlowIn,
+                          enlargeCenterPage: true,
 //            onPageChanged: callbackFunction,
-                        scrollDirection: Axis.horizontal,
-                        onPageChanged: (index, reason) {
-                          setState(() {
-                            _bannercurrent = index;
-                          });
-                        }
-                    ),
-                    items: dDt.map((item) =>
-                        Container(
-                          child: Image.network(item.imageFileName2,
-                            fit: !kIsWeb ? BoxFit.fill : BoxFit.fill,
-                            //height: 170,
-                            //width: screenWidth - 0,
-                          ),
-                        )
-                    ).toList(),
-                    carouselController: _controller,
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: () => _controller.nextPage(),
-                        child: Icon(
-                          Icons.arrow_forward_ios,
-                          color: Color(0xFFc4cfd4),
-                          size: 30.0,
-                        ),
+                          scrollDirection: Axis.horizontal,
+                          onPageChanged: (index, reason) {
+                            setState(() {
+                              _bannercurrent = index;
+                            });
+                          },
                       ),
+                      items: dDt.map((item) =>
+                          Container(
+                            child: Image.network(item.imageFileName2,
+                              fit: !kIsWeb ? BoxFit.fill : BoxFit.fill,
+                              //height: 170,
+                              //width: screenWidth - 0,
+                            ),
+                          )
+                      ).toList(),
+                      carouselController: _controller,
                     ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: () => _controller.previousPage(),
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () => _controller.nextPage(),
                           child: Icon(
-                            Icons.arrow_back_ios,
+                            Icons.arrow_forward_ios,
                             color: Color(0xFFc4cfd4),
                             size: 30.0,
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ]
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () => _controller.previousPage(),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Icon(
+                              Icons.arrow_back_ios,
+                              color: Color(0xFFc4cfd4),
+                              size: 30.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ]
+              ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -2956,25 +3001,24 @@ class _masterPage2 extends State<MasterPage2> with TickerProviderStateMixin {
   }
 
   int GridItemCount(double tscreenwidth) {
-    int itemCount = 0,
-        a = 0;
+    int itemCount = 1;
     tscreenwidth = tscreenwidth - (tscreenwidth - screenWidth);
     if (tscreenwidth <= 550)
+      itemCount = 1;
+    else if (tscreenwidth <= 800)
       itemCount = 2;
-    else if (tscreenwidth <= 750)
-      itemCount = 3;
-    else if (tscreenwidth <= 850)
-      itemCount = 4;
     else if (tscreenwidth <= 1050)
+      itemCount = 3;
+    else if (tscreenwidth <= 1150)
+      itemCount = 4;
+    else if (tscreenwidth <= 1300)
       itemCount = 5;
-    else if (tscreenwidth <= 1200)
-      itemCount = 6;
     else if (tscreenwidth <= 1450)
-      itemCount = 7;
+      itemCount = 6;
     else if (tscreenwidth <= 1600)
-      itemCount = 8;
+      itemCount = 7;
     else
-      itemCount = 10;
+      itemCount = 8;
 
     return itemCount;
   }
@@ -3203,18 +3247,11 @@ class _masterPage2 extends State<MasterPage2> with TickerProviderStateMixin {
   }
 
   Widget CategoryGriditem(Group item) {
-    int count = GridItemCount(screenWidth);
+    // int count = GridItemCount(screenWidth);
     return Container(
       //width: screenWidth / count - 4,
       //color: Colors.grey,
         child: Container(
-          // decoration: BoxDecoration(
-          //   color: Colors.white,
-          //   border: Border.all(
-          //     color: Color(0xFFe2e8ec),//e2e8ec
-          //     width: 1,
-          //   ),
-          // ),
             child: GestureDetector(
                 onTap: () {
                   _group_onTap(item.groupName, context);
@@ -3232,7 +3269,6 @@ class _masterPage2 extends State<MasterPage2> with TickerProviderStateMixin {
                             child: Align(
                               alignment: FractionalOffset.center,
                               child: Image.network(item.imageFileName2,
-                                // fit: !kIsWeb ? BoxFit.fill : BoxFit.fill,
                               ),
                               // child: Image(
                               //   image: CachedNetworkImageProvider(
@@ -3272,6 +3308,88 @@ class _masterPage2 extends State<MasterPage2> with TickerProviderStateMixin {
                                       Text("SHOW ALL " + item.groupName + " >>",
                                         style: TextStyle(fontSize: 12),),
                                       Spacer(),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 25,),
+                        ],
+                      ),
+
+                    ]
+                ))
+        )
+    );
+  }
+  Widget TopCategory(String tcategory) {
+    int count = GridItemCount(screenWidth);
+    return Container(
+      //width: screenWidth / count - 4,
+      //color: Colors.grey,
+        child: Container(
+            child: GestureDetector(
+                onTap: () {
+                  if(tcategory=="TOP SELLERS")
+                    getsSQLProducts("EXEC app_GetProductDetails 'TOP SELLERS', '', '', '', 1, ''", "TOP SELLERS", context);
+                  else if(tcategory=="NEW ARRIVAL")
+                    getsSQLProducts("EXEC app_GetProductDetails 'NEW ARRIVAL', '', '', '', 1, ''", "NEW ARRIVAL", context);
+                  else
+                    getsSQLProducts("EXEC app_GetProductDetails 'SALE', '', '', '', 1, ''", "SALE", context);
+                },
+                child: Stack(
+                    children: <Widget>[
+                      Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 05.0,
+                                right: 05.0,
+                                bottom: 00.0,
+                                top: 05.0),
+                            child: Align(
+                              alignment: FractionalOffset.center,
+                              child: Image.network(tcategory=="TOP SELLERS" ? imageUrl + "TopSellers.jpg" :
+                              tcategory=="NEW ARRIVAL" ? imageUrl + "NewArrival.jpg"
+                                  : imageUrl + "Sale.jpg",
+                              ),
+                              // child: Image(
+                              //   image: CachedNetworkImageProvider(
+                              //     item.imageFileName2,
+                              //   ),
+                              //   fit: BoxFit.fitWidth,
+                              // ),
+//                  child: Image.network(
+//                    item.imageUrl, fit: BoxFit.fitHeight,),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 05.0,
+                                right: 05.0,
+                                top: 8.0,
+                                bottom: 8.0),
+                            child: Container(
+                              alignment: FractionalOffset.bottomCenter,
+                              //color: listbgColor,
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(tcategory, style: TextStyle(color: Colors.redAccent,
+                                          fontWeight: FontWeight.bold),),
+                                    ],
+                                  ),
+                                  SizedBox(height: 8,),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text("SHOW ALL"+ " >>",
+                                        style: TextStyle(fontSize: 12),),
                                     ],
                                   ),
                                 ],
@@ -3361,7 +3479,6 @@ class _masterPage2 extends State<MasterPage2> with TickerProviderStateMixin {
       },
     );
   }
-
   Widget mainContainer(int itemCount, double itemheight, double screenwidth) {
     if (menuSelected == 0) {
       return Flexible(
@@ -3443,6 +3560,7 @@ class _masterPage2 extends State<MasterPage2> with TickerProviderStateMixin {
   }
 
   Widget homeWidget(int itemCount, double itemheight, double screenwidth) {
+    int count = GridItemCount(screenWidth);
     return Container(
       child: CustomScrollView(
         controller: _scrollController,
@@ -3457,14 +3575,34 @@ class _masterPage2 extends State<MasterPage2> with TickerProviderStateMixin {
           SliverToBoxAdapter(
             child: SizedBox(height: 10,),
           ),
-          SliverList(
+          SliverGrid(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: count),
               delegate: SliverChildListDelegate(
                   [
                     for(var i in groupdt)
-                      CategoryGriditem(i)
+                      Container(
+                          constraints: BoxConstraints(minWidth: 100, maxWidth: 300),
+                          child: CategoryGriditem(i)),
+                    TopCategory("NEW ARRIVAL"),
+                    TopCategory("SALE"),
+                    TopCategory("TOP SELLERS"),
                   ]
               )
           ),
+
+          // SliverList(
+          //     delegate: SliverChildListDelegate(
+          //         [
+          //           for(var i in groupdt)
+          //             Container(
+          //                 constraints: BoxConstraints(minWidth: 100, maxWidth: 300),
+          //                 child: CategoryGriditem(i)),
+          //           TopCategory("NEW ARRIVAL"),
+          //           TopCategory("SALE"),
+          //           TopCategory("TOP SELLERS"),
+          //         ]
+          //     )
+          // ),
           SliverToBoxAdapter(
             child: SizedBox(height: 20,),
           ),
@@ -3786,7 +3924,7 @@ class _masterPage2 extends State<MasterPage2> with TickerProviderStateMixin {
     firebaseMessaging.configure(
         onMessage: (Map<String, dynamic> message) async {
           notification = message['notification'];
-          notificationData = message['data'];
+          notificationData = message['data'] ?? message;
           String buttonTitle = "OK";
           if (notificationData['screen'] != null) {
             if (notificationData['screen'] == "videoCall")
@@ -3862,7 +4000,7 @@ class _masterPage2 extends State<MasterPage2> with TickerProviderStateMixin {
   }
 
   void _serialiseAndNavigate(Map<String, dynamic> message) {
-    var notificationData = message['data'];
+    var notificationData = message['data'] ?? message;
     if (notificationData["isScheduled"] == "yes") {
       _scheduleNotification(message);
       Dialogs.AlertMessage(context, "Appointment confirmed and reminder added");
@@ -3878,19 +4016,22 @@ class _masterPage2 extends State<MasterPage2> with TickerProviderStateMixin {
               builder: (context) => VoucherDetailPage()),);
       }
       else if (notificationData['screen'] == 'videoCall') {
-        hideGoldRate = true;
-        Commonfn.handleCameraAndMic();
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CallPage(
-              channelName: notificationData['channelName'],
-              role: ClientRole.Broadcaster,
-            ),),
-        );
+        onJoin(notificationData['channelName']);
       }
       // If there's no view it'll just open the app on the first view
     }
+  }
+
+  Future<void> onJoin(String channelName) async {
+    await Commonfn.handleCameraAndMic();
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CallPage(
+          channelName: channelName,
+          role: ClientRole.Broadcaster,
+        ),),
+    );
   }
 
   Future<void> _launchInBrowser(String url) async {
@@ -3932,15 +4073,14 @@ class _masterPage2 extends State<MasterPage2> with TickerProviderStateMixin {
       screenWidth = cfobj.ScreenWidth(screenSize.width);
     }
 
-
     int itemCount = GridItemCount(screenWidth);
     double itemheight = GridItemHeight(screenSize.height, screenWidth);
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: "Home",
-      theme: MasterScreen.themeData(context),
-      home: Scaffold(
+    // return MaterialApp(
+    //   debugShowCheckedModeBanner: false,
+    //   title: "Home",
+    //   theme: MasterScreen.themeData(context),
+    return Scaffold(
         key: scaffoldKey,
         drawer: Container(
             width: 220,
@@ -3953,7 +4093,7 @@ class _masterPage2 extends State<MasterPage2> with TickerProviderStateMixin {
               child: Container(
                   color: Colors.white,
                   child: Column(
-                    children: [
+                    children: <Widget> [
                       Container(
                           decoration: BoxDecoration(
                               gradient: LinearGradient(
@@ -3971,7 +4111,6 @@ class _masterPage2 extends State<MasterPage2> with TickerProviderStateMixin {
                             ],
                           )
                       ),
-
                       mainContainer(itemCount, itemheight, screenWidth),
                     ],
                   )
@@ -3986,7 +4125,7 @@ class _masterPage2 extends State<MasterPage2> with TickerProviderStateMixin {
 
             children: <Widget>[
               SizedBox(
-                width: 50.0,
+                width: 70.0,
                 child: FlatButton(
                   color: Colors.white,
                   padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
@@ -4005,10 +4144,10 @@ class _masterPage2 extends State<MasterPage2> with TickerProviderStateMixin {
                       Padding(
                         padding: const EdgeInsets.all(0.0),
                         child: Text(
-                          "Home",
+                          "Try @ Home",
                           style: TextStyle(
                               color: Color(0xFF656665),
-                              fontSize: 9
+                              fontSize: 8
                             //fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -4016,18 +4155,7 @@ class _masterPage2 extends State<MasterPage2> with TickerProviderStateMixin {
                     ],
                   ),
                   onPressed: () async {
-                    menuSelected = 0;
-                    _tabControllerFilter.index = 0;
-                    _tabController.index = 0;
-                    _filter = "ALL";
-                    await getProduct();
-                    _scrollController.animateTo(0.0,
-                      curve: Curves.easeOut,
-                      duration: const Duration(milliseconds: 300),
-                    );
-                    setState(() {
-
-                    });
+                    _group_onTap("Home Try-On", context);
                   },
                 ),
               ),
@@ -4076,7 +4204,7 @@ class _masterPage2 extends State<MasterPage2> with TickerProviderStateMixin {
                           "Contact Us",
                           style: TextStyle(
                               color: Color(0xFF656665),
-                              fontSize: 9
+                              fontSize: 8
                             //fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -4092,7 +4220,7 @@ class _masterPage2 extends State<MasterPage2> with TickerProviderStateMixin {
                 ),
               ),
               SizedBox(
-                width: 70.0,
+                width: 50.0,
                 child: FlatButton(
                   color: Colors.white,
                   padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
@@ -4102,7 +4230,7 @@ class _masterPage2 extends State<MasterPage2> with TickerProviderStateMixin {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(2.0, 0.0, 2.0, 0.0),
                         child: Icon(
-                          Icons.home,
+                          Icons.mail,
                           color: Colors.grey,
                           size: 24.0,
                         ),
@@ -4111,10 +4239,10 @@ class _masterPage2 extends State<MasterPage2> with TickerProviderStateMixin {
                       Padding(
                         padding: const EdgeInsets.all(0.0),
                         child: Text(
-                          "Home Try-On",
+                          "Inbox",
                           style: TextStyle(
                               color: Color(0xFF656665),
-                              fontSize: 9
+                              fontSize: 8
                             //fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -4122,7 +4250,18 @@ class _masterPage2 extends State<MasterPage2> with TickerProviderStateMixin {
                     ],
                   ),
                   onPressed: () {
-                    _group_onTap("Home Try-On", context);
+                    if (isLogin == false) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LoginPage()),);
+                    }
+                    else{
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => MessagePage())
+                      );
+                    }
                   },
                 ),
               ),
@@ -4149,7 +4288,7 @@ class _masterPage2 extends State<MasterPage2> with TickerProviderStateMixin {
                         "Login" : "Account",
                           style: TextStyle(
                               color: Color(0xFF656665),
-                              fontSize: 9
+                              fontSize: 8
                             //fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -4200,7 +4339,7 @@ class _masterPage2 extends State<MasterPage2> with TickerProviderStateMixin {
                           "More",
                           style: TextStyle(
                               color: Color(0xFF656665),
-                              fontSize: 9
+                              fontSize: 8
                             //fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -4233,8 +4372,8 @@ class _masterPage2 extends State<MasterPage2> with TickerProviderStateMixin {
               },
               label: Text('Top'),
             )),
-      ),
-    );
+      );
+    //);
   }
 }
 

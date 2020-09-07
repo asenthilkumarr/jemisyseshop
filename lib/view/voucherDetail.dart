@@ -1,4 +1,3 @@
-
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
@@ -6,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:jemisyseshop/data/dataService.dart';
 import 'package:jemisyseshop/model/common.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:jemisyseshop/model/dataObject.dart';
 import 'package:jemisyseshop/style.dart';
 
 class VoucherDetailPage extends StatefulWidget {
@@ -18,41 +19,9 @@ class VoucherDetailPage extends StatefulWidget {
 class _VoucherDetailPageState extends State<VoucherDetailPage> {
   ScrollController _scrollController2 = new ScrollController();
   Commonfn cfobj = Commonfn();
+  List<Voucher> itemDt = [];
+  DataService dataService = new DataService();
 
-  List itemDt = [
-    {
-      'voucherNo': 'EV000001',
-      'expiryDate': '31-08-2020',
-      'voucherValue': 100,
-      'voucherType': 'Gift Voucher',
-      'status': 'NEW',
-      'type': 'GV',
-    },
-    {
-      'voucherNo': 'BV000001',
-      'expiryDate': '31-08-2020',
-      'voucherValue': 50,
-      'voucherType': 'BDay Voucher',
-      'status': 'NEW',
-      'type': 'BV'
-    },
-    {
-      'voucherNo': 'EV000003',
-      'expiryDate': '31-08-2020',
-      'voucherValue': 200,
-      'voucherType': 'Gift Voucher',
-      'status': 'REDEEMED',
-      'type': 'GV'
-    },
-    {
-      'voucherNo': 'WV000001',
-      'expiryDate': '08-31-2020',
-      'voucherValue': 88,
-      'voucherType': 'Welcome Voucher',
-      'status': 'NEW',
-      'type': 'WV'
-    }
-  ];
   final dateformat = DateFormat('yyyy/MM/dd');
   final fdatetime = new DateFormat('dd-MM-yyyy');
 
@@ -63,10 +32,10 @@ class _VoucherDetailPageState extends State<VoucherDetailPage> {
           alignment: Alignment.center,
           child: RichText(
             text: TextSpan(
-              text: '${data['voucherType']}',
+              text: '${data.voucherName}',
               style: TextStyle(
-                  fontWeight: FontWeight.bold, 
-                  color: '${data['type']}' == 'WV' ? Colors.green : '${data['type']}' == 'GV' ? Colors.blueAccent : Colors.redAccent, fontSize: 25),
+                  fontWeight: FontWeight.bold,
+                  color: '${data.voucherType}' == 'WV' ? Colors.green : '${data.voucherType}' == 'GV' ? Colors.blueAccent : Colors.redAccent, fontSize: 25),
             ),
           )
       ),
@@ -78,12 +47,12 @@ class _VoucherDetailPageState extends State<VoucherDetailPage> {
       alignment: Alignment.centerLeft,
       child: RichText(
         text: TextSpan(
-          text: '${data['voucherNo']}',
+          text: '${data.voucherNo}',
           style: TextStyle(
               fontWeight: FontWeight.bold, color: Colors.black, fontSize: 17),
           children: <TextSpan>[
             TextSpan(
-                text: '\n31-08-2020',
+                text: '\n${fdatetime.format(DateTime.parse(data.expiryDate))}',
                 style: TextStyle(
                     color: Colors.grey,
                     fontSize: 14,
@@ -102,7 +71,7 @@ class _VoucherDetailPageState extends State<VoucherDetailPage> {
           child: RichText(
               textAlign: TextAlign.right,
               text: TextSpan(
-                text: '${data['status']}',
+                text: '${data.status}',
                 style: TextStyle(
                     fontWeight: FontWeight.bold, color: Colors.orange, fontSize: 16),
               )
@@ -120,12 +89,12 @@ class _VoucherDetailPageState extends State<VoucherDetailPage> {
           children: <Widget>[
             RichText(
               text: TextSpan(
-                text: '${data['voucherNo']}',
+                text: '${data.voucherNo}',
                 style: TextStyle(
                     fontWeight: FontWeight.bold, color: Colors.black, fontSize: 17),
                 children: <TextSpan>[
                   TextSpan(
-                      text: '\n31-08-2020',
+                      text: '\n31-12-2020',
                       style: TextStyle(
                           color: Colors.grey,
                           fontSize: 14,
@@ -149,7 +118,7 @@ class _VoucherDetailPageState extends State<VoucherDetailPage> {
             RichText(
               textAlign: TextAlign.left,
               text: TextSpan(
-                text: '\n$currencysymbol${formatter2dec.format(data['voucherValue'])}',
+                text: '\n$currencysymbol${formatter2dec.format(data.voucherValue)}',
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 23,
@@ -162,12 +131,19 @@ class _VoucherDetailPageState extends State<VoucherDetailPage> {
     );
   }
 
+  Future<List<Voucher>> _fetchVoucherList() async {
+    itemDt = new List<Voucher>();
+    var dt = await dataService.getVouchers(userID);
+    setState(() {
+      itemDt = dt;
+    });
+    return dt;
+  }
+
   @override
   void initState() {
+    _fetchVoucherList();
     super.initState();
-    setState(() {
-      //_fetchData();
-    });
     _scrollController2 = ScrollController();
   }
 

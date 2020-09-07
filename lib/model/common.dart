@@ -18,6 +18,8 @@ final String apiurlERP = 'http://51.79.160.233/JEMiSyseShopAPI/api/';
 final String imageDefaultUrl = 'http://51.79.160.233/JEMiSyseShopImage/';
 final String emailapiurl = "http://51.79.160.233/SMSeMailAppsToolAPI/";
 final String notificationsUrl = "http://51.79.160.233/JEMiSysNotificationsAPI/api/";
+final String gNotificationImageURL = 'http://51.79.160.233/NotificationImages/';
+final String webURL = "http://51.79.160.233/JEMiSyseShopweb/#/";
 
 final String paymenturl = "http://51.79.160.233/JEMiSyseShopAPI/api/Payment";
 final String paymentBackurl = "http://51.79.160.233/JEMiSyseShopAPI/api/PaymentBack";
@@ -30,6 +32,7 @@ FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLoc
 NotificationAppLaunchDetails notificationAppLaunchDetails;
 String gProgramName = '';
 String gDeviceID = '';
+int gMessageID = 0;
 
 String imgFolderName = "";
 String imageUrl = "";
@@ -41,9 +44,11 @@ String userID = "";
 String userName = "";
 //String password = "";
 bool isLogin = false;
+bool isAdmin = false;
 String udid = "";
 String loginMethod = "L";
 int cartCount = 0;
+String gEmailAdmin = "asset@jemisys.com";
 Customer customerdata;
 
 /*

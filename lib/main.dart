@@ -3,15 +3,39 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:jemisyseshop/model/common.dart';
+import 'package:jemisyseshop/route/route_config.dart';
 import 'package:jemisyseshop/view/masterPage.dart';
 import 'package:flutter_udid/flutter_udid.dart';
 import 'data/dataService.dart';
 import 'model/dataObject.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
-void main() {
-  runApp(MaterialApp(
-      home: SplashScreen()));
+void main() async {
+  DataService dataService = DataService();
+  List<Setting> sDT = List<Setting>();
+  var dt = await dataService.getSetting();
+  if(dt.length>0){
+    appTitle = dt[0].appName;
+    currencysymbol = dt[0].currSymbol;
+    currencyCode = dt[0].currCode;
+    titMessage = dt[0].message;
+    fontName = dt[0].fontName;
+    isBackendJEMiSys = dt[0].isBackendJEMiSys;
+    isERPandEShopOnSameServer = dt[0].isERPandEShopOnSameServer;
+    paymentGateway = dt[0].paymentGateway;
+    aboutusUrl = dt[0].aboutusUrl;
+    homeScreen = dt[0].mainScreen;
+  }
+  if(kIsWeb){
+    runApp(MaterialApp(
+      initialRoute: homeScreen == 1 ? MasterPage.route : Home.route,
+      onGenerateRoute: RouteConfiguration.onGenerateRoute,));
+  }
+  else{
+    runApp(MaterialApp(
+      home: SplashScreen(),
+    ));
+  }
 //  runApp(MasterScreen(currentIndex: 0, key: null,));
 //  runApp(HomeScreen());
   //runApp(MyApp());
@@ -103,6 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class SplashScreen extends StatefulWidget{
+  static const String route = '/SplashScreen';
   @override
   splashScreen createState() => splashScreen();
 }
@@ -116,7 +141,7 @@ class splashScreen extends State<SplashScreen>{
     }
     if(homeScreen == 1){
       Navigator.pushReplacement(context, MaterialPageRoute(
-          builder: (context) => MasterScreen(currentIndex: 0, key: null,),
+        builder: (context) => MasterScreen(currentIndex: 0, key: null,),
       ));
     }
     else if(homeScreen == 2){
@@ -125,7 +150,11 @@ class splashScreen extends State<SplashScreen>{
       ));
     }
   }
-
+  route2() async{
+    Navigator.pushReplacement(context, MaterialPageRoute(
+      builder: (context) => Home(),
+    ));
+  }
   Future<List<Setting>> getSetting() async {
     var dt = await dataService.getSetting();
     sDT = dt;
@@ -154,7 +183,7 @@ class splashScreen extends State<SplashScreen>{
     super.initState();
 
     Timer(
-      Duration(seconds: 2),route,
+      Duration(seconds: 2),route2,
     );
 
     //Future.delayed(Duration.zero, () => Dialogs.showLoadingOnlyDialog(context, _keyLoader));
@@ -165,40 +194,57 @@ class splashScreen extends State<SplashScreen>{
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
-    return Scaffold(
-      body: Builder(
-        builder: (context)
-    {
-      getSetting();
-      return Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          sDT.length > 0 && sDT[0].startupImageName != "" ? Container(
-            constraints: BoxConstraints(minWidth: 350, maxWidth: 750),
-            decoration: BoxDecoration(
-              // Box decoration takes a gradient
-              image: DecorationImage(
-                image: NetworkImage(sDT[0].startupImageName),
-                fit: BoxFit.fill,
-              ),
-            ),
-          ) : Container(
-          ),
-        ],
-      );
-    }
-    )
+    return MaterialApp(
+      //initialRoute: homeScreen == 1 ? MasterPage.route : MasterPage2.route,
+      home: Scaffold(
+          body: Builder(
+              builder: (context)
+              {
+                getSetting();
+                return Stack(
+                  fit: StackFit.expand,
+                  children: <Widget>[
+                    sDT.length > 0 && sDT[0].startupImageName != "" ? Container(
+                      constraints: BoxConstraints(minWidth: 350, maxWidth: 750),
+                      decoration: BoxDecoration(
+                        // Box decoration takes a gradient
+                        image: DecorationImage(
+                          image: NetworkImage(sDT[0].startupImageName),
+                          fit: BoxFit.fill,
+                        ),
+                      ),
+                    ) : Container(
+                    ),
+                  ],
+                );
+              }
+          )
+      ),
     );
     //return
   }
 }
 
-class RoutingData {
-  final String route;
-  final Map<String, String> _queryParameters;
-  RoutingData({
-    this.route,
-    Map<String, String> queryParameters,
-  }) : _queryParameters = queryParameters;
-  operator [](String key) => _queryParameters[key];
+class Home extends StatelessWidget{
+  static const String route = '/';
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: MasterScreen.themeData(context),
+      initialRoute: homeScreen == 1 ? MasterPage.route : Home.route,
+      onGenerateRoute: RouteConfiguration.onGenerateRoute,
+      // home: Home2(),
+    );
+  }
+}
+
+class Home2 extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        body: Container(),
+      ),
+    );
+  }
 }
